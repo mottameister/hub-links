@@ -713,19 +713,6 @@
   </style>
 </head>
 <body class="is-locked">
-  <div class="gate" data-gate>
-    <form class="gate-card" data-gate-form>
-      <span class="gate-kicker">Acesso restrito</span>
-      <h1>Proposta comercial</h1>
-      <p>Conteúdo preparado para a Trix Investimentos. Digite a senha para visualizar a proposta interativa.</p>
-      <div class="gate-form">
-        <input type="password" name="password" autocomplete="current-password" placeholder="Senha de acesso" aria-label="Senha de acesso" required>
-        <button class="button" type="submit">Entrar</button>
-      </div>
-      <p class="gate-error" data-gate-error aria-live="polite"></p>
-    </form>
-  </div>
-
   <main class="site" data-proposal hidden>
     <nav class="nav" aria-label="Navegação da proposta">
       <a class="brand" href="/">
@@ -1025,34 +1012,19 @@
   </main>
 
   <script>
-    const PASSWORD = "trix2026";
-    const STORAGE_KEY = "motta-trix-proposal";
-    const gate = document.querySelector("[data-gate]");
+    const STORAGE_KEY = "motta-proposal-trix";
     const proposal = document.querySelector("[data-proposal]");
-    const form = document.querySelector("[data-gate-form]");
-    const error = document.querySelector("[data-gate-error]");
 
     const unlock = () => {
-      gate.hidden = true;
       proposal.hidden = false;
       document.body.classList.remove("is-locked");
-      sessionStorage.setItem(STORAGE_KEY, "ok");
     };
 
     if (sessionStorage.getItem(STORAGE_KEY) === "ok") {
       unlock();
+    } else {
+      window.location.replace("/propostas/");
     }
-
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const value = new FormData(form).get("password");
-      if (String(value).trim() === PASSWORD) {
-        unlock();
-        return;
-      }
-      error.textContent = "Senha incorreta. Confira e tente novamente.";
-      form.password.select();
-    });
   </script>
 </body>
 </html>
