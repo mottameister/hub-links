@@ -888,11 +888,11 @@
         </a>
         -->
 
-        <a class="card tone-partner" href="mailto:contato@mottameister.xyz">
+        <button class="card tone-partner" type="button" data-partner-open>
           <span class="card-top"><span class="icon">🤝</span><span class="arrow">→</span></span>
           <span class="card-visual" aria-hidden="true"><span class="handshake"></span></span>
-          <span class="card-copy"><span class="title">Parcerias</span><span class="desc">Projetos, collabs e contato.</span><span class="meta-row"><span class="badge">e-mail</span></span></span>
-        </a>
+          <span class="card-copy"><span class="title">Parcerias</span><span class="desc">Propostas, projetos, collabs e mídia.</span><span class="meta-row"><span class="badge">email</span><span class="badge">propostas</span></span></span>
+        </button>
 
       </div>
 
@@ -1028,6 +1028,29 @@
     </div>
   </div>
 
+  <div class="live-modal" data-partner-modal aria-hidden="true">
+    <div class="live-picker" role="dialog" aria-modal="true" aria-labelledby="partner-picker-title">
+      <div class="live-picker-head">
+        <h2 class="live-picker-title" id="partner-picker-title">Parcerias</h2>
+        <button class="live-close" type="button" data-partner-close aria-label="Fechar menu de parcerias">×</button>
+      </div>
+
+      <div class="live-options">
+        <a class="card compact-card tone-partner" href="mailto:contato@mottameister.xyz">
+          <span class="card-top"><span class="icon">📩</span></span>
+          <span class="card-copy"><span class="title">Enviar email</span><span class="desc">Projetos, collabs, mídia e propostas comerciais.</span><span class="meta-row"><span class="badge">contato</span></span></span>
+          <span class="arrow">→</span>
+        </a>
+
+        <a class="card compact-card tone-campaign" href="/propostas/trix/">
+          <span class="card-top"><span class="icon">📊</span></span>
+          <span class="card-copy"><span class="title">Proposta Trix</span><span class="desc">Media kit interativo com dados, formatos e pacotes.</span><span class="meta-row"><span class="badge">acesso restrito</span><span class="badge">proposta</span></span></span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <script>
     const cards = document.querySelectorAll(".card");
 
@@ -1054,6 +1077,9 @@
     const liveModal = document.querySelector("[data-live-modal]");
     const liveOpen = document.querySelector("[data-live-open]");
     const liveClose = document.querySelector("[data-live-close]");
+    const partnerModal = document.querySelector("[data-partner-modal]");
+    const partnerOpen = document.querySelector("[data-partner-open]");
+    const partnerClose = document.querySelector("[data-partner-close]");
 
     const setLiveModal = (isOpen) => {
       liveModal.classList.toggle("is-open", isOpen);
@@ -1073,9 +1099,30 @@
       if (event.target === liveModal) setLiveModal(false);
     });
 
+    const setPartnerModal = (isOpen) => {
+      partnerModal.classList.toggle("is-open", isOpen);
+      partnerModal.setAttribute("aria-hidden", String(!isOpen));
+      document.body.style.overflow = isOpen ? "hidden" : "";
+      if (isOpen) {
+        partnerModal.querySelector("a").focus();
+      } else {
+        partnerOpen.focus();
+      }
+    };
+
+    partnerOpen.addEventListener("click", () => setPartnerModal(true));
+    partnerClose.addEventListener("click", () => setPartnerModal(false));
+
+    partnerModal.addEventListener("click", (event) => {
+      if (event.target === partnerModal) setPartnerModal(false);
+    });
+
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && liveModal.classList.contains("is-open")) {
         setLiveModal(false);
+      }
+      if (event.key === "Escape" && partnerModal.classList.contains("is-open")) {
+        setPartnerModal(false);
       }
     });
   </script>
