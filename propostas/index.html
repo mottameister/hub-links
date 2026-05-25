@@ -166,29 +166,19 @@
   </main>
 
   <script>
-    const proposals = {
-      trix2026: {
-        key: "motta-proposal-trix",
-        path: "/propostas/trix/"
-      }
-    };
-
     const form = document.querySelector("[data-form]");
     const error = document.querySelector("[data-error]");
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const password = String(new FormData(form).get("password")).trim();
-      const proposal = proposals[password];
-
-      if (!proposal) {
-        error.textContent = "Senha incorreta. Confira e tente novamente.";
-        form.password.select();
+      if (!password) {
+        error.textContent = "Digite a senha recebida para continuar.";
         return;
       }
 
-      sessionStorage.setItem(proposal.key, "ok");
-      window.location.href = proposal.path;
+      sessionStorage.setItem("motta-proposal-passphrase", password);
+      window.location.href = "/propostas/trix/";
     });
   </script>
 </body>
