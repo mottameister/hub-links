@@ -210,7 +210,7 @@ html[data-theme="dark"] .button {
 }
 
 .reel-card {
-  min-height: 620px;
+  min-height: 700px;
   display: grid;
   align-content: start;
   gap: 14px;
@@ -249,7 +249,7 @@ html[data-theme="dark"] .button {
 
 .reel-embed {
   position: relative;
-  min-height: 480px;
+  min-height: 560px;
   border-radius: 24px;
   overflow: hidden;
   background:
@@ -261,46 +261,36 @@ html[data-theme="dark"] .button {
   place-items: center;
 }
 
-.reel-embed .instagram-media {
-  min-width: 100% !important;
-  max-width: 100% !important;
-  width: 100% !important;
-  margin: 0 !important;
-  border-radius: 22px !important;
+.reel-frame {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 560px;
+  border: 0;
+  border-radius: 22px;
+  background: #fff;
 }
 
 .reel-fallback {
-  position: absolute;
-  inset: 14px;
-  z-index: 0;
-  display: grid;
-  place-items: center;
-  padding: 22px;
-  border-radius: 20px;
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 10px;
+  padding: 0 14px;
+  border-radius: 999px;
   color: var(--ink);
-  text-align: center;
   text-decoration: none;
   background:
     linear-gradient(135deg, rgba(181,23,255,.18), rgba(67,217,255,.14)),
     rgba(255,255,255,.72);
+  font-weight: 900;
 }
 
 .reel-fallback strong {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 28px;
-  line-height: .95;
-  letter-spacing: -.055em;
-}
-
-.reel-fallback small {
-  color: var(--muted);
-  font-weight: 850;
-}
-
-.reel-embed blockquote {
-  position: relative;
-  z-index: 1;
+  font-size: 13px;
 }
 
 html[data-theme="dark"] .reel-fallback {
@@ -310,8 +300,7 @@ html[data-theme="dark"] .reel-fallback {
     rgba(12,9,22,.82);
 }
 
-html[data-theme="dark"] .reel-card-head p,
-html[data-theme="dark"] .reel-fallback small {
+html[data-theme="dark"] .reel-card-head p {
   color: #cfc1df;
 }
 
