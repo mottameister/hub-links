@@ -198,6 +198,13 @@
       backdrop-filter: blur(16px);
     }
 
+    .card.featured {
+      min-height: 430px;
+      border-color: rgba(155, 92, 255, .32);
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.66));
+      box-shadow: 0 24px 76px rgba(90, 45, 148, .14);
+    }
+
     .card::before {
       content: "";
       position: absolute;
@@ -347,7 +354,7 @@
 
       filtered.forEach((item) => {
         const article = document.createElement("article");
-        article.className = "card";
+        article.className = item.featured ? "card featured" : "card";
         article.innerHTML = `
           <div class="meta"><span class="chip">${item.category}</span><span class="chip">${item.badge}</span></div>
           <h2>${item.title}</h2>

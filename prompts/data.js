@@ -1,19 +1,30 @@
 window.MOTTA_PROMPTS = [
   {
-    id: "minecraft-cozy-base",
-    title: "Fundo Minecraft Cozy",
+    id: "fundo-minecraft",
+    title: "Fundo Minecraft",
     category: "Minecraft",
-    badge: "foto de perfil",
-    description: "Transforma uma foto em um retrato com fundo inspirado em Minecraft, sem perder o rosto original.",
-    prompt: "Use a foto enviada como referência principal. Mantenha o rosto, expressão, cabelo, pose e roupas da pessoa. Substitua apenas o fundo por uma cena cozy inspirada em Minecraft: blocos de grama, madeira, tochas suaves, uma casa pequena ao fundo, luz de pôr do sol, atmosfera aconchegante, profundidade de campo leve. Estilo semi-realista premium, sem aparência infantil, sem alterar a identidade da pessoa, sem texto, sem logos."
+    badge: "carro-chefe",
+    featured: true,
+    description: "Mantém a pessoa fotorrealista e transforma o fundo original em uma réplica voxel precisa.",
+    prompt: "Manter o sujeito humano 100% fotorrealista e intocado. Sem filtro de pixel, sem estilização, sem mudança de iluminação na pele. Preservar detalhe facial exato, poros, textura de tecido, fios de cabelo, sombras naturais. Expressão e postura idênticas. Reconstruir o fundo como réplica voxel estruturalmente precisa do local original. Não reinterpretar. Combinar layout, espaçamento, profundidade e geometria exatos da imagem de referência. Se há caminho, replicar curva e largura usando blocos de cascalho ou terra. Se há árvores, manter posição dos troncos, proporção de altura e copa usando blocos de log e folha. Se há construções, recriar silhueta, posição das janelas e ângulo do telhado com geometria Minecraft. Pedras, bancos, cercas e placas viram blocos mantendo posição exata. Perspectiva idêntica à foto original."
   },
   {
-    id: "lego-minifig-world",
-    title: "Mundo LEGO",
+    id: "fundo-lego",
+    title: "Fundo LEGO",
     category: "LEGO",
-    badge: "criativo",
-    description: "Coloca a pessoa em um cenário de peças LEGO com cara divertida e bem produzida.",
-    prompt: "Edite a foto enviada mantendo a identidade, expressão, pose e composição da pessoa. Transforme o ambiente ao redor em um mundo feito de peças LEGO, com blocos coloridos, profundidade, iluminação de estúdio suave e detalhes de construção ao fundo. A pessoa deve continuar parecendo real, não virar minifigura. Resultado clean, divertido, premium, sem texto, sem marcas, sem distorcer rosto ou mãos."
+    badge: "carro-chefe",
+    featured: true,
+    description: "Preserva a pessoa real e reconstrói o ambiente como cenário LEGO fiel à referência.",
+    prompt: "Manter o sujeito humano 100% fotorrealista e intocado. Reconstruir o fundo como réplica LEGO estruturalmente precisa do local original. Combinar layout, profundidade e geometria exatos da referência. Se há caminho, replicar curva e largura com tiles e plates LEGO. Árvores com troncos e copas em folhagem em camadas usando peças apropriadas. Construções recriadas com geometria arquitetônica autêntica LEGO, posição de janelas e ângulo de telhado preservados. Pedras, bancos, placas convertidos em equivalentes LEGO mantendo posição relativa ao sujeito. Linha do horizonte, altura da câmera, distância focal e escala idênticos. Qualquer objeto tocando o sujeito vira lógica LEGO. Animal real vira figura LEGO equivalente. Luz natural realista interagindo com os materiais plásticos LEGO mantendo direção e intensidade da foto original. Textura realista do material LEGO com costuras, pinos e reflexos plásticos autênticos visíveis. Sem UI, sem texto, sem overlays."
+  },
+  {
+    id: "fundo-gta-v",
+    title: "Fundo GTA V",
+    category: "GTA V",
+    badge: "carro-chefe",
+    featured: true,
+    description: "Transforma toda a imagem em um screenshot 3D com estética de gameplay high-end do GTA V.",
+    prompt: "Reconstruir a cena inteira da imagem de referência como render 3D em tempo real dentro da engine Rage do GTA V. Sem aplicar filtro. Reconstruir totalmente todas as pessoas, veículos, arquitetura, terreno e props como assets 3D poligonais nativos do GTA V. O resultado deve parecer um screenshot autêntico de gameplay capturado em PC high-end com configurações ultra. Todos os sujeitos convertidos em geometria modelada com estrutura poligonal visível e texturas game-ready. Rostos, corpos e roupas seguindo as proporções de personagem do GTA V, levemente exagerados, rígidos e esculpidos digitalmente. Pele fosca e texturizada, sem poros fotográficos. Cabelo em mechas card-based, levemente rígido. Roupas com shaders de tecido planos. Ambiente com lógica de Los Santos ou Blaine County. Iluminação seguindo o comportamento de tempo real do GTA V."
   },
   {
     id: "minecraft-stream-room",
