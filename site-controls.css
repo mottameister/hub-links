@@ -173,6 +173,35 @@ html[data-theme="dark"] .mini-card span {
   color: #cfc1df !important;
 }
 
+html[data-theme="dark"] .nav .brand,
+html[data-theme="dark"] .nav-links a {
+  color: #e8dcf5 !important;
+}
+
+html[data-theme="dark"] .nav-links a:not(.ghost):hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, .08) !important;
+}
+
+html[data-theme="dark"] .ghost {
+  color: #f7f2ff !important;
+  background: rgba(255, 255, 255, .12) !important;
+  border-color: rgba(255, 255, 255, .18) !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .18);
+}
+
+html[data-theme="dark"] .ghost:hover,
+html[data-theme="dark"] .ghost:focus-visible {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, rgba(181, 23, 255, .32), rgba(67, 217, 255, .20)) !important;
+  border-color: rgba(255, 255, 255, .28) !important;
+  outline: none;
+}
+
+html[data-theme="dark"] .button {
+  color: #ffffff !important;
+}
+
 .site-controls {
   position: fixed;
   top: 14px;
