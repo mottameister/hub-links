@@ -6,11 +6,67 @@ const message = document.querySelector("[data-message]");
 const confirmedCount = document.querySelector("[data-confirmed-count]");
 const waitlistCount = document.querySelector("[data-waitlist-count]");
 const remainingCount = document.querySelector("[data-remaining-count]");
+const root = document.documentElement;
+
+const copy = {
+  "pt-BR": {
+    discordPlaceholder: "ex: mottameister",
+    timezonePlaceholder: "ex: Brasil, EUA Eastern, Portugal",
+    notesPlaceholder: "Algo que a organização precisa saber?",
+    sending: "Enviando...",
+    submit: "Enviar inscrição",
+    missingFields: "Preencha seu nick no Minecraft e seu Discord.",
+    missingChecks: "Confirme as regras e o horário antes de se inscrever.",
+    waitlist: "Você entrou na lista de espera. Se abrir vaga, a organização chama no Discord.",
+    confirmed: "Inscrição confirmada. Te vejo domingo no check-in.",
+    fallbackError: "Não foi possível enviar sua inscrição agora.",
+    storageError: "Inscrições ainda não configuradas no servidor. Falta conectar o Vercel Blob no projeto.",
+    discordSuffix: "Se persistir, chama no Discord.",
+  },
+  "en-US": {
+    discordPlaceholder: "e.g. mottameister",
+    timezonePlaceholder: "e.g. Brazil, US Eastern, Portugal",
+    notesPlaceholder: "Anything the organizers should know?",
+    sending: "Sending...",
+    submit: "Submit registration",
+    missingFields: "Fill in your Minecraft nickname and Discord name.",
+    missingChecks: "Confirm the rules and schedule before registering.",
+    waitlist: "You joined the waitlist. If a spot opens, the organizers will contact you on Discord.",
+    confirmed: "Registration confirmed. See you Sunday at check-in.",
+    fallbackError: "We could not submit your registration right now.",
+    storageError: "Registrations are not fully configured on the server yet. The Vercel Blob store still needs to be connected.",
+    discordSuffix: "If it keeps happening, message us on Discord.",
+  },
+};
+
+const t = (key) => {
+  const lang = root.dataset.lang === "en-US" ? "en-US" : "pt-BR";
+  return copy[lang][key];
+};
 
 const showMessage = (text, type = "") => {
   if (!message) return;
   message.textContent = text;
   message.className = `message is-visible ${type ? `is-${type}` : ""}`;
+};
+
+const localizeError = (messageText) => {
+  if (String(messageText || "").includes("Vercel Blob")) {
+    return t("storageError");
+  }
+  return messageText || t("fallbackError");
+};
+
+const applyLocalizedFormCopy = () => {
+  const discord = document.querySelector("#discordName");
+  const timezone = document.querySelector("#timezone");
+  const notes = document.querySelector("#notes");
+  const submit = form && form.querySelector("button[type='submit']");
+
+  if (discord) discord.placeholder = t("discordPlaceholder");
+  if (timezone) timezone.placeholder = t("timezonePlaceholder");
+  if (notes) notes.placeholder = t("notesPlaceholder");
+  if (submit && !submit.disabled) submit.textContent = t("submit");
 };
 
 const updateStatus = async () => {
@@ -52,17 +108,17 @@ if (form) {
     const payload = getFormData();
 
     if (!payload.minecraftNick || !payload.discordName) {
-      showMessage("Preencha seu nick no Minecraft e seu Discord.", "error");
+      showMessage(t("missingFields"), "error");
       return;
     }
 
     if (!payload.rulesAccepted || !payload.scheduleConfirmed) {
-      showMessage("Confirme as regras e o horário antes de se inscrever.", "error");
+      showMessage(t("missingChecks"), "error");
       return;
     }
 
     submit.disabled = true;
-    submit.textContent = "Enviando...";
+    submit.textContent = t("sending");
 
     try {
       const response = await fetch("/api/coruja-cup/register", {
@@ -77,19 +133,24 @@ if (form) {
       }
 
       const statusText = data.status === "waitlist"
-        ? "Você entrou na lista de espera. Se abrir vaga, a organização chama no Discord."
-        : "Inscrição confirmada. Te vejo domingo no check-in.";
+        ? t("waitlist")
+        : t("confirmed");
 
       showMessage(statusText, "success");
       form.reset();
       await updateStatus();
     } catch (error) {
-      showMessage(`${error.message} Se persistir, chama no Discord.`, "error");
+      showMessage(`${localizeError(error.message)} ${t("discordSuffix")}`, "error");
     } finally {
       submit.disabled = false;
-      submit.textContent = "Enviar inscrição";
+      submit.textContent = t("submit");
     }
   });
 }
 
+new MutationObserver(applyLocalizedFormCopy).observe(root, {
+  attributes: true,
+  attributeFilter: ["data-lang"],
+});
+applyLocalizedFormCopy();
 updateStatus();
