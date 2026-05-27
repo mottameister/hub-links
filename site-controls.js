@@ -350,7 +350,39 @@
   root.lang = state.lang;
 
   const buildControls = () => {
-    if (document.querySelector(".site-controls")) return;
+    const bindControls = (controls) => {
+      if (controls.dataset.controlsReady === "true") {
+        apply();
+        return;
+      }
+
+      controls.dataset.controlsReady = "true";
+      controls.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+
+        if (button.dataset.themeChoice) {
+          state.theme = button.dataset.themeChoice;
+          setStored(themeKey, state.theme);
+        }
+
+        if (button.dataset.langChoice) {
+          state.lang = button.dataset.langChoice;
+          setStored(langKey, state.lang);
+        }
+
+        apply();
+      });
+
+      apply();
+    };
+
+    const existingControls = document.querySelector(".site-controls");
+    if (existingControls) {
+      bindControls(existingControls);
+      new MutationObserver(() => apply()).observe(document.body, { childList: true, subtree: true });
+      return;
+    }
 
     const controls = document.createElement("div");
     controls.className = "site-controls";
@@ -366,25 +398,8 @@
       </div>
     `;
 
-    controls.addEventListener("click", (event) => {
-      const button = event.target.closest("button");
-      if (!button) return;
-
-      if (button.dataset.themeChoice) {
-        state.theme = button.dataset.themeChoice;
-        setStored(themeKey, state.theme);
-      }
-
-      if (button.dataset.langChoice) {
-        state.lang = button.dataset.langChoice;
-        setStored(langKey, state.lang);
-      }
-
-      apply();
-    });
-
     document.body.append(controls);
-    apply();
+    bindControls(controls);
     new MutationObserver(() => apply()).observe(document.body, { childList: true, subtree: true });
   };
 

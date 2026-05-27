@@ -34,6 +34,10 @@ html[data-theme="light"] body {
 
 a { color: inherit; }
 
+.site-controls {
+  z-index: 1000;
+}
+
 .page {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
