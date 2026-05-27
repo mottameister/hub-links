@@ -43,7 +43,7 @@
     "Coruja Cup": "Coruja Cup",
     "Torneio semanal de VGC no servidor. Inscrições da Poison Edition.": "Weekly VGC tournament on the server. Poison Edition registrations.",
     "domingo": "sunday",
-    "8 vagas": "8 spots",
+    "9 vagas": "9 spots",
     "vgc": "vgc",
     "Prompts para editar fotos com IA: Minecraft, LEGO, avatars e estilos criativos.": "Prompts to edit photos with AI: Minecraft, LEGO, avatars, and creative styles.",
     "Área de propostas": "Proposal area",

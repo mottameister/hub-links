@@ -1,5 +1,5 @@
 const eventId = "poison-edition-001";
-const capacity = 8;
+const capacity = 9;
 
 const form = document.querySelector("[data-registration-form]");
 const message = document.querySelector("[data-message]");
@@ -28,7 +28,7 @@ const updateStatus = async () => {
   } catch {
     if (confirmedCount) confirmedCount.textContent = "-";
     if (waitlistCount) waitlistCount.textContent = "-";
-    if (remainingCount) remainingCount.textContent = "8";
+    if (remainingCount) remainingCount.textContent = "9";
   }
 };
 
