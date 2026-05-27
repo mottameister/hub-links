@@ -148,9 +148,6 @@ if (form) {
   });
 }
 
-new MutationObserver(applyLocalizedFormCopy).observe(root, {
-  attributes: true,
-  attributeFilter: ["data-lang"],
-});
+window.addEventListener("coruja-cup-langchange", applyLocalizedFormCopy);
 applyLocalizedFormCopy();
 updateStatus();
