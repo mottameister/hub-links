@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Coruja Cup</title>
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="/site-controls.css" />
+  <link rel="stylesheet" href="/coruja-cup/coruja-cup.css" />
+</head>
+<body>
+  <main class="page">
+    <nav class="topbar" aria-label="Navegação">
+      <a class="back" href="/coruja-cup/">← voltar para Coruja Cup</a>
+      <span class="event-pill">Admin</span>
+    </nav>
+
+    <section class="panel">
+      <span class="kicker">Organização</span>
+      <h1 style="font-size: clamp(42px, 7vw, 72px);">Inscrições</h1>
+      <p class="lead">Use o token admin para carregar os inscritos, acompanhar confirmados/lista de espera e exportar CSV.</p>
+
+      <div class="field" style="max-width: 520px; margin-top: 22px;">
+        <label for="adminToken">Token admin</label>
+        <input id="adminToken" type="password" autocomplete="off" />
+      </div>
+
+      <div class="admin-actions">
+        <button class="button" type="button" data-load>Carregar</button>
+        <button class="button" type="button" data-export>Exportar CSV</button>
+      </div>
+
+      <div class="message" data-message role="status" aria-live="polite"></div>
+      <div data-table></div>
+    </section>
+  </main>
+
+  <script src="/site-controls.js"></script>
+  <script>
+    const eventId = "poison-edition-001";
+    const tokenInput = document.querySelector("#adminToken");
+    const message = document.querySelector("[data-message]");
+    const tableRoot = document.querySelector("[data-table]");
+
+    const showMessage = (text, type = "") => {
+      message.textContent = text;
+      message.className = `message is-visible ${type ? `is-${type}` : ""}`;
+    };
+
+    const getToken = () => tokenInput.value.trim();
+    const escapeHtml = (value) => String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+    const renderRows = (rows) => {
+      if (!rows.length) {
+        tableRoot.innerHTML = "<p class='form-copy'>Nenhuma inscrição ainda.</p>";
+        return;
+      }
+
+      tableRoot.innerHTML = `
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Minecraft</th>
+              <th>Discord</th>
+              <th>Fuso</th>
+              <th>Observações</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => `
+              <tr>
+                <td>${row.status}</td>
+                <td>${escapeHtml(row.minecraftNick)}</td>
+                <td>${escapeHtml(row.discordName)}</td>
+                <td>${escapeHtml(row.timezone || "-")}</td>
+                <td>${escapeHtml(row.notes || "-")}</td>
+                <td>${new Date(row.createdAt).toLocaleString("pt-BR")}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      `;
+    };
+
+    const loadRows = async () => {
+      const token = getToken();
+      if (!token) {
+        showMessage("Digite o token admin.", "error");
+        return;
+      }
+
+      const response = await fetch(`/api/coruja-cup/registrations?eventId=${eventId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        showMessage(data.error || "Não foi possível carregar as inscrições.", "error");
+        return;
+      }
+
+      renderRows(data.registrations || []);
+      showMessage(`${data.registrations.length} inscrição(ões) carregada(s).`, "success");
+    };
+
+    document.querySelector("[data-load]").addEventListener("click", loadRows);
+    document.querySelector("[data-export]").addEventListener("click", async () => {
+      const token = getToken();
+      if (!token) {
+        showMessage("Digite o token admin.", "error");
+        return;
+      }
+
+      const response = await fetch(`/api/coruja-cup/registrations?eventId=${eventId}&format=csv`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        showMessage(data.error || "Não foi possível exportar o CSV.", "error");
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `coruja-cup-${eventId}.csv`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showMessage("CSV exportado.", "success");
+    });
+  </script>
+</body>
+</html>
