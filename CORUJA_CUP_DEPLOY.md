@@ -1,13 +1,12 @@
 # Coruja Cup - Deploy das Inscricoes
 
-O hub ja possui a pagina publica em `/coruja-cup/`, admin em `/coruja-cup/admin/` e rotas Cloudflare Pages Functions em `/api/coruja-cup/*`.
+O hub ja possui a pagina publica em `/coruja-cup/`, admin em `/coruja-cup/admin/` e rotas Vercel Serverless Functions em `/api/coruja-cup/*`.
 
 Para as inscricoes funcionarem em producao:
 
-1. Hospedar o hub em Cloudflare Pages ou conectar essas Functions ao deploy existente.
-2. Criar um KV namespace no Cloudflare.
-3. Adicionar o binding do KV com o nome `CORUJA_CUP`.
-4. Criar uma variavel secreta `CORUJA_CUP_ADMIN_TOKEN` para proteger o admin.
+1. Criar ou conectar um Vercel Blob store ao projeto do hub.
+2. Garantir que a env `BLOB_READ_WRITE_TOKEN` exista no projeto.
+3. Criar uma variavel secreta `CORUJA_CUP_ADMIN_TOKEN` para proteger o admin.
 
 Rotas usadas:
 
@@ -17,3 +16,5 @@ Rotas usadas:
 - `GET /api/coruja-cup/registrations?eventId=poison-edition-001&format=csv`
 
 O CSV e exportado pelo admin usando o token via header `Authorization: Bearer`.
+
+Observacao: existe uma versao antiga das rotas em `functions/api/coruja-cup/*` para Cloudflare Pages Functions. O dominio atual roda na Vercel, entao a versao ativa fica em `api/coruja-cup/*`.
