@@ -342,6 +342,9 @@
     document.querySelectorAll("[data-pt][data-en]").forEach((node) => {
       node.textContent = state.lang === "en-US" ? node.dataset.en : node.dataset.pt;
     });
+    document.querySelectorAll("[data-href-pt][data-href-en]").forEach((node) => {
+      node.href = state.lang === "en-US" ? node.dataset.hrefEn : node.dataset.hrefPt;
+    });
     if (document.body) translateTextNodes();
   };
 
