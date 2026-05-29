@@ -871,11 +871,11 @@
       <div class="section-title">Principais links</div>
       <div class="bento">
 
-        <a class="card card-main tone-shop" href="https://www.amazon.com.br/shop/mottameister" data-href-pt="https://www.amazon.com.br/shop/mottameister" data-href-en="https://www.amazon.com/shop/mottameister?ccs_id=e601d8bd-0a1b-421a-bc96-e0ce5841f050" target="_blank" rel="noopener noreferrer">
+        <button class="card card-main tone-shop" type="button" data-shop-open>
           <span class="card-top"><span class="icon">🎮</span><span class="arrow">→</span></span>
           <span class="card-visual" aria-hidden="true"><span class="gear"></span></span>
           <span class="card-copy"><span class="title">Produtos que eu uso</span><span class="desc">Setup, jogos, casa, comidas, bebidas e recomendações reais.</span><span class="meta-row"><span class="badge">setup</span><span class="badge">curadoria</span></span></span>
-        </a>
+        </button>
 
         <button class="card tone-twitch" type="button" data-live-open>
           <span class="card-top"><span class="icon">🎥</span><span class="arrow">→</span></span>
@@ -1016,6 +1016,29 @@
 
   </main>
 
+  <div class="live-modal" data-shop-modal aria-hidden="true">
+    <div class="live-picker" role="dialog" aria-modal="true" aria-labelledby="shop-picker-title">
+      <div class="live-picker-head">
+        <h2 class="live-picker-title" id="shop-picker-title">Produtos que eu uso</h2>
+        <button class="live-close" type="button" data-shop-close aria-label="Fechar menu de produtos">×</button>
+      </div>
+
+      <div class="live-options">
+        <a class="card compact-card tone-shop" href="https://www.amazon.com.br/shop/mottameister" data-href-pt="https://www.amazon.com.br/shop/mottameister" data-href-en="https://www.amazon.com/shop/mottameister?ccs_id=e601d8bd-0a1b-421a-bc96-e0ce5841f050" target="_blank" rel="noopener noreferrer">
+          <span class="card-top"><span class="icon">📦</span></span>
+          <span class="card-copy"><span class="title">Amazon</span><span class="desc">Setup, jogos, casa e recomendações que eu uso.</span><span class="meta-row"><span class="badge">setup</span><span class="badge">curadoria</span></span></span>
+          <span class="arrow">→</span>
+        </a>
+
+        <a class="card compact-card tone-shop" href="https://temu.to/k/pyq7wa030qz" target="_blank" rel="noopener noreferrer">
+          <span class="card-top"><span class="icon">🛍️</span></span>
+          <span class="card-copy"><span class="title">Temu</span><span class="desc">Achadinhos e recomendações do programa de influencer.</span><span class="meta-row"><span class="badge">achados</span><span class="badge">influencer</span></span></span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div class="live-modal" data-live-modal aria-hidden="true">
     <div class="live-picker" role="dialog" aria-modal="true" aria-labelledby="live-picker-title">
       <div class="live-picker-head">
@@ -1095,9 +1118,30 @@
     const liveModal = document.querySelector("[data-live-modal]");
     const liveOpen = document.querySelector("[data-live-open]");
     const liveClose = document.querySelector("[data-live-close]");
+    const shopModal = document.querySelector("[data-shop-modal]");
+    const shopOpen = document.querySelector("[data-shop-open]");
+    const shopClose = document.querySelector("[data-shop-close]");
     const partnerModal = document.querySelector("[data-partner-modal]");
     const partnerOpen = document.querySelector("[data-partner-open]");
     const partnerClose = document.querySelector("[data-partner-close]");
+
+    const setShopModal = (isOpen) => {
+      shopModal.classList.toggle("is-open", isOpen);
+      shopModal.setAttribute("aria-hidden", String(!isOpen));
+      document.body.style.overflow = isOpen ? "hidden" : "";
+      if (isOpen) {
+        shopModal.querySelector("a").focus();
+      } else {
+        shopOpen.focus();
+      }
+    };
+
+    shopOpen.addEventListener("click", () => setShopModal(true));
+    shopClose.addEventListener("click", () => setShopModal(false));
+
+    shopModal.addEventListener("click", (event) => {
+      if (event.target === shopModal) setShopModal(false);
+    });
 
     const setLiveModal = (isOpen) => {
       liveModal.classList.toggle("is-open", isOpen);
@@ -1136,6 +1180,9 @@
     });
 
     document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && shopModal.classList.contains("is-open")) {
+        setShopModal(false);
+      }
       if (event.key === "Escape" && liveModal.classList.contains("is-open")) {
         setLiveModal(false);
       }
