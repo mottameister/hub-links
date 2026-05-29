@@ -278,6 +278,7 @@
     .tone-github { --accent: #f7f2ff; --accent-2: #43d9ff; }
     .tone-prompts { --accent: #b517ff; --accent-2: #ffbf38; }
     .tone-coruja-cup { --accent: #a855f7; --accent-2: #34d399; }
+    .tone-server-map { --accent: #43d9ff; --accent-2: #66f28b; }
 
     .card-main {
       grid-column: span 2;
@@ -686,6 +687,34 @@
       gap: 12px;
     }
 
+    .folder-hero-link {
+      min-height: 132px;
+      padding: 18px;
+      border-radius: 18px;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 16px;
+      border-color: color-mix(in srgb, var(--accent) 46%, rgba(255,255,255,.16));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 24%, transparent), rgba(255,255,255,.065));
+      box-shadow: 0 0 26px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    .folder-hero-link .card-top {
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .folder-hero-link .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      font-size: 23px;
+    }
+
+    .folder-hero-link .title { font-size: 20px; }
+    .folder-hero-link .desc { font-size: 13px; }
+
     .compact-card .card-top {
       align-items: center;
       flex: 0 0 auto;
@@ -826,7 +855,12 @@
         grid-column: span 1;
         min-height: 118px;
       }
-      .featured-link { min-height: 88px; }
+      .featured-link,
+      .folder-hero-link {
+        min-height: 88px;
+        flex-direction: row;
+        align-items: center;
+      }
       .card-main { min-height: 140px; }
       .title { font-size: 17px; }
       .card-main .title { font-size: 20px; }
@@ -835,6 +869,8 @@
       .card-main .card-visual { height: 52px; }
       .compact-list { grid-template-columns: 1fr; padding: 0 10px 10px; }
       .compact-card { min-height: 74px; }
+      .folder-hero-link .card-top { width: auto; }
+      .folder-hero-link .title { font-size: 16px; }
       .folder summary { min-height: 54px; padding: 0 14px; }
       .folder-title { font-size: 12px; letter-spacing: 1.3px; }
     }
@@ -903,17 +939,23 @@
         <details class="folder" open>
           <summary>
             <span class="folder-title">Toca da Coruja</span>
-            <span class="folder-count">8 links <span class="folder-chevron">›</span></span>
+            <span class="folder-count">9 links <span class="folder-chevron">›</span></span>
           </summary>
 
           <div class="compact-list">
-            <a class="card compact-card featured-link tone-coruja-cup" href="/coruja-cup/">
+            <a class="card compact-card folder-hero-link tone-coruja-cup" href="/coruja-cup/">
               <span class="card-top"><span class="icon">🏆</span></span>
               <span class="card-copy"><span class="title">Coruja Cup</span><span class="desc">Torneio quinzenal de VGC no servidor. Inscrições da Poison Edition.</span><span class="meta-row"><span class="badge">7/jun</span><span class="badge">9 vagas</span><span class="badge">vgc</span></span></span>
               <span class="arrow">→</span>
             </a>
 
-            <a class="card compact-card featured-link tone-patreon" href="https://www.patreon.com/mottameister" target="_blank" rel="noopener noreferrer">
+            <a class="card compact-card folder-hero-link tone-server-map" href="https://map.mottameister.xyz/" target="_blank" rel="noopener noreferrer">
+              <span class="card-top"><span class="icon">🗺️</span></span>
+              <span class="card-copy"><span class="title">Mapa 3D do Servidor</span><span class="desc">Monitore a Toca da Coruja em tempo real com render 3D.</span><span class="meta-row"><span class="badge">ao vivo</span><span class="badge">3D</span><span class="badge">server</span></span></span>
+              <span class="arrow">→</span>
+            </a>
+
+            <a class="card compact-card tone-patreon" href="https://www.patreon.com/mottameister" target="_blank" rel="noopener noreferrer">
               <span class="card-top"><span class="icon">🦉</span></span>
               <span class="card-copy"><span class="title">Patreon</span><span class="desc">Corujões, bastidores, conteúdo exclusivo e formas de me apoiar.</span><span class="meta-row"><span class="badge">downloads</span><span class="badge">assinatura</span></span></span>
               <span class="arrow">→</span>
