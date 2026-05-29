@@ -335,9 +335,10 @@
       const key = base.trim();
       const translated = translations[key];
       if (state.lang === "en-US" && translated) {
-        node.nodeValue = base.replace(key, translated);
+        const text = base.replace(key, translated);
+        if (node.nodeValue !== text) node.nodeValue = text;
       } else if (state.lang === "pt-BR") {
-        node.nodeValue = base;
+        if (node.nodeValue !== base) node.nodeValue = base;
       }
     });
   };
@@ -353,10 +354,12 @@
       button.classList.toggle("is-active", button.dataset.langChoice === state.lang);
     });
     document.querySelectorAll("[data-pt][data-en]").forEach((node) => {
-      node.textContent = state.lang === "en-US" ? node.dataset.en : node.dataset.pt;
+      const text = state.lang === "en-US" ? node.dataset.en : node.dataset.pt;
+      if (node.textContent !== text) node.textContent = text;
     });
     document.querySelectorAll("[data-href-pt][data-href-en]").forEach((node) => {
-      node.href = state.lang === "en-US" ? node.dataset.hrefEn : node.dataset.hrefPt;
+      const href = state.lang === "en-US" ? node.dataset.hrefEn : node.dataset.hrefPt;
+      if (node.getAttribute("href") !== href) node.href = href;
     });
     if (document.body) translateTextNodes();
   };
