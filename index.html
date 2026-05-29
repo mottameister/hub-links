@@ -729,6 +729,14 @@
 
     .compact-card .card-visual { display: none; }
 
+    .folder-hero-link .card-visual {
+      display: block;
+      width: 100%;
+      height: 50px;
+      margin: 0;
+      flex: 0 0 auto;
+    }
+
     .compact-card .card-copy {
       flex: 1 1 auto;
       min-width: 0;
@@ -857,9 +865,9 @@
       }
       .featured-link,
       .folder-hero-link {
-        min-height: 88px;
-        flex-direction: row;
-        align-items: center;
+        min-height: 126px;
+        flex-direction: column;
+        align-items: stretch;
       }
       .card-main { min-height: 140px; }
       .title { font-size: 17px; }
@@ -869,7 +877,7 @@
       .card-main .card-visual { height: 52px; }
       .compact-list { grid-template-columns: 1fr; padding: 0 10px 10px; }
       .compact-card { min-height: 74px; }
-      .folder-hero-link .card-top { width: auto; }
+      .folder-hero-link .card-visual { height: 46px; margin: 0; }
       .folder-hero-link .title { font-size: 16px; }
       .folder summary { min-height: 54px; padding: 0 14px; }
       .folder-title { font-size: 12px; letter-spacing: 1.3px; }
@@ -939,27 +947,29 @@
         <details class="folder" open>
           <summary>
             <span class="folder-title">Toca da Coruja</span>
-            <span class="folder-count">9 links <span class="folder-chevron">›</span></span>
+            <span class="folder-count">8 links <span class="folder-chevron">›</span></span>
           </summary>
 
           <div class="compact-list">
             <a class="card compact-card folder-hero-link tone-coruja-cup" href="/coruja-cup/">
-              <span class="card-top"><span class="icon">🏆</span></span>
+              <span class="card-top"><span class="icon">🏆</span><span class="arrow">→</span></span>
+              <span class="card-visual" aria-hidden="true"><span class="rank"></span></span>
               <span class="card-copy"><span class="title">Coruja Cup</span><span class="desc">Torneio quinzenal de VGC no servidor. Inscrições da Poison Edition.</span><span class="meta-row"><span class="badge">7/jun</span><span class="badge">9 vagas</span><span class="badge">vgc</span></span></span>
-              <span class="arrow">→</span>
             </a>
 
             <a class="card compact-card folder-hero-link tone-server-map" href="https://map.mottameister.xyz/" target="_blank" rel="noopener noreferrer">
-              <span class="card-top"><span class="icon">🗺️</span></span>
+              <span class="card-top"><span class="icon">🗺️</span><span class="arrow">→</span></span>
+              <span class="card-visual" aria-hidden="true"><span class="pulse-line"></span></span>
               <span class="card-copy"><span class="title">Mapa 3D do Servidor</span><span class="desc">Monitore a Toca da Coruja em tempo real com render 3D.</span><span class="meta-row"><span class="badge">ao vivo</span><span class="badge">3D</span><span class="badge">server</span></span></span>
-              <span class="arrow">→</span>
             </a>
 
+            <!-- Patreon oculto por enquanto.
             <a class="card compact-card tone-patreon" href="https://www.patreon.com/mottameister" target="_blank" rel="noopener noreferrer">
               <span class="card-top"><span class="icon">🦉</span></span>
               <span class="card-copy"><span class="title">Patreon</span><span class="desc">Corujões, bastidores, conteúdo exclusivo e formas de me apoiar.</span><span class="meta-row"><span class="badge">downloads</span><span class="badge">assinatura</span></span></span>
               <span class="arrow">→</span>
             </a>
+            -->
 
             <a class="card compact-card tone-discord" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noopener noreferrer">
               <span class="card-top"><span class="icon">💬</span></span>
