@@ -687,6 +687,15 @@
       gap: 12px;
     }
 
+    .special-projects {
+      grid-auto-rows: 1fr;
+    }
+
+    .special-projects .compact-card {
+      height: 100%;
+      align-items: flex-start;
+    }
+
     .folder-hero-link {
       min-height: 132px;
       padding: 18px;
@@ -1027,11 +1036,11 @@
         <details class="folder">
           <summary>
             <span class="folder-title">Projetos Especiais</span>
-            <span class="folder-count">3 links <span class="folder-chevron">›</span></span>
+            <span class="folder-count">4 links <span class="folder-chevron">›</span></span>
           </summary>
 
-          <div class="compact-list">
-            <a class="card compact-card featured-link tone-prompts" href="/prompts/">
+          <div class="compact-list special-projects">
+            <a class="card compact-card tone-prompts" href="/prompts/">
               <span class="card-top"><span class="icon">✨</span></span>
               <span class="card-copy"><span class="title">Prompt Lab</span><span class="desc">Prompts para editar fotos com IA: Minecraft, LEGO, avatars e estilos criativos.</span><span class="meta-row"><span class="badge">ia</span><span class="badge">foto</span><span class="badge">prompts</span></span></span>
               <span class="arrow">→</span>
@@ -1040,6 +1049,12 @@
             <a class="card compact-card tone-github" href="https://github.com/mottameister" target="_blank" rel="noopener noreferrer">
               <span class="card-top"><span class="icon">💻</span></span>
               <span class="card-copy"><span class="title">GitHub</span><span class="desc">Projetos, código e coisas em construção.</span><span class="meta-row"><span class="badge">code</span><span class="badge">projetos</span></span></span>
+              <span class="arrow">→</span>
+            </a>
+
+            <a class="card compact-card tone-prompts" href="https://steamcommunity.com/id/mottameister/myworkshopfiles?appid=431960&amp;browsefilter=mysubscriptions" target="_blank" rel="noopener noreferrer">
+              <span class="card-top"><span class="icon">🖼️</span></span>
+              <span class="card-copy"><span class="title">Wallpapers favoritos</span><span class="desc">Minha curadoria do Wallpaper Engine que aparece nos vídeos.</span><span class="meta-row"><span class="badge">steam</span><span class="badge">wallpaper engine</span></span></span>
               <span class="arrow">→</span>
             </a>
 
