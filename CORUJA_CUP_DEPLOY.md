@@ -10,10 +10,10 @@ Para as inscricoes funcionarem em producao:
 
 Rotas usadas:
 
-- `GET /api/coruja-cup/status?eventId=poison-edition-001`
+- `GET /api/coruja-cup/status?eventId=coruja-cup-2026-06-28`
 - `POST /api/coruja-cup/register`
-- `GET /api/coruja-cup/registrations?eventId=poison-edition-001`
-- `GET /api/coruja-cup/registrations?eventId=poison-edition-001&format=csv`
+- `GET /api/coruja-cup/registrations?eventId=coruja-cup-2026-06-28`
+- `GET /api/coruja-cup/registrations?eventId=coruja-cup-2026-06-28&format=csv`
 
 O CSV e exportado pelo admin usando o token via header `Authorization: Bearer`.
 

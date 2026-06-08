@@ -13,7 +13,7 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "Invalid JSON payload." }, 400);
   }
 
-  const eventId = sanitize(payload.eventId || "poison-edition-001", 80);
+  const eventId = sanitize(payload.eventId || "coruja-cup-2026-06-28", 80);
   const minecraftNick = sanitize(payload.minecraftNick, 40);
   const discordName = sanitize(payload.discordName, 60);
   const timezone = sanitize(payload.timezone, 80);

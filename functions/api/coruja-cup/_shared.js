@@ -1,5 +1,5 @@
 export const capacity = 9;
-export const defaultEventId = "poison-edition-001";
+export const defaultEventId = "coruja-cup-2026-06-28";
 
 export const json = (body, status = 200) => new Response(JSON.stringify(body), {
   status,
