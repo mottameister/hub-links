@@ -140,7 +140,7 @@ html[data-theme="light"] .hero-copy::after {
 }
 
 h1 {
-  margin: 14px 0 12px;
+  margin: 14px 0 24px;
   max-width: 720px;
   font-size: clamp(48px, 8vw, 104px);
   line-height: .88;
@@ -148,11 +148,11 @@ h1 {
 }
 
 .lead {
-  max-width: 620px;
+  max-width: 590px;
   margin: 0;
   color: #dfd2ee;
   font-size: clamp(16px, 2vw, 20px);
-  line-height: 1.5;
+  line-height: 1.58;
 }
 
 html[data-theme="light"] .lead,
