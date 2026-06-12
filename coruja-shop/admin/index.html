@@ -48,7 +48,7 @@
 
     .toolbar {
       display: grid;
-      grid-template-columns: minmax(180px, 1fr) auto auto;
+      grid-template-columns: minmax(180px, 1fr) auto auto auto;
       gap: 10px;
       margin: 24px 0;
     }
@@ -188,6 +188,7 @@
       <input id="token" type="password" autocomplete="off" placeholder="Token admin">
       <button id="load" type="button">Carregar</button>
       <button id="export" class="secondary" type="button" disabled>Exportar CSV</button>
+      <button id="archive-tests" class="secondary" type="button">Arquivar testes</button>
     </div>
 
     <div id="status" class="status">Digite o token admin para carregar os pedidos.</div>
@@ -218,6 +219,7 @@
     const tokenInput = document.querySelector("#token");
     const loadButton = document.querySelector("#load");
     const exportButton = document.querySelector("#export");
+    const archiveTestsButton = document.querySelector("#archive-tests");
     const statusBox = document.querySelector("#status");
     const rowsBox = document.querySelector("#rows");
     let currentOrders = [];
@@ -385,8 +387,48 @@
       URL.revokeObjectURL(url);
     };
 
+    const archiveTests = async () => {
+      const token = tokenInput.value.trim();
+      if (!token) {
+        showStatus("Digite o token admin.", "error");
+        tokenInput.focus();
+        return;
+      }
+
+      const ok = window.confirm("Arquivar pedidos de teste sem pagamento, mantendo PetecaTreze visivel?");
+      if (!ok) return;
+
+      archiveTestsButton.disabled = true;
+      showStatus("Arquivando pedidos de teste...");
+
+      try {
+        const response = await fetch("/api/shop/archive-tests", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            keepMinecraftNicks: ["PetecaTreze"],
+            reason: "cleanup before production automation",
+          }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || "Nao foi possivel arquivar testes.");
+        }
+        showStatus(`${payload.archivedCount} pedido(s) de teste arquivado(s).`, "ok");
+        await loadOrders();
+      } catch (error) {
+        showStatus(error.message || "Nao foi possivel arquivar testes.", "error");
+      } finally {
+        archiveTestsButton.disabled = false;
+      }
+    };
+
     loadButton.addEventListener("click", loadOrders);
     exportButton.addEventListener("click", exportCsv);
+    archiveTestsButton.addEventListener("click", archiveTests);
     rowsBox.addEventListener("click", (event) => {
       const button = event.target.closest("[data-sync-order]");
       if (!button) return;

@@ -15,7 +15,8 @@ module.exports = async function handler(request, response) {
       return json(response, { error: "Unauthorized." }, 401);
     }
 
-    const orders = await listOrders();
+    const includeArchived = request.query?.archived === "1";
+    const orders = await listOrders({ includeArchived });
     return json(response, {
       ok: true,
       orders,
@@ -24,4 +25,3 @@ module.exports = async function handler(request, response) {
     return handleError(response, error, "Nao foi possivel buscar os pedidos da lojinha.");
   }
 };
-
