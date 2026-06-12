@@ -4,6 +4,7 @@ const {
   handleError,
   isAuthorizedShopAdminRequest,
   json,
+  paymentBelongsToOrder,
   parseJsonBody,
   sanitizeText,
 } = require("../../lib/coruja-shop-store");
@@ -27,7 +28,7 @@ module.exports = async function handler(request, response) {
 
     const order = await getOrder(orderId);
     const payments = await searchPaymentsByExternalReference(order.id);
-    const payment = payments.find((row) => row.status === "approved") || payments[0];
+    const payment = payments.find((row) => row.status === "approved" && paymentBelongsToOrder({ order, payment: row }));
 
     if (!payment) {
       return json(response, {

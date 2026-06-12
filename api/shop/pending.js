@@ -6,6 +6,7 @@ const {
   json,
   listOrders,
   pendingDeliveries,
+  paymentBelongsToOrder,
 } = require("../../lib/coruja-shop-store");
 const { searchPaymentsByExternalReference } = require("../../lib/coruja-shop-mercadopago");
 
@@ -37,7 +38,7 @@ const reconcileRecentPaidOrders = async () => {
 
   for (const order of candidates) {
     const payments = await searchPaymentsByExternalReference(order.id);
-    const payment = payments.find((row) => row.status === "approved");
+    const payment = payments.find((row) => row.status === "approved" && paymentBelongsToOrder({ order, payment: row }));
     if (!payment) continue;
 
     const result = await applyApprovedPayment({ order, payment });
