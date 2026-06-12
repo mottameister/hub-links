@@ -1,6 +1,5 @@
 const {
-  createDeliveryIfNeeded,
-  getProduct,
+  applyApprovedPayment,
   handleError,
   json,
   updateOrder,
@@ -47,41 +46,12 @@ module.exports = async function handler(request, response) {
       mercadoPagoPaymentId: String(payment.id || paymentId),
       lastPaymentStatus: payment.status || null,
     });
-    const product = getProduct(order.sku);
-    const paidAmount = Number(payment.transaction_amount);
-
-    const isApproved = payment.status === "approved";
-    const hasExpectedAmount = paidAmount === Number(product.amount);
-    const hasExpectedCurrency = payment.currency_id === product.currency;
-
-    if (!isApproved || !hasExpectedAmount || !hasExpectedCurrency) {
-      await updateOrder(order.id, {
-        status: isApproved ? "payment_review_required" : `payment_${payment.status || "unknown"}`,
-        paymentValidation: {
-          paidAmount,
-          expectedAmount: product.amount,
-          currency: payment.currency_id,
-          expectedCurrency: product.currency,
-        },
-      });
-
-      return json(response, { received: true, delivered: false });
-    }
-
-    await updateOrder(order.id, {
-      status: "paid_pending_delivery",
-      mercadoPagoPaymentId: String(payment.id || paymentId),
-      paidAt: payment.date_approved || new Date().toISOString(),
-    });
-    const delivery = await createDeliveryIfNeeded({ order, payment });
-    if (delivery.status !== "paid_pending_delivery") {
-      await updateOrder(order.id, { status: delivery.status });
-    }
+    const result = await applyApprovedPayment({ order, payment });
 
     return json(response, {
       received: true,
-      delivered: false,
-      deliveryId: delivery.id,
+      delivered: result.delivered,
+      deliveryId: result.delivery?.id || null,
     });
   } catch (error) {
     return handleError(response, error, "Nao foi possivel validar o pagamento agora.");

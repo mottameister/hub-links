@@ -91,6 +91,13 @@
       opacity: .65;
     }
 
+    button.small {
+      min-height: 28px;
+      margin-top: 8px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
     .status {
       min-height: 22px;
       margin-bottom: 12px;
@@ -268,6 +275,7 @@
             <td>
               <span class="pill ${pillClass(order.lastPaymentStatus || status)}">${escapeHtml(order.lastPaymentStatus || "-")}</span><br>
               <code>${escapeHtml(order.mercadoPagoPaymentId || "sem payment id")}</code>
+              ${order.mercadoPagoPaymentId ? "" : `<br><button class="small secondary" type="button" data-sync-order="${escapeHtml(order.id)}">Sincronizar</button>`}
             </td>
             <td>
               <span class="pill ${pillClass(deliveryStatus)}">${escapeHtml(deliveryStatus || "-")}</span><br>
@@ -312,6 +320,38 @@
       }
     };
 
+    const syncPayment = async (orderId, button) => {
+      const token = tokenInput.value.trim();
+      if (!token) {
+        showStatus("Digite o token admin.", "error");
+        tokenInput.focus();
+        return;
+      }
+
+      button.disabled = true;
+      showStatus("Sincronizando pagamento no Mercado Pago...");
+
+      try {
+        const response = await fetch("/api/shop/sync-payment", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderId }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.synced) {
+          throw new Error(payload.error || "Pagamento nao encontrado para esse pedido.");
+        }
+        showStatus(`Pagamento ${payload.paymentId} sincronizado.`, "ok");
+        await loadOrders();
+      } catch (error) {
+        showStatus(error.message || "Nao foi possivel sincronizar pagamento.", "error");
+        button.disabled = false;
+      }
+    };
+
     const exportCsv = () => {
       const columns = [
         "createdAt",
@@ -347,10 +387,14 @@
 
     loadButton.addEventListener("click", loadOrders);
     exportButton.addEventListener("click", exportCsv);
+    rowsBox.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-sync-order]");
+      if (!button) return;
+      syncPayment(button.dataset.syncOrder, button);
+    });
     tokenInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") loadOrders();
     });
   </script>
 </body>
 </html>
-
