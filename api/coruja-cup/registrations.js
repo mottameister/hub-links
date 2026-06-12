@@ -4,7 +4,7 @@ const {
   handleError,
   isAuthorized,
   json,
-  readRegistrations,
+  readRegistrationsWithLegacy,
   toCsv,
 } = require("../../lib/coruja-cup-store");
 
@@ -20,7 +20,7 @@ module.exports = async function handler(request, response) {
   const eventId = request.query.eventId || defaultEventId;
 
   try {
-    const registrations = await readRegistrations(eventId);
+    const registrations = await readRegistrationsWithLegacy(eventId);
 
     if (request.query.format === "csv") {
       response.status(200);

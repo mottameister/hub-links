@@ -5,7 +5,7 @@ const {
   handleError,
   json,
   parseJsonBody,
-  readRegistrations,
+  readRegistrationsWithLegacy,
   sanitize,
   writeRegistrations,
 } = require("../../lib/coruja-cup-store");
@@ -32,7 +32,7 @@ module.exports = async function handler(request, response) {
       return json(response, { error: "Confirme as regras e o horario antes de se inscrever." }, 400);
     }
 
-    const registrations = await readRegistrations(eventId);
+    const registrations = await readRegistrationsWithLegacy(eventId);
     const duplicate = registrations.find((row) => (
       row.minecraftNick.toLowerCase() === minecraftNick.toLowerCase()
       || row.discordName.toLowerCase() === discordName.toLowerCase()
@@ -62,7 +62,10 @@ module.exports = async function handler(request, response) {
       createdAt,
     };
 
-    const nextRegistrations = [...registrations, registration];
+    const nextRegistrations = [...registrations, registration].map((row) => ({
+      ...row,
+      eventId,
+    }));
     await writeRegistrations(eventId, nextRegistrations);
 
     return json(response, {
