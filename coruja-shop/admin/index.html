@@ -91,6 +91,26 @@
       opacity: .65;
     }
 
+    label.toggle {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .05);
+      color: var(--muted);
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    label.toggle input {
+      width: auto;
+      min-height: 0;
+    }
+
     button.small {
       min-height: 28px;
       margin-top: 8px;
@@ -189,6 +209,7 @@
       <button id="load" type="button">Carregar</button>
       <button id="export" class="secondary" type="button" disabled>Exportar CSV</button>
       <button id="archive-tests" class="secondary" type="button">Arquivar testes</button>
+      <label class="toggle"><input id="show-attempts" type="checkbox"> tentativas</label>
     </div>
 
     <div id="status" class="status">Digite o token admin para carregar os pedidos.</div>
@@ -220,9 +241,11 @@
     const loadButton = document.querySelector("#load");
     const exportButton = document.querySelector("#export");
     const archiveTestsButton = document.querySelector("#archive-tests");
+    const showAttemptsInput = document.querySelector("#show-attempts");
     const statusBox = document.querySelector("#status");
     const rowsBox = document.querySelector("#rows");
     let currentOrders = [];
+    let visibleOrders = [];
 
     tokenInput.value = sessionStorage.getItem("coruja-shop-admin-token") || "";
 
@@ -252,16 +275,24 @@
       return "";
     };
 
+    const isRelevantOrder = (order) => (
+      Boolean(order.mercadoPagoPaymentId)
+      || Boolean(order.paidAt)
+      || Boolean(order.deliveryStatus)
+      || /paid|delivering|delivered|review|mismatch/.test(order.status || "")
+    );
+
     const render = (orders) => {
       currentOrders = orders;
-      exportButton.disabled = !orders.length;
+      visibleOrders = showAttemptsInput.checked ? orders : orders.filter(isRelevantOrder);
+      exportButton.disabled = !visibleOrders.length;
 
-      if (!orders.length) {
+      if (!visibleOrders.length) {
         rowsBox.innerHTML = '<tr><td colspan="9">Nenhum pedido encontrado.</td></tr>';
         return;
       }
 
-      rowsBox.innerHTML = orders.map((order) => {
+      rowsBox.innerHTML = visibleOrders.map((order) => {
         const status = order.status || "";
         const deliveryStatus = order.deliveryStatus || "";
         return `
@@ -314,7 +345,8 @@
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error || "Nao foi possivel carregar pedidos.");
         render(payload.orders || []);
-        showStatus(`${(payload.orders || []).length} pedido(s) carregado(s).`, "ok");
+        const relevantCount = (payload.orders || []).filter(isRelevantOrder).length;
+        showStatus(`${relevantCount} pedido(s) relevante(s), ${(payload.orders || []).length} total.`, "ok");
       } catch (error) {
         showStatus(error.message || "Nao foi possivel carregar pedidos.", "error");
       } finally {
@@ -373,7 +405,7 @@
       ];
       const csv = [
         columns.join(","),
-        ...currentOrders.map((order) => columns.map((column) => {
+        ...visibleOrders.map((order) => columns.map((column) => {
           const value = String(order[column] || "").replace(/"/g, '""');
           return `"${value}"`;
         }).join(",")),
@@ -429,6 +461,7 @@
     loadButton.addEventListener("click", loadOrders);
     exportButton.addEventListener("click", exportCsv);
     archiveTestsButton.addEventListener("click", archiveTests);
+    showAttemptsInput.addEventListener("change", () => render(currentOrders));
     rowsBox.addEventListener("click", (event) => {
       const button = event.target.closest("[data-sync-order]");
       if (!button) return;
