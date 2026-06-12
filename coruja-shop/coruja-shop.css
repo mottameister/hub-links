@@ -126,9 +126,9 @@ p { margin-top: 0; }
 
 h1 {
   max-width: 940px;
-  margin-bottom: 18px;
+  margin-bottom: 28px;
   font-size: clamp(76px, 12vw, 170px);
-  line-height: .88;
+  line-height: .94;
   letter-spacing: 0;
 }
 
@@ -192,9 +192,9 @@ h1 {
 }
 
 .shop-intro h2 {
-  margin-bottom: 10px;
+  margin-bottom: 18px;
   font-size: clamp(32px, 5vw, 58px);
-  line-height: .94;
+  line-height: 1;
 }
 
 .shop-intro p {
