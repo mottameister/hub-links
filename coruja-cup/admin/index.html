@@ -49,6 +49,7 @@
   <script src="/coruja-cup/controls.js"></script>
   <script>
     const eventId = "coruja-cup-2026-06-28";
+    const apiBaseUrl = "https://coruja-cup-api.mottameister.xyz";
     const tokenInput = document.querySelector("#adminToken");
     const message = document.querySelector("[data-message]");
     const tableRoot = document.querySelector("[data-table]");
@@ -57,6 +58,8 @@
       message.textContent = text;
       message.className = `message is-visible ${type ? `is-${type}` : ""}`;
     };
+
+    const apiUrl = (path) => `${apiBaseUrl}${path}`;
 
     const getToken = () => tokenInput.value.trim();
     const escapeHtml = (value) => String(value || "")
@@ -107,7 +110,7 @@
         return;
       }
 
-      const response = await fetch(`/api/coruja-cup/registrations?eventId=${eventId}`, {
+      const response = await fetch(apiUrl(`/api/coruja-cup/registrations?eventId=${eventId}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json().catch(() => ({}));
@@ -129,7 +132,7 @@
         return;
       }
 
-      const response = await fetch(`/api/coruja-cup/registrations?eventId=${eventId}&format=csv`, {
+      const response = await fetch(apiUrl(`/api/coruja-cup/registrations?eventId=${eventId}&format=csv`), {
         headers: { Authorization: `Bearer ${token}` },
       });
 

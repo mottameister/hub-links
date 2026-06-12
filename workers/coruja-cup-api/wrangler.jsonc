@@ -1,0 +1,25 @@
+{
+  "name": "coruja-cup-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-06-12",
+  "workers_dev": true,
+  "observability": {
+    "enabled": true
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CORUJA_CUP",
+      "id": "51afc5eb2f374f3fa7d471a8da46df09"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "mottameister.xyz/api/coruja-cup/*",
+      "zone_name": "mottameister.xyz"
+    },
+    {
+      "pattern": "www.mottameister.xyz/api/coruja-cup/*",
+      "zone_name": "mottameister.xyz"
+    }
+  ]
+}

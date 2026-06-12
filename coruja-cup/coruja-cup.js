@@ -1,5 +1,6 @@
 const eventId = "coruja-cup-2026-06-28";
 const capacity = 9;
+const apiBaseUrl = "https://coruja-cup-api.mottameister.xyz";
 
 const form = document.querySelector("[data-registration-form]");
 const message = document.querySelector("[data-message]");
@@ -44,6 +45,8 @@ const t = (key) => {
   return copy[lang][key];
 };
 
+const apiUrl = (path) => `${apiBaseUrl}${path}`;
+
 const showMessage = (text, type = "") => {
   if (!message) return;
   message.textContent = text;
@@ -71,7 +74,7 @@ const applyLocalizedFormCopy = () => {
 
 const updateStatus = async () => {
   try {
-    const response = await fetch(`/api/coruja-cup/status?eventId=${encodeURIComponent(eventId)}`);
+    const response = await fetch(apiUrl(`/api/coruja-cup/status?eventId=${encodeURIComponent(eventId)}`));
     if (!response.ok) throw new Error("status unavailable");
     const data = await response.json();
     const confirmed = Number(data.confirmed || 0);
@@ -121,7 +124,7 @@ if (form) {
     submit.textContent = t("sending");
 
     try {
-      const response = await fetch("/api/coruja-cup/register", {
+      const response = await fetch(apiUrl("/api/coruja-cup/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
