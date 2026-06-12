@@ -1,0 +1,9 @@
+.git
+.env
+.env.*
+!.env.worker.example
+node_modules
+npm-debug.log*
+preview.png
+profile.jpeg
+

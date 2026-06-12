@@ -1,0 +1,12 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+COPY scripts/coruja-shop-worker.cjs ./scripts/coruja-shop-worker.cjs
+
+USER node
+
+CMD ["node", "scripts/coruja-shop-worker.cjs"]
+

@@ -1,0 +1,11 @@
+services:
+  coruja-shop-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    container_name: coruja-shop-worker
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - .env.worker
+
