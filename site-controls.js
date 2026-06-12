@@ -62,6 +62,7 @@
     "Não foi possível iniciar o pagamento.": "Could not start payment.",
     "Não foi possível iniciar o pagamento agora.": "Could not start payment right now.",
     "Ambiente de teste em preparação. CobbleDollars são moeda interna da Toca da Coruja, podem ser obtidos jogando, não têm valor real fora do servidor, não podem ser sacados e não são afiliados à Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon.": "Test environment is being prepared. CobbleDollars are an internal Owl's Nest currency, can be earned by playing, have no real-world value outside the server, cannot be cashed out, and are not affiliated with Mojang, Microsoft, Nintendo, Creatures, GAME FREAK, or Pokemon.",
+    "Pagamento seguro via Mercado Pago. CobbleDollars são moeda interna da Toca da Coruja, podem ser obtidos jogando, não têm valor real fora do servidor, não podem ser sacados e não são afiliados à Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon.": "Secure payment through Mercado Pago. CobbleDollars are an internal Owl's Nest currency, can be earned by playing, have no real-world value outside the server, cannot be cashed out, and are not affiliated with Mojang, Microsoft, Nintendo, Creatures, GAME FREAK, or Pokemon.",
     "Mais Conteúdo": "More content",
     "Projetos Especiais": "Special projects",
     "Prompt Lab": "Prompt Lab",
