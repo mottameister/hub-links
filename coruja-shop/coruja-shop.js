@@ -105,7 +105,7 @@
     renderLeaderboard(fallbackLeaderboard, "snapshot");
 
     try {
-      const response = await fetch("/api/shop/leaderboard", { headers: { Accept: "application/json,text/plain" } });
+      const response = await fetch("/coruja-shop/leaderboard.json", { headers: { Accept: "application/json,text/plain" } });
       if (!response.ok) return;
 
       const contentType = response.headers.get("content-type") || "";
