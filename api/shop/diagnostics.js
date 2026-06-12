@@ -1,4 +1,3 @@
-const { createHash } = require("node:crypto");
 const {
   handleError,
   isAuthorizedShopAdminRequest,
@@ -10,7 +9,8 @@ const fingerprint = (value) => {
   return {
     present: Boolean(text),
     length: text.length,
-    sha256: text ? createHash("sha256").update(text).digest("hex") : "",
+    startsWith: text ? text.slice(0, 4) : "",
+    endsWith: text ? text.slice(-4) : "",
   };
 };
 
@@ -35,4 +35,3 @@ module.exports = async function handler(request, response) {
     return handleError(response, error, "Nao foi possivel carregar diagnostico da lojinha.");
   }
 };
-
