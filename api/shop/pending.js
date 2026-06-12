@@ -5,6 +5,21 @@ const {
   pendingDeliveries,
 } = require("../../lib/coruja-shop-store");
 
+const authDebug = (request) => {
+  const expected = String(process.env.SHOP_DELIVERY_SECRET || "");
+  const authorization = request.headers.authorization || "";
+  const received = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+  return {
+    expectedPresent: Boolean(expected),
+    expectedLength: expected.length,
+    expectedStartsWith: expected ? expected.slice(0, 4) : "",
+    expectedEndsWith: expected ? expected.slice(-4) : "",
+    receivedLength: received.length,
+    receivedStartsWith: received ? received.slice(0, 4) : "",
+    receivedEndsWith: received ? received.slice(-4) : "",
+  };
+};
+
 module.exports = async function handler(request, response) {
   if (request.method !== "GET") {
     return json(response, { error: "Method not allowed." }, 405);
@@ -12,7 +27,7 @@ module.exports = async function handler(request, response) {
 
   try {
     if (!isAuthorizedDeliveryRequest(request)) {
-      return json(response, { error: "Unauthorized." }, 401);
+      return json(response, { error: "Unauthorized.", debug: authDebug(request) }, 401);
     }
 
     const deliveries = await pendingDeliveries();
