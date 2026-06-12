@@ -1023,11 +1023,11 @@
               <span class="card-copy"><span class="title">Entrar no Discord</span><span class="desc">Comunidade, avisos, eventos, FAQ e contato comigo.</span><span class="meta-row"><span class="badge">bate papo</span><span class="badge">eventos</span><span class="badge">suporte</span></span></span>
             </a>
 
-            <button class="card compact-card folder-hero-link tone-server-shop" type="button" data-server-shop-open>
+            <a class="card compact-card folder-hero-link tone-server-shop" href="/coruja-shop/">
               <span class="card-top"><span class="icon">💰</span><span class="arrow">→</span></span>
               <span class="card-visual" aria-hidden="true"><span class="rank"></span></span>
-              <span class="card-copy"><span class="title">Lojinha do Servidor</span><span class="desc">Pacotes de CobbleDollars para acelerar a economia da Toca.</span><span class="meta-row"><span class="badge">cobbledollars</span><span class="badge">spawn</span><span class="badge">pix</span></span></span>
-            </button>
+              <span class="card-copy"><span class="title">Coruja Shop</span><span class="desc">Pacotes de CobbleDollars, shops do spawn e leaderboard.</span><span class="meta-row"><span class="badge">cobbledollars</span><span class="badge">spawn</span><span class="badge">pix</span></span></span>
+            </a>
           </div>
 
           <div class="compact-list">
@@ -1310,7 +1310,10 @@
       if (event.target === shopModal) setShopModal(false);
     });
 
+    const hasServerShopModal = serverShopModal && serverShopOpen && serverShopClose && serverShopNick && serverShopStatus;
+
     const setServerShopModal = (isOpen) => {
+      if (!hasServerShopModal) return;
       serverShopModal.classList.toggle("is-open", isOpen);
       serverShopModal.setAttribute("aria-hidden", String(!isOpen));
       document.body.style.overflow = isOpen ? "hidden" : "";
@@ -1321,14 +1324,17 @@
       }
     };
 
-    serverShopOpen.addEventListener("click", () => setServerShopModal(true));
-    serverShopClose.addEventListener("click", () => setServerShopModal(false));
+    if (hasServerShopModal) {
+      serverShopOpen.addEventListener("click", () => setServerShopModal(true));
+      serverShopClose.addEventListener("click", () => setServerShopModal(false));
 
-    serverShopModal.addEventListener("click", (event) => {
-      if (event.target === serverShopModal) setServerShopModal(false);
-    });
+      serverShopModal.addEventListener("click", (event) => {
+        if (event.target === serverShopModal) setServerShopModal(false);
+      });
+    }
 
     const setServerShopStatus = (message, type = "") => {
+      if (!serverShopStatus) return;
       serverShopStatus.textContent = message;
       serverShopStatus.classList.toggle("is-error", type === "error");
       serverShopStatus.classList.toggle("is-ok", type === "ok");
@@ -1343,6 +1349,7 @@
     };
 
     const createServerShopCheckout = async (sku) => {
+      if (!serverShopNick) return;
       const minecraftNick = serverShopNick.value.trim();
 
       if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) {
@@ -1417,7 +1424,7 @@
       if (event.key === "Escape" && shopModal.classList.contains("is-open")) {
         setShopModal(false);
       }
-      if (event.key === "Escape" && serverShopModal.classList.contains("is-open")) {
+      if (event.key === "Escape" && serverShopModal && serverShopModal.classList.contains("is-open")) {
         setServerShopModal(false);
       }
       if (event.key === "Escape" && liveModal.classList.contains("is-open")) {
