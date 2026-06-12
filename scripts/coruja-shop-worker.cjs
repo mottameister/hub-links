@@ -22,6 +22,7 @@ const requestJson = async (path, options = {}) => {
     ...options,
     headers: {
       Authorization: `Bearer ${config.deliverySecret}`,
+      "x-shop-delivery-secret": config.deliverySecret,
       "Content-Type": "application/json",
       ...(options.headers || {}),
     },

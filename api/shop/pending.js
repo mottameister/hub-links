@@ -8,8 +8,9 @@ const {
 
 const authDebug = (request) => {
   const expected = String(process.env.SHOP_DELIVERY_SECRET || "");
+  const customSecret = getHeader(request, "x-shop-delivery-secret");
   const authorization = getHeader(request, "authorization");
-  const received = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+  const received = customSecret || (authorization.startsWith("Bearer ") ? authorization.slice(7) : "");
   return {
     expectedPresent: Boolean(expected),
     expectedLength: expected.length,
@@ -18,6 +19,7 @@ const authDebug = (request) => {
     receivedLength: received.length,
     receivedStartsWith: received ? received.slice(0, 4) : "",
     receivedEndsWith: received ? received.slice(-4) : "",
+    receivedVia: customSecret ? "x-shop-delivery-secret" : "authorization",
   };
 };
 
