@@ -1,5 +1,8 @@
 {
   "private": true,
+  "scripts": {
+    "shop:worker": "node scripts/coruja-shop-worker.cjs"
+  },
   "dependencies": {
     "@vercel/blob": "^2.3.3"
   }

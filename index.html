@@ -269,6 +269,7 @@
     .tone-campaign { --accent: #43d9ff; --accent-2: var(--purple); }
     .tone-wiki { --accent: #66f28b; --accent-2: #43d9ff; }
     .tone-shop { --accent: #ff8a3d; --accent-2: #43d9ff; }
+    .tone-server-shop { --accent: #ffbf38; --accent-2: #66f28b; }
     .tone-story { --accent: #ff4fd8; --accent-2: #ffbf38; }
     .tone-youtube { --accent: #ff3131; --accent-2: #ffbf38; }
     .tone-instagram { --accent: #ff4fd8; --accent-2: #ff8a3d; }
@@ -678,6 +679,13 @@
       padding: 0 12px 12px;
     }
 
+    .server-feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 0 12px 8px;
+    }
+
     .compact-card {
       min-height: 78px;
       padding: 12px;
@@ -779,6 +787,54 @@
       margin-left: auto;
       flex: 0 0 auto;
     }
+
+    .shop-note {
+      margin: 12px 4px 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .shop-form {
+      display: grid;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .shop-label {
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .shop-input {
+      width: 100%;
+      min-height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      padding: 0 12px;
+      font: inherit;
+      outline: none;
+    }
+
+    .shop-input:focus {
+      border-color: color-mix(in srgb, var(--gold) 70%, white);
+      box-shadow: 0 0 0 3px rgba(255,191,56,.16);
+    }
+
+    .shop-status {
+      min-height: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .shop-status.is-error { color: #ff9bad; }
+    .shop-status.is-ok { color: var(--green); }
 
     .footer {
       text-align: center;
@@ -886,6 +942,7 @@
       .card-visual { height: 46px; margin-top: 10px; }
       .card-main .card-visual { height: 52px; }
       .compact-list { grid-template-columns: 1fr; padding: 0 10px 10px; }
+      .server-feature-grid { grid-template-columns: 1fr; padding: 0 10px 8px; }
       .compact-card { min-height: 74px; }
       .folder-hero-link .card-visual { height: 46px; margin: 0; }
       .folder-hero-link .title { font-size: 16px; }
@@ -956,8 +1013,22 @@
         <details class="folder" open>
           <summary>
             <span class="folder-title">Toca da Coruja</span>
-            <span class="folder-count">8 links <span class="folder-chevron">›</span></span>
+            <span class="folder-count">9 links <span class="folder-chevron">›</span></span>
           </summary>
+
+          <div class="server-feature-grid">
+            <a class="card compact-card folder-hero-link tone-discord" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noopener noreferrer">
+              <span class="card-top"><span class="icon">💬</span><span class="arrow">→</span></span>
+              <span class="card-visual" aria-hidden="true"><span class="pulse-line"></span></span>
+              <span class="card-copy"><span class="title">Entrar no Discord</span><span class="desc">Comunidade, avisos, eventos, FAQ e contato comigo.</span><span class="meta-row"><span class="badge">bate papo</span><span class="badge">eventos</span><span class="badge">suporte</span></span></span>
+            </a>
+
+            <button class="card compact-card folder-hero-link tone-server-shop" type="button" data-server-shop-open>
+              <span class="card-top"><span class="icon">💰</span><span class="arrow">→</span></span>
+              <span class="card-visual" aria-hidden="true"><span class="rank"></span></span>
+              <span class="card-copy"><span class="title">Lojinha do Servidor</span><span class="desc">Pacotes de CobbleDollars para acelerar a economia da Toca.</span><span class="meta-row"><span class="badge">cobbledollars</span><span class="badge">spawn</span><span class="badge">pix</span></span></span>
+            </button>
+          </div>
 
           <div class="compact-list">
             <a class="card compact-card folder-hero-link tone-coruja-cup" href="/coruja-cup/">
@@ -970,12 +1041,6 @@
               <span class="card-top"><span class="icon">🗺️</span><span class="arrow">→</span></span>
               <span class="card-visual" aria-hidden="true"><span class="pulse-line"></span></span>
               <span class="card-copy"><span class="title">Mapa 3D do Servidor</span><span class="desc">Monitore a Toca da Coruja em tempo real com render 3D.</span><span class="meta-row"><span class="badge">ao vivo</span><span class="badge">3D</span><span class="badge">server</span></span></span>
-            </a>
-
-            <a class="card compact-card tone-discord" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noopener noreferrer">
-              <span class="card-top"><span class="icon">💬</span></span>
-              <span class="card-copy"><span class="title">Entrar no Discord</span><span class="desc">Comunidade, avisos e eventos, FAQ e contato comigo.</span><span class="meta-row"><span class="badge">bate papo</span><span class="badge">eventos</span></span></span>
-              <span class="arrow">→</span>
             </a>
 
             <a class="card compact-card tone-modpack" href="https://modrinth.com/modpack/toca-da-coruja" target="_blank" rel="noopener noreferrer">
@@ -1098,6 +1163,43 @@
     </div>
   </div>
 
+  <div class="live-modal" data-server-shop-modal aria-hidden="true">
+    <div class="live-picker" role="dialog" aria-modal="true" aria-labelledby="server-shop-title">
+      <div class="live-picker-head">
+        <h2 class="live-picker-title" id="server-shop-title">Lojinha do Servidor</h2>
+        <button class="live-close" type="button" data-server-shop-close aria-label="Fechar lojinha do servidor">×</button>
+      </div>
+
+      <div class="shop-form">
+        <label class="shop-label" for="server-shop-nick">Nick do Minecraft</label>
+        <input class="shop-input" id="server-shop-nick" name="minecraftNick" autocomplete="username" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" placeholder="Seu nick original" data-server-shop-nick>
+        <div class="shop-status" role="status" aria-live="polite" data-server-shop-status>Digite seu nick antes de escolher o pacote.</div>
+      </div>
+
+      <div class="live-options">
+        <button class="card compact-card tone-server-shop" type="button" data-server-shop-checkout data-sku="cobbledollars_1m">
+          <span class="card-top"><span class="icon">💵</span></span>
+          <span class="card-copy"><span class="title">1 mi CobbleDollars</span><span class="desc">Para comprar itens nos merchants do spawn e treinar o time sem pular toda a jornada.</span><span class="meta-row"><span class="badge">R$ 10</span><span class="badge">farmável</span></span></span>
+          <span class="arrow">→</span>
+        </button>
+
+        <button class="card compact-card tone-server-shop" type="button" data-server-shop-checkout data-sku="cobbledollars_5m">
+          <span class="card-top"><span class="icon">💰</span></span>
+          <span class="card-copy"><span class="title">5 mi CobbleDollars</span><span class="desc">Pacote intermediário para quem quer acelerar builds, consumíveis e ajustes de equipe.</span><span class="meta-row"><span class="badge">R$ 30</span><span class="badge">melhor começo</span></span></span>
+          <span class="arrow">→</span>
+        </button>
+
+        <button class="card compact-card tone-server-shop" type="button" data-server-shop-checkout data-sku="cobbledollars_10m">
+          <span class="card-top"><span class="icon">🏦</span></span>
+          <span class="card-copy"><span class="title">10 mi CobbleDollars</span><span class="desc">Mais economia para treinar, testar estratégias e movimentar os merchants do spawn.</span><span class="meta-row"><span class="badge">R$ 40</span><span class="badge">maior valor</span></span></span>
+          <span class="arrow">→</span>
+        </button>
+      </div>
+
+      <p class="shop-note">Pagamento seguro via Mercado Pago. CobbleDollars são moeda interna da Toca da Coruja, podem ser obtidos jogando, não têm valor real fora do servidor, não podem ser sacados e não são afiliados à Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon.</p>
+    </div>
+  </div>
+
   <div class="live-modal" data-live-modal aria-hidden="true">
     <div class="live-picker" role="dialog" aria-modal="true" aria-labelledby="live-picker-title">
       <div class="live-picker-head">
@@ -1180,6 +1282,12 @@
     const shopModal = document.querySelector("[data-shop-modal]");
     const shopOpen = document.querySelector("[data-shop-open]");
     const shopClose = document.querySelector("[data-shop-close]");
+    const serverShopModal = document.querySelector("[data-server-shop-modal]");
+    const serverShopOpen = document.querySelector("[data-server-shop-open]");
+    const serverShopClose = document.querySelector("[data-server-shop-close]");
+    const serverShopNick = document.querySelector("[data-server-shop-nick]");
+    const serverShopStatus = document.querySelector("[data-server-shop-status]");
+    const serverShopCheckoutButtons = document.querySelectorAll("[data-server-shop-checkout]");
     const partnerModal = document.querySelector("[data-partner-modal]");
     const partnerOpen = document.querySelector("[data-partner-open]");
     const partnerClose = document.querySelector("[data-partner-close]");
@@ -1200,6 +1308,73 @@
 
     shopModal.addEventListener("click", (event) => {
       if (event.target === shopModal) setShopModal(false);
+    });
+
+    const setServerShopModal = (isOpen) => {
+      serverShopModal.classList.toggle("is-open", isOpen);
+      serverShopModal.setAttribute("aria-hidden", String(!isOpen));
+      document.body.style.overflow = isOpen ? "hidden" : "";
+      if (isOpen) {
+        serverShopNick.focus();
+      } else {
+        serverShopOpen.focus();
+      }
+    };
+
+    serverShopOpen.addEventListener("click", () => setServerShopModal(true));
+    serverShopClose.addEventListener("click", () => setServerShopModal(false));
+
+    serverShopModal.addEventListener("click", (event) => {
+      if (event.target === serverShopModal) setServerShopModal(false);
+    });
+
+    const setServerShopStatus = (message, type = "") => {
+      serverShopStatus.textContent = message;
+      serverShopStatus.classList.toggle("is-error", type === "error");
+      serverShopStatus.classList.toggle("is-ok", type === "ok");
+    };
+
+    const setServerShopLoading = (isLoading) => {
+      serverShopCheckoutButtons.forEach((button) => {
+        button.disabled = isLoading;
+        button.style.opacity = isLoading ? ".62" : "";
+        button.style.cursor = isLoading ? "wait" : "";
+      });
+    };
+
+    const createServerShopCheckout = async (sku) => {
+      const minecraftNick = serverShopNick.value.trim();
+
+      if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) {
+        setServerShopStatus("Use seu nick original com 3 a 16 letras, números ou underline.", "error");
+        serverShopNick.focus();
+        return;
+      }
+
+      setServerShopLoading(true);
+      setServerShopStatus("Criando checkout seguro...", "ok");
+
+      try {
+        const response = await fetch("/api/shop/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sku, minecraftNick }),
+        });
+        const payload = await response.json();
+
+        if (!response.ok || !payload.checkoutUrl) {
+          throw new Error(payload.error || "Não foi possível iniciar o pagamento.");
+        }
+
+        window.location.href = payload.checkoutUrl;
+      } catch (error) {
+        setServerShopStatus(error.message || "Não foi possível iniciar o pagamento agora.", "error");
+        setServerShopLoading(false);
+      }
+    };
+
+    serverShopCheckoutButtons.forEach((button) => {
+      button.addEventListener("click", () => createServerShopCheckout(button.dataset.sku));
     });
 
     const setLiveModal = (isOpen) => {
@@ -1241,6 +1416,9 @@
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && shopModal.classList.contains("is-open")) {
         setShopModal(false);
+      }
+      if (event.key === "Escape" && serverShopModal.classList.contains("is-open")) {
+        setServerShopModal(false);
       }
       if (event.key === "Escape" && liveModal.classList.contains("is-open")) {
         setLiveModal(false);
