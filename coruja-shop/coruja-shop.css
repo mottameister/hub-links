@@ -391,14 +391,11 @@ h1 {
 }
 
 .leaderboard-live {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, .78fr);
-  gap: 14px;
   margin-bottom: 14px;
 }
 
 .leaderboard-panel {
-  min-height: 420px;
+  min-height: 440px;
   border: 1px solid rgba(101, 239, 154, .26);
   border-radius: 8px;
   background:
@@ -467,11 +464,6 @@ h1 {
   color: var(--coin);
   font-weight: 950;
   white-space: nowrap;
-}
-
-.leaderboard-shot img {
-  height: 100%;
-  min-height: 300px;
 }
 
 .shots {
@@ -579,8 +571,7 @@ html[data-theme="light"] .field input {
     min-height: 500px;
   }
 
-  .shop-section,
-  .leaderboard-live {
+  .shop-section {
     grid-template-columns: 1fr;
   }
 
