@@ -20,6 +20,13 @@ module.exports = async function handler(request, response) {
       ...getCounts(registrations),
     });
   } catch (error) {
+    if (request.query.debug === "1") {
+      return json(response, {
+        error: "debug",
+        name: error && error.name,
+        message: error && error.message,
+      }, error.statusCode || 500);
+    }
     return handleError(response, error);
   }
 };
