@@ -23,7 +23,6 @@ Este fluxo ainda nao deve ir para producao antes de uma compra teste completa.
    - `MERCADOPAGO_ACCESS_TOKEN=APP_USR...` ou token de teste
    - `MERCADOPAGO_WEBHOOK_SECRET=...`
    - `SHOP_DELIVERY_SECRET=um_token_longo_aleatorio`
-   - `SHOP_TEST_COUPON=um_cupom_secreto_temporario` apenas durante testes de entrega sem pagamento.
    - Nao use `um_token_longo` literalmente. Gere um valor forte, por exemplo:
      `ea49ba24f35b6ea11730d7be92a06ae37ce06f2708404fad0283a4ce7fb300b7`
 
@@ -71,7 +70,6 @@ Se o plugin de economia usa outro comando, altere `lib/coruja-shop-store.js` ant
 ## Checklist antes de publicar
 
 - Compra teste cria checkout.
-- Cupom de teste cria entrega pendente sem Mercado Pago.
 - Webhook recebe evento assinado.
 - Pedido pago vira entrega pendente.
 - Worker em dry-run busca e marca entrega.
