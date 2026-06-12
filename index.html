@@ -1173,6 +1173,8 @@
       <div class="shop-form">
         <label class="shop-label" for="server-shop-nick">Nick do Minecraft</label>
         <input class="shop-input" id="server-shop-nick" name="minecraftNick" autocomplete="username" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" placeholder="Seu nick original" data-server-shop-nick>
+        <label class="shop-label" for="server-shop-coupon">Cupom</label>
+        <input class="shop-input" id="server-shop-coupon" name="coupon" autocomplete="off" maxlength="80" placeholder="Opcional" data-server-shop-coupon>
         <div class="shop-status" role="status" aria-live="polite" data-server-shop-status>Digite seu nick antes de escolher o pacote.</div>
       </div>
 
@@ -1286,6 +1288,7 @@
     const serverShopOpen = document.querySelector("[data-server-shop-open]");
     const serverShopClose = document.querySelector("[data-server-shop-close]");
     const serverShopNick = document.querySelector("[data-server-shop-nick]");
+    const serverShopCoupon = document.querySelector("[data-server-shop-coupon]");
     const serverShopStatus = document.querySelector("[data-server-shop-status]");
     const serverShopCheckoutButtons = document.querySelectorAll("[data-server-shop-checkout]");
     const partnerModal = document.querySelector("[data-partner-modal]");
@@ -1344,6 +1347,7 @@
 
     const createServerShopCheckout = async (sku) => {
       const minecraftNick = serverShopNick.value.trim();
+      const coupon = serverShopCoupon.value.trim();
 
       if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) {
         setServerShopStatus("Use seu nick original com 3 a 16 letras, números ou underline.", "error");
@@ -1358,9 +1362,15 @@
         const response = await fetch("/api/shop/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sku, minecraftNick }),
+          body: JSON.stringify({ sku, minecraftNick, coupon }),
         });
         const payload = await response.json();
+
+        if (payload.testDelivery) {
+          setServerShopStatus("Entrega de teste criada. O worker vai processar em instantes.", "ok");
+          setServerShopLoading(false);
+          return;
+        }
 
         if (!response.ok || !payload.checkoutUrl) {
           throw new Error(payload.error || "Não foi possível iniciar o pagamento.");
