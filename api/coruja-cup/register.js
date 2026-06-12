@@ -4,6 +4,7 @@ const {
   getCounts,
   handleError,
   json,
+  parseJsonBody,
   readRegistrations,
   sanitize,
   writeRegistrations,
@@ -15,24 +16,22 @@ module.exports = async function handler(request, response) {
     return json(response, { error: "Method not allowed." }, 405);
   }
 
-  const payload = typeof request.body === "string"
-    ? JSON.parse(request.body || "{}")
-    : request.body || {};
-  const eventId = sanitize(payload.eventId || defaultEventId, 80);
-  const minecraftNick = sanitize(payload.minecraftNick, 40);
-  const discordName = sanitize(payload.discordName, 60);
-  const timezone = sanitize(payload.timezone, 80);
-  const notes = sanitize(payload.notes, 420);
-
-  if (!minecraftNick || !discordName) {
-    return json(response, { error: "Preencha seu nick no Minecraft e seu Discord." }, 400);
-  }
-
-  if (!payload.rulesAccepted || !payload.scheduleConfirmed) {
-    return json(response, { error: "Confirme as regras e o horario antes de se inscrever." }, 400);
-  }
-
   try {
+    const payload = parseJsonBody(request);
+    const eventId = sanitize(payload.eventId || defaultEventId, 80);
+    const minecraftNick = sanitize(payload.minecraftNick, 40);
+    const discordName = sanitize(payload.discordName, 60);
+    const timezone = sanitize(payload.timezone, 80);
+    const notes = sanitize(payload.notes, 420);
+
+    if (!minecraftNick || !discordName) {
+      return json(response, { error: "Preencha seu nick no Minecraft e seu Discord." }, 400);
+    }
+
+    if (!payload.rulesAccepted || !payload.scheduleConfirmed) {
+      return json(response, { error: "Confirme as regras e o horario antes de se inscrever." }, 400);
+    }
+
     const registrations = await readRegistrations(eventId);
     const duplicate = registrations.find((row) => (
       row.minecraftNick.toLowerCase() === minecraftNick.toLowerCase()

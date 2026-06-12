@@ -3,6 +3,7 @@ const {
   isAuthorizedDeliveryRequest,
   json,
   markDelivered,
+  parseJsonBody,
   sanitizeText,
 } = require("../../lib/coruja-shop-store");
 
@@ -11,11 +12,8 @@ module.exports = async function handler(request, response) {
     return json(response, { error: "Method not allowed." }, 405);
   }
 
-  const payload = typeof request.body === "string"
-    ? JSON.parse(request.body || "{}")
-    : request.body || {};
-
   try {
+    const payload = parseJsonBody(request);
     if (!isAuthorizedDeliveryRequest(request)) {
       return json(response, { error: "Unauthorized." }, 401);
     }

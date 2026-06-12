@@ -2,15 +2,14 @@ const {
   applyApprovedPayment,
   handleError,
   json,
+  parseJsonBody,
   updateOrder,
   verifyMercadoPagoSignature,
 } = require("../../../lib/coruja-shop-store");
 const { getPayment } = require("../../../lib/coruja-shop-mercadopago");
 
 const paymentIdFrom = (request) => {
-  const payload = typeof request.body === "string"
-    ? JSON.parse(request.body || "{}")
-    : request.body || {};
+  const payload = parseJsonBody(request);
 
   return String(
     request.query?.["data.id"]

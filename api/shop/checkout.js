@@ -2,6 +2,7 @@ const {
   createOrder,
   handleError,
   json,
+  parseJsonBody,
   updateOrder,
 } = require("../../lib/coruja-shop-store");
 const { createPreference } = require("../../lib/coruja-shop-mercadopago");
@@ -11,11 +12,8 @@ module.exports = async function handler(request, response) {
     return json(response, { error: "Method not allowed." }, 405);
   }
 
-  const payload = typeof request.body === "string"
-    ? JSON.parse(request.body || "{}")
-    : request.body || {};
-
   try {
+    const payload = parseJsonBody(request);
     const order = await createOrder({
       sku: payload.sku,
       minecraftNick: payload.minecraftNick,

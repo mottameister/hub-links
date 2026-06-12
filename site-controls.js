@@ -454,3 +454,60 @@
     buildControls();
   }
 })();
+
+(function () {
+  if (location.pathname.includes("/admin/")) return;
+
+  const endpoint = "/api/analytics/click";
+  const textOf = (node) => String(
+    node.getAttribute("aria-label")
+    || node.dataset.trackLabel
+    || node.textContent
+    || "",
+  ).trim().replace(/\s+/g, " ").slice(0, 140);
+
+  const send = (payload) => {
+    const body = JSON.stringify({
+      path: location.pathname,
+      language: document.documentElement.dataset.lang || document.documentElement.lang || "",
+      theme: document.documentElement.dataset.theme || "",
+      ...payload,
+    });
+
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
+      return;
+    }
+
+    fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    }).catch(() => {});
+  };
+
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest("a[href]");
+    if (link) {
+      send({
+        href: link.href,
+        label: textOf(link),
+        source: link.className || "link",
+      });
+      return;
+    }
+
+    const button = event.target.closest("button");
+    if (!button || button.closest(".site-controls")) return;
+
+    const isTrackable = button.matches(".card, [data-shop-open], [data-server-shop-open], [data-live-open], [data-partner-open], [data-server-shop-checkout], [data-track-click]");
+    if (!isTrackable) return;
+
+    send({
+      href: button.dataset.sku ? `shop:${button.dataset.sku}` : "",
+      label: textOf(button),
+      source: button.dataset.sku || button.dataset.trackClick || "button",
+    });
+  }, { capture: true });
+})();

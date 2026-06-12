@@ -4,6 +4,7 @@ const {
   handleError,
   isAuthorizedShopAdminRequest,
   json,
+  parseJsonBody,
   sanitizeText,
 } = require("../../lib/coruja-shop-store");
 const { searchPaymentsByExternalReference } = require("../../lib/coruja-shop-mercadopago");
@@ -13,11 +14,8 @@ module.exports = async function handler(request, response) {
     return json(response, { error: "Method not allowed." }, 405);
   }
 
-  const payload = typeof request.body === "string"
-    ? JSON.parse(request.body || "{}")
-    : request.body || {};
-
   try {
+    const payload = parseJsonBody(request);
     if (!isAuthorizedShopAdminRequest(request)) {
       return json(response, { error: "Unauthorized." }, 401);
     }
@@ -53,4 +51,3 @@ module.exports = async function handler(request, response) {
     return handleError(response, error, "Nao foi possivel sincronizar o pagamento.");
   }
 };
-

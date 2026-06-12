@@ -46,10 +46,8 @@ export const isAuthorized = (request, env) => {
   const expected = env.CORUJA_CUP_ADMIN_TOKEN;
   if (!expected) return false;
 
-  const url = new URL(request.url);
-  const fromQuery = url.searchParams.get("token");
   const authorization = request.headers.get("Authorization") || "";
   const bearer = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
 
-  return fromQuery === expected || bearer === expected;
+  return bearer === expected;
 };
