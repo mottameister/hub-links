@@ -20,15 +20,6 @@ module.exports = async function handler(request, response) {
       ...getCounts(registrations),
     });
   } catch (error) {
-    if (request.query.diagnose === "1") {
-      return json(response, {
-        error: "status diagnose",
-        name: error && error.name,
-        message: error && error.message,
-        statusCode: error && error.statusCode,
-      }, error.statusCode || 500);
-    }
-
     return handleError(response, error);
   }
 };
