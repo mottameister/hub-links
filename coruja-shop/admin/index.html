@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lojinha do Servidor - Admin</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #17121d;
+      --panel: #251d2d;
+      --panel-2: #30263a;
+      --text: #fff8ff;
+      --muted: #cbbdd8;
+      --line: rgba(255, 255, 255, .14);
+      --accent: #ffbf38;
+      --ok: #65ef9a;
+      --warn: #ffd36b;
+      --bad: #ff8fa6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 0%, rgba(255, 191, 56, .16), transparent 30%), var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) auto auto;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    input,
+    button {
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    input {
+      width: 100%;
+      background: rgba(255, 255, 255, .08);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    button {
+      background: var(--accent);
+      color: #1b1302;
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0 16px;
+    }
+
+    button.secondary {
+      background: rgba(255, 255, 255, .08);
+      color: var(--text);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: .65;
+    }
+
+    .status {
+      min-height: 22px;
+      margin-bottom: 12px;
+      color: var(--muted);
+    }
+
+    .status.error { color: var(--bad); }
+    .status.ok { color: var(--ok); }
+
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .04);
+    }
+
+    table {
+      width: 100%;
+      min-width: 1080px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: rgba(255, 255, 255, .07);
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    code {
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .1);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .pill.ok { color: var(--ok); }
+    .pill.warn { color: var(--warn); }
+    .pill.bad { color: var(--bad); }
+
+    @media (max-width: 720px) {
+      main {
+        width: min(100% - 20px, 1180px);
+        padding: 22px 0;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Lojinha do Servidor</h1>
+    <p>Pedidos, nicks, pagamentos e entregas da Toca da Coruja.</p>
+
+    <div class="toolbar">
+      <input id="token" type="password" autocomplete="off" placeholder="Token admin">
+      <button id="load" type="button">Carregar</button>
+      <button id="export" class="secondary" type="button" disabled>Exportar CSV</button>
+    </div>
+
+    <div id="status" class="status">Digite o token admin para carregar os pedidos.</div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Criado</th>
+            <th>Status</th>
+            <th>Nick</th>
+            <th>Produto</th>
+            <th>Valor</th>
+            <th>Pagamento</th>
+            <th>Entrega</th>
+            <th>Comando</th>
+            <th>Pedido</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="9">Nenhum dado carregado.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const tokenInput = document.querySelector("#token");
+    const loadButton = document.querySelector("#load");
+    const exportButton = document.querySelector("#export");
+    const statusBox = document.querySelector("#status");
+    const rowsBox = document.querySelector("#rows");
+    let currentOrders = [];
+
+    tokenInput.value = sessionStorage.getItem("coruja-shop-admin-token") || "";
+
+    const escapeHtml = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;",
+    }[char]));
+
+    const formatDate = (value) => {
+      if (!value) return "";
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? value : date.toLocaleString("pt-BR");
+    };
+
+    const money = (order) => `${order.currency || "BRL"} ${Number(order.amount || 0).toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+
+    const pillClass = (status) => {
+      if (/delivered|approved|paid/.test(status)) return "ok";
+      if (/pending|created|checkout|delivering/.test(status)) return "warn";
+      if (/fail|cancel|reject|invalid/.test(status)) return "bad";
+      return "";
+    };
+
+    const render = (orders) => {
+      currentOrders = orders;
+      exportButton.disabled = !orders.length;
+
+      if (!orders.length) {
+        rowsBox.innerHTML = '<tr><td colspan="9">Nenhum pedido encontrado.</td></tr>';
+        return;
+      }
+
+      rowsBox.innerHTML = orders.map((order) => {
+        const status = order.status || "";
+        const deliveryStatus = order.deliveryStatus || "";
+        return `
+          <tr>
+            <td>${escapeHtml(formatDate(order.createdAt))}</td>
+            <td><span class="pill ${pillClass(status)}">${escapeHtml(status)}</span></td>
+            <td>
+              <strong>${escapeHtml(order.minecraftNick)}</strong><br>
+              <code>${escapeHtml(order.minecraftUuid || "sem uuid salvo")}</code>
+            </td>
+            <td>${escapeHtml(order.productTitle || order.sku)}<br>${Number(order.cobbleDollars || 0).toLocaleString("pt-BR")} CobbleDollars</td>
+            <td>${escapeHtml(money(order))}</td>
+            <td>
+              <span class="pill ${pillClass(order.lastPaymentStatus || status)}">${escapeHtml(order.lastPaymentStatus || "-")}</span><br>
+              <code>${escapeHtml(order.mercadoPagoPaymentId || "sem payment id")}</code>
+            </td>
+            <td>
+              <span class="pill ${pillClass(deliveryStatus)}">${escapeHtml(deliveryStatus || "-")}</span><br>
+              ${escapeHtml(formatDate(order.deliveredAt))}
+            </td>
+            <td><code>${escapeHtml(order.deliveryCommand || "-")}</code></td>
+            <td><code>${escapeHtml(order.id)}</code></td>
+          </tr>
+        `;
+      }).join("");
+    };
+
+    const showStatus = (message, type = "") => {
+      statusBox.textContent = message;
+      statusBox.className = `status ${type}`.trim();
+    };
+
+    const loadOrders = async () => {
+      const token = tokenInput.value.trim();
+      if (!token) {
+        showStatus("Digite o token admin.", "error");
+        tokenInput.focus();
+        return;
+      }
+
+      sessionStorage.setItem("coruja-shop-admin-token", token);
+      loadButton.disabled = true;
+      showStatus("Carregando pedidos...");
+
+      try {
+        const response = await fetch("/api/shop/orders", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "Nao foi possivel carregar pedidos.");
+        render(payload.orders || []);
+        showStatus(`${(payload.orders || []).length} pedido(s) carregado(s).`, "ok");
+      } catch (error) {
+        showStatus(error.message || "Nao foi possivel carregar pedidos.", "error");
+      } finally {
+        loadButton.disabled = false;
+      }
+    };
+
+    const exportCsv = () => {
+      const columns = [
+        "createdAt",
+        "status",
+        "minecraftNick",
+        "minecraftUuid",
+        "productTitle",
+        "amount",
+        "currency",
+        "cobbleDollars",
+        "mercadoPagoPaymentId",
+        "lastPaymentStatus",
+        "deliveryStatus",
+        "deliveryCommand",
+        "deliveredAt",
+        "id",
+      ];
+      const csv = [
+        columns.join(","),
+        ...currentOrders.map((order) => columns.map((column) => {
+          const value = String(order[column] || "").replace(/"/g, '""');
+          return `"${value}"`;
+        }).join(",")),
+      ].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `coruja-shop-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    };
+
+    loadButton.addEventListener("click", loadOrders);
+    exportButton.addEventListener("click", exportCsv);
+    tokenInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") loadOrders();
+    });
+  </script>
+</body>
+</html>
+
