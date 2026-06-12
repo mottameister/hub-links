@@ -1,4 +1,5 @@
 const {
+  getHeader,
   handleError,
   isAuthorizedDeliveryRequest,
   json,
@@ -7,7 +8,7 @@ const {
 
 const authDebug = (request) => {
   const expected = String(process.env.SHOP_DELIVERY_SECRET || "");
-  const authorization = request.headers.authorization || "";
+  const authorization = getHeader(request, "authorization");
   const received = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
   return {
     expectedPresent: Boolean(expected),
