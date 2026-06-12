@@ -4,6 +4,7 @@ const config = {
   siteUrl: (process.env.SHOP_SITE_URL || process.env.SITE_URL || "").replace(/\/+$/, ""),
   deliverySecret: process.env.SHOP_DELIVERY_SECRET || "",
   pollMs: Number(process.env.SHOP_WORKER_POLL_MS || 15000),
+  reconcileMs: Number(process.env.SHOP_WORKER_RECONCILE_MS || 60000),
   dryRun: process.env.SHOP_DRY_RUN !== "false",
   rconHost: process.env.RCON_HOST || "127.0.0.1",
   rconPort: Number(process.env.RCON_PORT || 25575),
@@ -132,7 +133,18 @@ const deliver = async (delivery) => {
   }
 };
 
+let lastReconcileAt = 0;
+
 const tick = async () => {
+  const now = Date.now();
+  if (now - lastReconcileAt >= config.reconcileMs) {
+    lastReconcileAt = now;
+    const result = await requestJson("/api/shop/reconcile-payments", { method: "POST" });
+    for (const row of result.synced || []) {
+      console.log(`[shop] reconciled paid order ${row.orderId}: ${row.paymentId}`);
+    }
+  }
+
   const payload = await requestJson("/api/shop/pending");
   for (const delivery of payload.deliveries || []) {
     try {

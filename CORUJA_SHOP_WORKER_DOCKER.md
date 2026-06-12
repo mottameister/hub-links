@@ -11,6 +11,7 @@ SHOP_SITE_URL=https://mottameister.xyz
 SHOP_DELIVERY_SECRET=mesmo_valor_da_vercel
 SHOP_DRY_RUN=false
 SHOP_WORKER_POLL_MS=15000
+SHOP_WORKER_RECONCILE_MS=60000
 SHOP_WORKER_ID=coruja-main
 RCON_HOST=127.0.0.1
 RCON_PORT=25575
@@ -80,4 +81,3 @@ e suba novamente:
 ```bash
 docker compose up -d
 ```
-
