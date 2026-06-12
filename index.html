@@ -1352,7 +1352,7 @@
       }
 
       setServerShopLoading(true);
-      setServerShopStatus("Criando checkout seguro...", "ok");
+      setServerShopStatus("Validando nick e criando checkout seguro...", "ok");
 
       try {
         const response = await fetch("/api/shop/checkout", {
