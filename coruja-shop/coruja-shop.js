@@ -4,6 +4,21 @@
   const nickInput = document.querySelector("[data-shop-nick]");
   const status = document.querySelector("[data-shop-status]");
   const checkoutButtons = document.querySelectorAll("[data-shop-checkout]");
+  const leaderboardList = document.querySelector("[data-leaderboard-list]");
+  const leaderboardState = document.querySelector("[data-leaderboard-state]");
+
+  const fallbackLeaderboard = [
+    { rank: 1, name: "jotinha7b", amount: "11.6M" },
+    { rank: 2, name: "Muniz_XD", amount: "10M" },
+    { rank: 3, name: "Marru_XD", amount: "10M" },
+    { rank: 4, name: "yRuizx", amount: "1.07M" },
+    { rank: 5, name: "Shyad0u", amount: "878K" },
+    { rank: 6, name: "Fortalzera", amount: "567K" },
+    { rank: 7, name: "Fethr7350", amount: "323K" },
+    { rank: 8, name: "yLoorenzoo", amount: "277K" },
+    { rank: 9, name: "BiggieSm4llz", amount: "261K" },
+    { rank: 10, name: "Miquesl", amount: "215K" },
+  ];
 
   const getStoredTheme = () => {
     try {
@@ -48,6 +63,65 @@
     });
   };
 
+  const parseLeaderboardText = (text) => {
+    return text
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .map((line) => line.match(/^(\d+)\.\s+(.+?)\s+\$?\s*([\d.,]+[KMB]?)/i))
+      .filter(Boolean)
+      .map((match) => ({
+        rank: Number(match[1]),
+        name: match[2].trim(),
+        amount: match[3].replace(",", ".").toUpperCase(),
+      }));
+  };
+
+  const escapeHtml = (value) => String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+  const renderLeaderboard = (entries, stateText = "snapshot") => {
+    if (!leaderboardList) return;
+    leaderboardList.innerHTML = entries
+      .slice(0, 10)
+      .map((entry) => `
+        <li>
+          <span class="leaderboard-rank">#${escapeHtml(entry.rank)}</span>
+          <span class="leaderboard-name">${escapeHtml(entry.name)}</span>
+          <span class="leaderboard-amount">$ ${escapeHtml(entry.amount)}</span>
+        </li>
+      `)
+      .join("");
+
+    if (leaderboardState) {
+      leaderboardState.textContent = stateText;
+    }
+  };
+
+  const loadLeaderboard = async () => {
+    renderLeaderboard(fallbackLeaderboard, "snapshot");
+
+    try {
+      const response = await fetch("/api/shop/leaderboard", { headers: { Accept: "application/json,text/plain" } });
+      if (!response.ok) return;
+
+      const contentType = response.headers.get("content-type") || "";
+      const payload = contentType.includes("application/json") ? await response.json() : await response.text();
+      const entries = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload.entries)
+          ? payload.entries
+          : parseLeaderboardText(String(payload.text || payload));
+
+      if (entries.length) {
+        renderLeaderboard(entries, payload.source === "server" ? "ao vivo" : "snapshot");
+      }
+    } catch {}
+  };
+
   const createCheckout = async (sku) => {
     const minecraftNick = nickInput.value.trim();
 
@@ -83,5 +157,6 @@
     button.addEventListener("click", () => createCheckout(button.dataset.sku));
   });
 
+  loadLeaderboard();
   applyTheme();
 })();
