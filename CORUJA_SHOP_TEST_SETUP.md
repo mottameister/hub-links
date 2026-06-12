@@ -62,9 +62,9 @@ npm run shop:worker
 
 Os pacotes estao gerando comandos no backend assim:
 
-- `eco give {nick} 1000000`
-- `eco give {nick} 5000000`
-- `eco give {nick} 10000000`
+- `cobbledollars give {nick} 1000000`
+- `cobbledollars give {nick} 5000000`
+- `cobbledollars give {nick} 10000000`
 
 Se o plugin de economia usa outro comando, altere `lib/coruja-shop-store.js` antes do teste real.
 

@@ -114,14 +114,22 @@ const deliver = async (delivery) => {
     ? `dry-run: ${command}`
     : await rconCommand(command);
 
-  await requestJson("/api/shop/delivered", {
-    method: "POST",
-    body: JSON.stringify({
-      orderId: delivery.orderId,
-      deliveryLog: output || "Command executed.",
-    }),
-  });
-  console.log(`[shop] delivered ${delivery.orderId}`);
+  try {
+    await requestJson("/api/shop/delivered", {
+      method: "POST",
+      body: JSON.stringify({
+        orderId: delivery.orderId,
+        deliveryLog: output || "Command executed.",
+      }),
+    });
+    console.log(`[shop] delivered ${delivery.orderId}`);
+  } catch (error) {
+    if (String(error.message || "").includes("Entrega precisa estar em processamento")) {
+      console.warn(`[shop] delivery ${delivery.orderId} was already finalized or reset after command execution.`);
+      return;
+    }
+    throw error;
+  }
 };
 
 const tick = async () => {
