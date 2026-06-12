@@ -21,7 +21,7 @@ const copy = {
     waitlist: "Você entrou na lista de espera. Se abrir vaga, a organização chama no Discord.",
     confirmed: "Inscrição confirmada. Te vejo domingo 28/jun no check-in.",
     fallbackError: "Não foi possível enviar sua inscrição agora.",
-    storageError: "Inscrições ainda não configuradas no servidor. Falta conectar o Vercel Blob no projeto.",
+    storageError: "Inscrições ainda não configuradas no servidor.",
     discordSuffix: "Se persistir, chama no Discord.",
   },
   "en-US": {
@@ -35,7 +35,7 @@ const copy = {
     waitlist: "You joined the waitlist. If a spot opens, the organizers will contact you on Discord.",
     confirmed: "Registration confirmed. See you Sunday, Jun 28 at check-in.",
     fallbackError: "We could not submit your registration right now.",
-    storageError: "Registrations are not fully configured on the server yet. The Vercel Blob store still needs to be connected.",
+    storageError: "Registrations are not fully configured on the server yet.",
     discordSuffix: "If it keeps happening, message us on Discord.",
   },
 };
