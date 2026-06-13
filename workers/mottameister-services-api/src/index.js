@@ -157,7 +157,7 @@ const validateMinecraftProfile = async (nick) => {
     headers: { Accept: "application/json" },
   });
   if (response.status === 404) throw Object.assign(new Error("Esse nick nao existe em uma conta Minecraft original."), { statusCode: 400 });
-  if (!response.ok) throw Object.assign(new Error("Nao foi possivel validar o nick na Mojang agora."), { statusCode: response.status >= 500 ? 503 : 400 });
+  if (!response.ok) return { id: "", name: nick };
   const profile = await response.json();
   if (!profile?.id || !profile?.name) throw Object.assign(new Error("A Mojang nao retornou um perfil valido para esse nick."), { statusCode: 400 });
   return { id: sanitizeText(profile.id, 40), name: sanitizeMinecraftNick(profile.name) };
