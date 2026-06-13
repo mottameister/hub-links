@@ -1362,7 +1362,7 @@
       setServerShopStatus("Validando nick e criando checkout seguro...", "ok");
 
       try {
-        const response = await fetch("/api/shop/checkout", {
+        const response = await fetch("https://mottameister-services-api.mottameister.xyz/api/shop/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ sku, minecraftNick }),

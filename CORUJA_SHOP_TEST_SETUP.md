@@ -4,22 +4,24 @@ Este fluxo ainda nao deve ir para producao antes de uma compra teste completa.
 
 ## O que precisa existir fora do codigo
 
-1. Vercel Blob conectado ao projeto.
-   - O projeto ja usa `@vercel/blob`.
-   - A env `BLOB_READ_WRITE_TOKEN` precisa existir na Vercel.
+1. Cloudflare D1 e Worker conectados ao projeto.
+   - Worker: `mottameister-services-api`.
+   - Banco: `mottameister-services`.
+   - URL publica: `https://mottameister-services-api.mottameister.xyz`.
 
 2. App do Mercado Pago em modo teste.
    - Criar uma aplicacao em Mercado Pago Developers.
    - Configurar webhook de teste para:
-     `https://SEU_DOMINIO/api/shop/webhook/mercadopago`
+     `https://mottameister-services-api.mottameister.xyz/api/shop/webhook/mercadopago`
    - Evento necessario: `payment`.
    - Copiar o access token de teste e o secret de webhook.
    - O codigo de verificacao do usuario de teste nao e o secret do webhook.
    - Como o access token ja foi compartilhado no chat, rotacione o token antes de producao.
 
-3. Environment variables na Vercel.
+3. Secrets/variaveis no Worker da Cloudflare.
    - `SHOP_ENV=test`
-   - `SITE_URL=https://SEU_DOMINIO`
+   - `SITE_URL=https://mottameister.xyz`
+   - `API_URL=https://mottameister-services-api.mottameister.xyz`
    - `MERCADOPAGO_ACCESS_TOKEN=APP_USR...` ou token de teste
    - `MERCADOPAGO_WEBHOOK_SECRET=...`
    - `SHOP_DELIVERY_SECRET=um_token_longo_aleatorio`
@@ -39,8 +41,8 @@ Rode perto do servidor Minecraft.
 Modo teste sem executar comando:
 
 ```powershell
-$env:SHOP_SITE_URL="https://SEU_DOMINIO"
-$env:SHOP_DELIVERY_SECRET="mesmo_valor_da_vercel"
+$env:SHOP_API_URL="https://mottameister-services-api.mottameister.xyz"
+$env:SHOP_DELIVERY_SECRET="mesmo_valor_da_cloudflare"
 $env:SHOP_DRY_RUN="true"
 npm run shop:worker
 ```
@@ -48,8 +50,8 @@ npm run shop:worker
 Modo RCON:
 
 ```powershell
-$env:SHOP_SITE_URL="https://SEU_DOMINIO"
-$env:SHOP_DELIVERY_SECRET="mesmo_valor_da_vercel"
+$env:SHOP_API_URL="https://mottameister-services-api.mottameister.xyz"
+$env:SHOP_DELIVERY_SECRET="mesmo_valor_da_cloudflare"
 $env:SHOP_DRY_RUN="false"
 $env:RCON_HOST="127.0.0.1"
 $env:RCON_PORT="25575"

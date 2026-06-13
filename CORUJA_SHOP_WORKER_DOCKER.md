@@ -9,7 +9,7 @@ Crie `.env.worker` no servidor. Este arquivo nao deve ir para o git.
 ```env
 SHOP_API_URL=https://mottameister-services-api.mottameister.xyz
 SHOP_SITE_URL=https://mottameister.xyz
-SHOP_DELIVERY_SECRET=mesmo_valor_da_vercel
+SHOP_DELIVERY_SECRET=mesmo_valor_da_cloudflare
 SHOP_DRY_RUN=false
 SHOP_WORKER_POLL_MS=15000
 SHOP_WORKER_ID=coruja-main

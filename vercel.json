@@ -1,4 +1,18 @@
 {
+  "rewrites": [
+    {
+      "source": "/api/shop/:path*",
+      "destination": "https://mottameister-services-api.mottameister.xyz/api/shop/:path*"
+    },
+    {
+      "source": "/api/analytics/:path*",
+      "destination": "https://mottameister-services-api.mottameister.xyz/api/analytics/:path*"
+    },
+    {
+      "source": "/api/coruja-cup/:path*",
+      "destination": "https://coruja-cup-api.mottameister.xyz/api/coruja-cup/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
