@@ -7,8 +7,9 @@ O backend oficial das inscricoes roda em Cloudflare Workers + KV.
 Endpoint ativo:
 
 - `https://coruja-cup-api.mottameister.xyz/api/coruja-cup/*`
+- chamadas antigas em `https://mottameister.xyz/api/coruja-cup/*` sao encaminhadas pela Vercel para o Worker.
 
-Tambem existem Worker Routes configuradas para `mottameister.xyz/api/coruja-cup/*` e `www.mottameister.xyz/api/coruja-cup/*`, mas elas so interceptam se o DNS do host estiver proxied pela Cloudflare. Como o dominio principal esta servindo pela Vercel, o frontend aponta explicitamente para o Custom Domain do Worker.
+Tambem existem Worker Routes configuradas para `mottameister.xyz/api/coruja-cup/*` e `www.mottameister.xyz/api/coruja-cup/*`, mas elas so interceptam se o DNS do host estiver proxied pela Cloudflare. Como o dominio principal esta servindo pela Vercel, o frontend aponta explicitamente para o Custom Domain do Worker e o `vercel.json` mantem rewrites para compatibilidade.
 
 Recursos:
 
@@ -33,4 +34,4 @@ Deploy manual, se precisar:
 2. Configurar o secret `CORUJA_CUP_ADMIN_TOKEN`.
 3. Rodar `wrangler deploy` dentro de `workers/coruja-cup-api`.
 
-As rotas Vercel antigas em `api/coruja-cup/*` permanecem no repo apenas como fallback historico, mas dependem do Vercel Blob e nao sao mais o caminho recomendado.
+As rotas Vercel antigas foram removidas. A fonte de verdade agora e o Worker `coruja-cup-api`.

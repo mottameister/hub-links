@@ -67,7 +67,7 @@ Os pacotes estao gerando comandos no backend assim:
 - `cobbledollars give {nick} 5000000`
 - `cobbledollars give {nick} 10000000`
 
-Se o plugin de economia usa outro comando, altere `lib/coruja-shop-store.js` antes do teste real.
+Se o plugin de economia usa outro comando, altere o mapa `products` em `workers/mottameister-services-api/src/index.js` antes do teste real.
 
 ## Checklist antes de publicar
 
