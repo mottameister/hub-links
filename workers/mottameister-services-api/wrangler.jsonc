@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "mottameister-services-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-06-12",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "SITE_URL": "https://mottameister.xyz",
+    "API_URL": "https://mottameister-services-api.mottameister.xyz",
+    "SHOP_ENV": "test"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mottameister-services",
+      "database_id": "20bfc4f1-7334-47c3-b32a-6c43a8db3973"
+    }
+  ]
+}

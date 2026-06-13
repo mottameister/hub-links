@@ -458,7 +458,7 @@
 (function () {
   if (location.pathname.includes("/admin/")) return;
 
-  const endpoint = "/api/analytics/click";
+  const endpoint = "https://mottameister-services-api.mottameister.xyz/api/analytics/click";
   const textOf = (node) => String(
     node.getAttribute("aria-label")
     || node.dataset.trackLabel

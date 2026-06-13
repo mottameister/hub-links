@@ -244,6 +244,7 @@
     const showAttemptsInput = document.querySelector("#show-attempts");
     const statusBox = document.querySelector("#status");
     const rowsBox = document.querySelector("#rows");
+    const apiBase = "https://mottameister-services-api.mottameister.xyz";
     let currentOrders = [];
     let visibleOrders = [];
 
@@ -339,7 +340,7 @@
       showStatus("Carregando pedidos...");
 
       try {
-        const response = await fetch("/api/shop/orders", {
+        const response = await fetch(`${apiBase}/api/shop/orders`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const payload = await response.json();
@@ -366,7 +367,7 @@
       showStatus("Sincronizando pagamento no Mercado Pago...");
 
       try {
-        const response = await fetch("/api/shop/sync-payment", {
+        const response = await fetch(`${apiBase}/api/shop/sync-payment`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -434,7 +435,7 @@
       showStatus("Arquivando pedidos de teste...");
 
       try {
-        const response = await fetch("/api/shop/archive-tests", {
+        const response = await fetch(`${apiBase}/api/shop/archive-tests`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,

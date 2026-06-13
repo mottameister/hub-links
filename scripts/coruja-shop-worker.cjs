@@ -1,7 +1,7 @@
 const net = require("node:net");
 
 const config = {
-  siteUrl: (process.env.SHOP_SITE_URL || process.env.SITE_URL || "").replace(/\/+$/, ""),
+  siteUrl: (process.env.SHOP_API_URL || process.env.SHOP_SITE_URL || process.env.SITE_URL || "https://mottameister-services-api.mottameister.xyz").replace(/\/+$/, ""),
   deliverySecret: process.env.SHOP_DELIVERY_SECRET || "",
   pollMs: Number(process.env.SHOP_WORKER_POLL_MS || 15000),
   dryRun: process.env.SHOP_DRY_RUN !== "false",
@@ -12,7 +12,7 @@ const config = {
 };
 
 const assertConfig = () => {
-  if (!config.siteUrl) throw new Error("Missing SHOP_SITE_URL or SITE_URL.");
+  if (!config.siteUrl) throw new Error("Missing SHOP_API_URL, SHOP_SITE_URL, or SITE_URL.");
   if (!config.deliverySecret) throw new Error("Missing SHOP_DELIVERY_SECRET.");
   if (!config.dryRun && !config.rconPassword) throw new Error("Missing RCON_PASSWORD when SHOP_DRY_RUN=false.");
 };

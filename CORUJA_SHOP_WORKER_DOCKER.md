@@ -7,6 +7,7 @@ Este container deve rodar no mesmo servidor fisico/VPS do Minecraft, perto do RC
 Crie `.env.worker` no servidor. Este arquivo nao deve ir para o git.
 
 ```env
+SHOP_API_URL=https://mottameister-services-api.mottameister.xyz
 SHOP_SITE_URL=https://mottameister.xyz
 SHOP_DELIVERY_SECRET=mesmo_valor_da_vercel
 SHOP_DRY_RUN=false

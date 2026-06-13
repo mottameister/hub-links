@@ -6,6 +6,7 @@
   const checkoutButtons = document.querySelectorAll("[data-shop-checkout]");
   const leaderboardList = document.querySelector("[data-leaderboard-list]");
   const leaderboardState = document.querySelector("[data-leaderboard-state]");
+  const apiBase = "https://mottameister-services-api.mottameister.xyz";
 
   const fallbackLeaderboard = [
     { rank: 1, name: "jotinha7b", amount: "11.6M" },
@@ -105,7 +106,7 @@
     renderLeaderboard(fallbackLeaderboard, "snapshot");
 
     try {
-      const response = await fetch("/api/shop/pending?leaderboard=1", { headers: { Accept: "application/json,text/plain" } });
+      const response = await fetch(`${apiBase}/api/shop/pending?leaderboard=1`, { headers: { Accept: "application/json,text/plain" } });
       if (!response.ok) return;
 
       const contentType = response.headers.get("content-type") || "";
@@ -135,7 +136,7 @@
     setStatus("Criando checkout seguro no Mercado Pago...", "ok");
 
     try {
-      const response = await fetch("/api/shop/checkout", {
+      const response = await fetch(`${apiBase}/api/shop/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sku, minecraftNick }),
