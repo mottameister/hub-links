@@ -188,10 +188,13 @@ const handleRegister = async (request, env) => {
   };
 
   await env.CORUJA_CUP.put(`${prefixFor(eventId)}${createdAt}:${id}`, JSON.stringify(registration));
+  const updatedCounts = getCounts([...registrations, registration]);
 
   return json(request, {
     ok: true,
     status,
+    eventId,
+    ...updatedCounts,
     registration: {
       id,
       status,

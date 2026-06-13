@@ -60,6 +60,16 @@ const localizeError = (messageText) => {
   return messageText || t("fallbackError");
 };
 
+const applyStatus = (data) => {
+  const confirmed = Number(data.confirmed || 0);
+  const waitlist = Number(data.waitlist || 0);
+  const remaining = Math.max(capacity - confirmed, 0);
+
+  if (confirmedCount) confirmedCount.textContent = String(confirmed);
+  if (waitlistCount) waitlistCount.textContent = String(waitlist);
+  if (remainingCount) remainingCount.textContent = String(remaining);
+};
+
 const applyLocalizedFormCopy = () => {
   const discord = document.querySelector("#discordName");
   const timezone = document.querySelector("#timezone");
@@ -77,13 +87,7 @@ const updateStatus = async () => {
     const response = await fetch(apiUrl(`/api/coruja-cup/status?eventId=${encodeURIComponent(eventId)}`));
     if (!response.ok) throw new Error("status unavailable");
     const data = await response.json();
-    const confirmed = Number(data.confirmed || 0);
-    const waitlist = Number(data.waitlist || 0);
-    const remaining = Math.max(capacity - confirmed, 0);
-
-    if (confirmedCount) confirmedCount.textContent = String(confirmed);
-    if (waitlistCount) waitlistCount.textContent = String(waitlist);
-    if (remainingCount) remainingCount.textContent = String(remaining);
+    applyStatus(data);
   } catch {
     if (confirmedCount) confirmedCount.textContent = "-";
     if (waitlistCount) waitlistCount.textContent = "-";
@@ -141,6 +145,9 @@ if (form) {
 
       showMessage(statusText, "success");
       form.reset();
+      if (typeof data.confirmed !== "undefined") {
+        applyStatus(data);
+      }
       await updateStatus();
     } catch (error) {
       showMessage(`${localizeError(error.message)} ${t("discordSuffix")}`, "error");
