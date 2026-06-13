@@ -116,21 +116,6 @@ html[data-theme="light"] .form-panel {
   position: relative;
 }
 
-.hero-copy::after {
-  content: "POISON";
-  position: absolute;
-  right: -18px;
-  bottom: -14px;
-  color: rgba(255,255,255,.045);
-  font-size: clamp(72px, 13vw, 164px);
-  font-weight: 950;
-  letter-spacing: 0;
-}
-
-html[data-theme="light"] .hero-copy::after {
-  color: rgba(80, 56, 118, .055);
-}
-
 .kicker {
   color: var(--toxic);
   font-size: 13px;
