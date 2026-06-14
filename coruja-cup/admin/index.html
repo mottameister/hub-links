@@ -6,7 +6,7 @@
   <title>Admin - Coruja Cup</title>
   <meta name="robots" content="noindex" />
   <link rel="stylesheet" href="/site-controls.css" />
-  <link rel="stylesheet" href="/coruja-cup/coruja-cup.css" />
+  <link rel="stylesheet" href="/coruja-cup/coruja-cup.css?v=20260613-1" />
 </head>
 <body>
   <main class="page">
@@ -46,13 +46,15 @@
     </div>
   </div>
 
-  <script src="/coruja-cup/controls.js"></script>
+  <script src="/coruja-cup/controls.js?v=20260613-1"></script>
   <script>
     const eventId = "coruja-cup-2026-06-28";
     const apiBaseUrl = "https://coruja-cup-api.mottameister.xyz";
     const tokenInput = document.querySelector("#adminToken");
     const message = document.querySelector("[data-message]");
     const tableRoot = document.querySelector("[data-table]");
+    const storageKey = "coruja-cup-admin-token";
+    tokenInput.value = sessionStorage.getItem(storageKey) || "";
 
     const showMessage = (text, type = "") => {
       message.textContent = text;
@@ -109,6 +111,7 @@
         showMessage("Digite o token admin.", "error");
         return;
       }
+      sessionStorage.setItem(storageKey, token);
 
       const response = await fetch(apiUrl(`/api/coruja-cup/registrations?eventId=${eventId}`), {
         headers: { Authorization: `Bearer ${token}` },
@@ -131,6 +134,7 @@
         showMessage("Digite o token admin.", "error");
         return;
       }
+      sessionStorage.setItem(storageKey, token);
 
       const response = await fetch(apiUrl(`/api/coruja-cup/registrations?eventId=${eventId}&format=csv`), {
         headers: { Authorization: `Bearer ${token}` },
