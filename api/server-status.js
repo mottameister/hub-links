@@ -13,7 +13,7 @@ function normalizePlayer(player) {
 
   return {
     name: name.slice(0, 32),
-    avatarUrl: `https://crafatar.com/avatars/${uuid}?size=96&overlay&default=MHF_Steve`,
+    avatarUrl: `https://mc-heads.net/avatar/${uuid}/96`,
   };
 }
 
