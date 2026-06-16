@@ -1,36 +1,11 @@
-const SERVER_HOST = "crafty.marru.dpdns.org";
-const SERVER_PORT = 25565;
+const SERVER_HOST = "cbmn.mottameister.xyz";
 const STATUS_SOURCE = `https://api.mcsrvstat.us/3/${SERVER_HOST}`;
 
 function normalizeStatus(payload) {
-  const players = payload?.players || {};
-  const motd = payload?.motd || {};
-  const debug = payload?.debug || {};
-
   return {
     ok: true,
     checkedAt: new Date().toISOString(),
-    host: SERVER_HOST,
-    port: payload?.port || SERVER_PORT,
     online: Boolean(payload?.online),
-    ip: payload?.ip || null,
-    version: payload?.version || null,
-    protocol: payload?.protocol || null,
-    players: {
-      online: Number(players.online || 0),
-      max: Number(players.max || 0),
-      sample: Array.isArray(players.list) ? players.list.slice(0, 12) : [],
-    },
-    motd: {
-      clean: Array.isArray(motd.clean) ? motd.clean.filter(Boolean).join("\n") : "",
-      html: Array.isArray(motd.html) ? motd.html.filter(Boolean).join("<br>") : "",
-    },
-    debug: {
-      cachehit: Boolean(debug.cachehit),
-      cachetime: debug.cachetime || null,
-      cacheexpire: debug.cacheexpire || null,
-      error: debug.error || null,
-    },
   };
 }
 
@@ -65,10 +40,7 @@ module.exports = async function handler(req, res) {
     res.status(502).json({
       ok: false,
       checkedAt: new Date().toISOString(),
-      host: SERVER_HOST,
-      port: SERVER_PORT,
       online: false,
-      error: error.name === "AbortError" ? "Status check timed out" : error.message,
     });
   } finally {
     clearTimeout(timeout);

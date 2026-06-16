@@ -249,18 +249,14 @@
 
     .status-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: 1fr;
       border-bottom: 1px solid var(--line);
     }
 
     .metric {
       padding: 18px 20px;
       min-height: 108px;
-      border-right: 1px solid var(--line);
     }
-
-    .metric:nth-child(2n) { border-right: 0; }
-    .metric:nth-child(n+3) { border-top: 1px solid var(--line); }
 
     .metric-label {
       margin: 0 0 9px;
@@ -276,57 +272,6 @@
       font-size: 25px;
       font-weight: 850;
       overflow-wrap: anywhere;
-    }
-
-    .server-address {
-      padding: 20px;
-      display: grid;
-      gap: 12px;
-    }
-
-    .address-box {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: center;
-      min-height: 54px;
-      padding: 8px 8px 8px 14px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(1, 8, 6, .42);
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-      color: #e9fff0;
-      overflow: hidden;
-    }
-
-    .address-box span { overflow-wrap: anywhere; }
-
-    .copy-feedback {
-      min-height: 20px;
-      color: var(--green);
-      font-size: 13px;
-    }
-
-    .players {
-      padding: 18px 20px 22px;
-      border-top: 1px solid var(--line);
-    }
-
-    .player-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .player-pill {
-      border-radius: 999px;
-      padding: 7px 10px;
-      background: rgba(180,140,255,.16);
-      color: #efe6ff;
-      border: 1px solid rgba(180,140,255,.26);
-      font-size: 13px;
-      font-weight: 750;
     }
 
     .note {
@@ -354,7 +299,6 @@
       .metric,
       .metric:nth-child(2n) { border-right: 0; }
       .metric:nth-child(n+2) { border-top: 1px solid var(--line); }
-      .address-box { grid-template-columns: 1fr; }
       .button { width: 100%; }
     }
   </style>
@@ -373,10 +317,9 @@
       <section class="hero" aria-labelledby="page-title">
         <p class="eyebrow"><span class="ping-dot" data-ping-dot></span> Status do servidor Cobblemon</p>
         <h1 id="page-title">A Toca está online?</h1>
-        <p class="lede">Antes de abrir o modpack, dá uma olhada aqui. A página consulta o servidor e mostra jogadores, versão e o último check conhecido.</p>
+        <p class="lede">Antes de abrir o modpack, dá uma olhada aqui. A página mostra só se a Toca está respondendo agora.</p>
         <div class="actions">
           <button class="button primary" type="button" data-refresh>Atualizar status</button>
-          <a class="button" href="https://crafty.marru.dpdns.org/status" target="_blank" rel="noopener noreferrer">Status original</a>
         </div>
       </section>
 
@@ -394,36 +337,9 @@
 
         <div class="status-grid">
           <div class="metric">
-            <p class="metric-label">Jogadores</p>
-            <p class="metric-value" data-players>-</p>
-          </div>
-          <div class="metric">
-            <p class="metric-label">Versão</p>
-            <p class="metric-value" data-version>-</p>
-          </div>
-          <div class="metric">
-            <p class="metric-label">Porta</p>
-            <p class="metric-value" data-port>25565</p>
-          </div>
-          <div class="metric">
             <p class="metric-label">Última leitura</p>
             <p class="metric-value" data-last-check>-</p>
           </div>
-        </div>
-
-        <div class="server-address">
-          <p class="metric-label">Endereço do servidor</p>
-          <div class="address-box">
-            <span data-address>crafty.marru.dpdns.org</span>
-            <button class="button" type="button" data-copy>Copiar</button>
-          </div>
-          <div class="copy-feedback" data-copy-feedback></div>
-          <p class="note" data-motd>Se a leitura falhar, o painel original ainda pode ter mais detalhes administrativos.</p>
-        </div>
-
-        <div class="players" data-player-section hidden>
-          <p class="metric-label">Quem está por lá</p>
-          <div class="player-list" data-player-list></div>
         </div>
       </section>
     </main>
@@ -435,20 +351,12 @@
   </div>
 
   <script>
-    const SERVER_ADDRESS = "crafty.marru.dpdns.org";
     const statusCard = document.querySelector("[data-status-card]");
     const stateIcon = document.querySelector("[data-state-icon]");
     const stateTitle = document.querySelector("[data-state-title]");
     const stateSubtitle = document.querySelector("[data-state-subtitle]");
-    const players = document.querySelector("[data-players]");
-    const version = document.querySelector("[data-version]");
-    const port = document.querySelector("[data-port]");
     const lastCheck = document.querySelector("[data-last-check]");
-    const motd = document.querySelector("[data-motd]");
     const currentTime = document.querySelector("[data-current-time]");
-    const playerSection = document.querySelector("[data-player-section]");
-    const playerList = document.querySelector("[data-player-list]");
-    const copyFeedback = document.querySelector("[data-copy-feedback]");
     const pingDot = document.querySelector("[data-ping-dot]");
 
     function formatTime(value) {
@@ -468,39 +376,17 @@
       pingDot.style.boxShadow = "0 0 0 8px rgba(245,197,66,.12)";
     }
 
-    function renderPlayers(sample) {
-      playerList.innerHTML = "";
-      if (!sample || sample.length === 0) {
-        playerSection.hidden = true;
-        return;
-      }
-      sample.forEach((player) => {
-        const pill = document.createElement("span");
-        pill.className = "player-pill";
-        pill.textContent = typeof player === "string" ? player : player.name || "Jogador";
-        playerList.appendChild(pill);
-      });
-      playerSection.hidden = false;
-    }
-
     function renderStatus(data) {
       const checkedDate = data.checkedAt ? new Date(data.checkedAt) : new Date();
-      const onlineCount = data.players?.online ?? 0;
-      const maxCount = data.players?.max ?? 0;
 
       statusCard.className = `status-card ${data.online ? "is-online" : "is-offline"}`;
       stateIcon.textContent = data.online ? "ON" : "OFF";
       stateTitle.textContent = data.online ? "Servidor online" : "Servidor offline";
-      stateSubtitle.textContent = data.online ? "Pode entrar na aventura." : "A consulta não conseguiu pingar o servidor agora.";
-      players.textContent = maxCount ? `${onlineCount}/${maxCount}` : String(onlineCount);
-      version.textContent = data.version || "Indisponível";
-      port.textContent = String(data.port || 25565);
+      stateSubtitle.textContent = data.online ? "A Toca está respondendo agora." : "A Toca não respondeu ao último check.";
       lastCheck.textContent = formatTime(checkedDate);
-      motd.textContent = data.motd?.clean || (data.online ? "Servidor respondendo normalmente." : "Pode ser manutenção, reinício ou bloqueio temporário do ping externo.");
       currentTime.textContent = `Último check às ${formatTime(checkedDate)}`;
       pingDot.style.background = data.online ? "var(--green)" : "var(--red)";
       pingDot.style.boxShadow = data.online ? "0 0 0 8px rgba(119,242,154,.13)" : "0 0 0 8px rgba(255,107,126,.13)";
-      renderPlayers(data.players?.sample);
     }
 
     function renderError() {
@@ -508,14 +394,10 @@
       stateIcon.textContent = "!";
       stateTitle.textContent = "Sem leitura";
       stateSubtitle.textContent = "Não deu para consultar o status agora.";
-      players.textContent = "-";
-      version.textContent = "Indisponível";
       lastCheck.textContent = formatTime(new Date());
-      motd.textContent = "Tente atualizar em alguns segundos ou abra o status original.";
       currentTime.textContent = "Falha na consulta";
       pingDot.style.background = "var(--red)";
       pingDot.style.boxShadow = "0 0 0 8px rgba(255,107,126,.13)";
-      renderPlayers([]);
     }
 
     async function loadStatus() {
@@ -532,18 +414,6 @@
 
     document.querySelectorAll("[data-refresh], [data-refresh-small]").forEach((button) => {
       button.addEventListener("click", loadStatus);
-    });
-
-    document.querySelector("[data-copy]").addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(SERVER_ADDRESS);
-        copyFeedback.textContent = "Endereço copiado.";
-      } catch (error) {
-        copyFeedback.textContent = SERVER_ADDRESS;
-      }
-      setTimeout(() => {
-        copyFeedback.textContent = "";
-      }, 2400);
     });
 
     loadStatus();
