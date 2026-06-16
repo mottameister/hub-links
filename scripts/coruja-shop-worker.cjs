@@ -8,6 +8,7 @@ const config = {
   rconHost: process.env.RCON_HOST || "127.0.0.1",
   rconPort: Number(process.env.RCON_PORT || 25575),
   rconPassword: process.env.RCON_PASSWORD || "",
+  rconTimeoutMs: Number(process.env.RCON_TIMEOUT_MS || 10000),
   workerId: process.env.SHOP_WORKER_ID || `worker-${Date.now()}`,
 };
 
@@ -76,8 +77,17 @@ const readPacket = (socket) => new Promise((resolve, reject) => {
 
 const rconCommand = async (command) => new Promise((resolve, reject) => {
   const socket = net.createConnection(config.rconPort, config.rconHost);
+  const timeout = setTimeout(() => {
+    socket.destroy();
+    reject(new Error(`RCON timeout after ${config.rconTimeoutMs}ms.`));
+  }, config.rconTimeoutMs);
 
-  socket.once("error", reject);
+  const finish = (callback, value) => {
+    clearTimeout(timeout);
+    callback(value);
+  };
+
+  socket.once("error", (error) => finish(reject, error));
   socket.once("connect", async () => {
     try {
       socket.write(writePacket(1, 3, config.rconPassword));
@@ -87,13 +97,25 @@ const rconCommand = async (command) => new Promise((resolve, reject) => {
       socket.write(writePacket(2, 2, command));
       const result = await readPacket(socket);
       socket.end();
-      resolve(result.body);
+      finish(resolve, result.body);
     } catch (error) {
       socket.destroy();
-      reject(error);
+      finish(reject, error);
     }
   });
 });
+
+const failDelivery = async (orderId, error) => {
+  await requestJson("/api/shop/failed", {
+    method: "POST",
+    body: JSON.stringify({
+      orderId,
+      deliveryLog: error.message || String(error),
+    }),
+  }).catch((failError) => {
+    console.error(`[shop] could not mark ${orderId} as failed: ${failError.message}`);
+  });
+};
 
 const deliver = async (delivery) => {
   const claim = await requestJson("/api/shop/claim", {
@@ -110,9 +132,15 @@ const deliver = async (delivery) => {
   if (!command) throw new Error(`Delivery ${delivery.orderId} has no command.`);
 
   console.log(`[shop] delivering ${delivery.orderId}: ${command}`);
-  const output = config.dryRun
-    ? `dry-run: ${command}`
-    : await rconCommand(command);
+  let output = "";
+  try {
+    output = config.dryRun
+      ? `dry-run: ${command}`
+      : await rconCommand(command);
+  } catch (error) {
+    await failDelivery(delivery.orderId, error);
+    throw error;
+  }
 
   try {
     await requestJson("/api/shop/delivered", {

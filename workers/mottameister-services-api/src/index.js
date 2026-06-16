@@ -607,6 +607,39 @@ const handleDelivered = async (request, env) => {
   return { ok: true, delivery: { id: delivery.id, status: "delivered", deliveredAt } };
 };
 
+const handleFailed = async (request, env) => {
+  await requireDeliveryAuth(request, env);
+  const payload = await parseBody(request);
+  const orderId = sanitizeText(payload.orderId, 80);
+  if (!orderId) throw Object.assign(new Error("Pedido invalido."), { statusCode: 400 });
+  const delivery = deliveryFromRow(await env.DB.prepare("SELECT * FROM shop_deliveries WHERE environment = ? AND order_id = ?")
+    .bind(getEnvironment(env), orderId).first());
+  if (!delivery) throw Object.assign(new Error("Entrega nao encontrada."), { statusCode: 404 });
+  if (delivery.status === "delivered") return { ok: true, delivery: { id: delivery.id, status: delivery.status } };
+  const deliveryLog = sanitizeText(payload.deliveryLog || "Falha ao executar entrega.", 500);
+  await env.DB.prepare("UPDATE shop_deliveries SET status = ?, delivery_log = ? WHERE environment = ? AND order_id = ?")
+    .bind("delivery_failed", deliveryLog, getEnvironment(env), orderId)
+    .run();
+  await updateOrder(env, orderId, { status: "delivery_failed" });
+  return { ok: true, delivery: { id: delivery.id, status: "delivery_failed" } };
+};
+
+const handleRetryDelivery = async (request, env) => {
+  await requireShopAdminAuth(request, env);
+  const payload = await parseBody(request);
+  const orderId = sanitizeText(payload.orderId, 80);
+  if (!orderId) throw Object.assign(new Error("Pedido invalido."), { statusCode: 400 });
+  const delivery = deliveryFromRow(await env.DB.prepare("SELECT * FROM shop_deliveries WHERE environment = ? AND order_id = ?")
+    .bind(getEnvironment(env), orderId).first());
+  if (!delivery) throw Object.assign(new Error("Entrega nao encontrada."), { statusCode: 404 });
+  if (delivery.status === "delivered") throw Object.assign(new Error("Entrega ja foi concluida."), { statusCode: 409 });
+  await env.DB.prepare("UPDATE shop_deliveries SET status = ?, claimed_at = ?, worker_id = ?, delivery_log = ? WHERE environment = ? AND order_id = ?")
+    .bind("paid_pending_delivery", "", "", sanitizeText(payload.reason || "retry requested", 500), getEnvironment(env), orderId)
+    .run();
+  await updateOrder(env, orderId, { status: "paid_pending_delivery" });
+  return { ok: true, delivery: { id: delivery.id, status: "paid_pending_delivery" } };
+};
+
 const handleSyncPayment = async (request, env) => {
   await requireShopAdminAuth(request, env);
   const payload = await parseBody(request);
@@ -701,6 +734,8 @@ export default {
       }
       if (url.pathname === "/api/shop/claim" && request.method === "POST") return json(await handleClaim(request, env), 200, request);
       if (url.pathname === "/api/shop/delivered" && request.method === "POST") return json(await handleDelivered(request, env), 200, request);
+      if (url.pathname === "/api/shop/failed" && request.method === "POST") return json(await handleFailed(request, env), 200, request);
+      if (url.pathname === "/api/shop/retry-delivery" && request.method === "POST") return json(await handleRetryDelivery(request, env), 200, request);
       if (url.pathname === "/api/shop/sync-payment" && request.method === "POST") return handleSyncPayment(request, env);
       if (url.pathname === "/api/shop/archive-tests" && request.method === "POST") return json(await handleArchiveTests(request, env), 200, request);
       if (url.pathname === "/api/analytics/click") return json(await handleAnalytics(request, env), 200, request);
