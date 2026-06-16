@@ -1,11 +1,37 @@
 const SERVER_HOST = "cbmn.mottameister.xyz";
-const STATUS_SOURCE = `https://api.mcsrvstat.us/3/${SERVER_HOST}`;
+const STATUS_SOURCE = `https://api.mcstatus.io/v2/status/java/${SERVER_HOST}?timeout=5`;
+
+function compactUuid(uuid) {
+  return String(uuid || "").replace(/-/g, "");
+}
+
+function normalizePlayer(player) {
+  const uuid = compactUuid(player?.uuid);
+  const name = String(player?.name_clean || player?.name || player?.name_raw || "Jogador").trim();
+
+  if (!uuid || !/^[a-f0-9]{32}$/i.test(uuid)) return null;
+
+  return {
+    name: name.slice(0, 32),
+    avatarUrl: `https://crafatar.com/avatars/${uuid}?size=96&overlay&default=MHF_Steve`,
+  };
+}
 
 function normalizeStatus(payload) {
+  const players = payload?.players || {};
+  const visiblePlayers = Array.isArray(players.list)
+    ? players.list.map(normalizePlayer).filter(Boolean).slice(0, 24)
+    : [];
+
   return {
     ok: true,
     checkedAt: new Date().toISOString(),
     online: Boolean(payload?.online),
+    players: {
+      online: Number(players.online || 0),
+      max: Number(players.max || 0),
+      list: visiblePlayers,
+    },
   };
 }
 

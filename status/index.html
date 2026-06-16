@@ -258,6 +258,71 @@
       min-height: 108px;
     }
 
+    .players-panel {
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .players-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .players-count {
+      color: var(--text);
+      font-size: 28px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .player-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+      gap: 10px;
+    }
+
+    .player-card {
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 8px;
+      background: rgba(1, 8, 6, .38);
+      display: grid;
+      justify-items: center;
+      gap: 8px;
+    }
+
+    .player-card img {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      image-rendering: pixelated;
+      background: rgba(255,255,255,.08);
+      box-shadow: 0 10px 24px rgba(0,0,0,.25);
+    }
+
+    .player-card span {
+      width: 100%;
+      color: #eafff0;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 800;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .empty-players {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
     .metric-label {
       margin: 0 0 9px;
       color: var(--muted);
@@ -341,6 +406,17 @@
             <p class="metric-value" data-last-check>-</p>
           </div>
         </div>
+
+        <div class="players-panel">
+          <div class="players-heading">
+            <div>
+              <p class="metric-label">Jogadores agora</p>
+              <p class="players-count" data-players-count>-</p>
+            </div>
+          </div>
+          <div class="player-grid" data-player-grid hidden></div>
+          <div class="empty-players" data-empty-players>Carregando jogadores...</div>
+        </div>
       </section>
     </main>
 
@@ -358,6 +434,9 @@
     const lastCheck = document.querySelector("[data-last-check]");
     const currentTime = document.querySelector("[data-current-time]");
     const pingDot = document.querySelector("[data-ping-dot]");
+    const playersCount = document.querySelector("[data-players-count]");
+    const playerGrid = document.querySelector("[data-player-grid]");
+    const emptyPlayers = document.querySelector("[data-empty-players]");
 
     function formatTime(value) {
       return new Intl.DateTimeFormat("pt-BR", {
@@ -372,8 +451,52 @@
       stateIcon.textContent = "...";
       stateTitle.textContent = "Checando...";
       stateSubtitle.textContent = "Consultando a Toca da Coruja.";
+      playersCount.textContent = "-";
+      playerGrid.hidden = true;
+      emptyPlayers.hidden = false;
+      emptyPlayers.textContent = "Carregando jogadores...";
       pingDot.style.background = "var(--gold)";
       pingDot.style.boxShadow = "0 0 0 8px rgba(245,197,66,.12)";
+    }
+
+    function renderPlayers(players) {
+      const online = players?.online ?? 0;
+      const max = players?.max ?? 0;
+      const list = Array.isArray(players?.list) ? players.list : [];
+
+      playersCount.textContent = max ? `${online}/${max}` : String(online);
+      playerGrid.innerHTML = "";
+
+      if (!list.length) {
+        playerGrid.hidden = true;
+        emptyPlayers.hidden = false;
+        emptyPlayers.textContent = online > 0 ? "Jogadores online, mas a lista pública não foi enviada pelo servidor." : "Ninguém online no último check.";
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      list.forEach((player) => {
+        const card = document.createElement("div");
+        card.className = "player-card";
+
+        const img = document.createElement("img");
+        img.src = player.avatarUrl;
+        img.alt = `Avatar de ${player.name}`;
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.referrerPolicy = "no-referrer";
+
+        const name = document.createElement("span");
+        name.textContent = player.name;
+        name.title = player.name;
+
+        card.append(img, name);
+        fragment.appendChild(card);
+      });
+
+      playerGrid.appendChild(fragment);
+      playerGrid.hidden = false;
+      emptyPlayers.hidden = true;
     }
 
     function renderStatus(data) {
@@ -387,6 +510,7 @@
       currentTime.textContent = `Último check às ${formatTime(checkedDate)}`;
       pingDot.style.background = data.online ? "var(--green)" : "var(--red)";
       pingDot.style.boxShadow = data.online ? "0 0 0 8px rgba(119,242,154,.13)" : "0 0 0 8px rgba(255,107,126,.13)";
+      renderPlayers(data.players);
     }
 
     function renderError() {
@@ -396,6 +520,10 @@
       stateSubtitle.textContent = "Não deu para consultar o status agora.";
       lastCheck.textContent = formatTime(new Date());
       currentTime.textContent = "Falha na consulta";
+      playersCount.textContent = "-";
+      playerGrid.hidden = true;
+      emptyPlayers.hidden = false;
+      emptyPlayers.textContent = "Não deu para carregar os jogadores agora.";
       pingDot.style.background = "var(--red)";
       pingDot.style.boxShadow = "0 0 0 8px rgba(255,107,126,.13)";
     }
