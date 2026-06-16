@@ -2,6 +2,7 @@
   const themeKey = "motta-theme";
   const root = document.documentElement;
   const nickInput = document.querySelector("[data-shop-nick]");
+  const couponInput = document.querySelector("[data-shop-coupon]");
   const status = document.querySelector("[data-shop-status]");
   const checkoutButtons = document.querySelectorAll("[data-shop-checkout]");
   const leaderboardList = document.querySelector("[data-leaderboard-list]");
@@ -125,6 +126,7 @@
 
   const createCheckout = async (sku) => {
     const minecraftNick = nickInput.value.trim();
+    const coupon = couponInput ? couponInput.value.trim() : "";
 
     if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) {
       setStatus("Use seu nick original com 3 a 16 letras, numeros ou underline.", "error");
@@ -139,9 +141,15 @@
       const response = await fetch(`${apiBase}/api/shop/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sku, minecraftNick }),
+        body: JSON.stringify({ sku, minecraftNick, coupon }),
       });
       const payload = await response.json();
+
+      if (payload.couponApplied) {
+        setStatus("Cupom aplicado. Pedido entrou na fila de entrega do servidor.", "ok");
+        setLoading(false);
+        return;
+      }
 
       if (!response.ok || !payload.checkoutUrl) {
         throw new Error(payload.error || "Nao foi possivel iniciar o pagamento.");

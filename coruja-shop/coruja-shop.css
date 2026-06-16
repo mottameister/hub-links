@@ -223,6 +223,10 @@ h1 {
   margin: 16px 0;
 }
 
+.coupon-field {
+  margin-top: -2px;
+}
+
 .field label {
   color: #f8e4c4;
   font-size: 13px;

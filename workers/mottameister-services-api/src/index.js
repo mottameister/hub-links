@@ -81,6 +81,22 @@ const getEnvironment = (env) => sanitizeText(env.SHOP_ENV || defaultEnvironment,
 
 const getProduct = (sku) => products[String(sku || "")] || null;
 
+const normalizeCoupon = (value) => sanitizeText(value, 80).toUpperCase();
+
+const validateTestCoupon = async (payload, env) => {
+  const coupon = normalizeCoupon(payload.coupon);
+  if (!coupon) return "";
+  const expected = normalizeCoupon(env.SHOP_TEST_COUPON);
+  const expectedSku = sanitizeText(env.SHOP_TEST_COUPON_SKU || "cobbledollars_1m", 80);
+  if (!expected || !(await isSafeEqual(coupon, expected))) {
+    throw Object.assign(new Error("Cupom invalido."), { statusCode: 400 });
+  }
+  if (String(payload.sku || "") !== expectedSku) {
+    throw Object.assign(new Error("Cupom de teste disponivel apenas para o pacote 1 mi."), { statusCode: 400 });
+  }
+  return coupon;
+};
+
 const parseBody = async (request) => {
   const text = await request.text();
   if (!text) return {};
@@ -472,7 +488,29 @@ const handleLeaderboardPost = async (request, env) => {
 
 const handleCheckout = async (request, env) => {
   const payload = await parseBody(request);
+  const testCoupon = await validateTestCoupon(payload, env);
   const order = await createOrder({ env, request, payload });
+  if (testCoupon) {
+    const paidOrder = await updateOrder(env, order.id, {
+      status: "paid_pending_delivery",
+      amount: 0,
+      mercadoPagoPaymentId: `coupon:${testCoupon}`,
+      lastPaymentStatus: "coupon_test",
+      paidAt: new Date().toISOString(),
+      paymentValidation: {
+        source: "test_coupon",
+        originalAmount: order.amount,
+      },
+    });
+    const delivery = await createDeliveryIfNeeded({
+      env,
+      order: paidOrder,
+      payment: {
+        id: `coupon:${testCoupon}`,
+      },
+    });
+    return { ok: true, orderId: order.id, couponApplied: true, deliveryId: delivery.id, status: paidOrder.status };
+  }
   const preference = await createPreference({ env, request, order });
   await updateOrder(env, order.id, {
     status: "checkout_created",
