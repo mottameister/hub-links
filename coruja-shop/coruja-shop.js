@@ -134,16 +134,21 @@
       return;
     }
 
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 15000);
+
     setLoading(true);
-    setStatus("Criando checkout seguro no Mercado Pago...", "ok");
+    setStatus(coupon ? "Aplicando cupom de teste no servidor..." : "Criando checkout seguro no Mercado Pago...", "ok");
 
     try {
       const response = await fetch(`${apiBase}/api/shop/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sku, minecraftNick, coupon }),
+        signal: controller.signal,
       });
       const payload = await response.json();
+      window.clearTimeout(timeoutId);
 
       if (payload.couponApplied) {
         setStatus("Cupom aplicado. Pedido entrou na fila de entrega do servidor.", "ok");
@@ -157,7 +162,8 @@
 
       window.location.href = payload.checkoutUrl;
     } catch (error) {
-      setStatus(error.message || "Nao foi possivel iniciar o pagamento agora.", "error");
+      window.clearTimeout(timeoutId);
+      setStatus(error.name === "AbortError" ? "A conexao demorou demais. Atualize a pagina e tente de novo." : error.message || "Nao foi possivel iniciar o pagamento agora.", "error");
       setLoading(false);
     }
   };
