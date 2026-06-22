@@ -122,7 +122,7 @@ const parseTestCouponPairs = (env) => {
   const legacySku = sanitizeText(env.SHOP_TEST_COUPON_SKU || "cobbledollars_1m", 80);
   if (legacyCoupon && legacySku) pairs.push({ coupon: legacyCoupon, sku: legacySku });
 
-  // Keep supporting a single secret that maps multiple test coupons to SKUs.
+  // Keep supporting one secret that maps multiple test coupons to SKUs.
   const raw = String(env.SHOP_TEST_COUPONS || "").trim();
   if (!raw) return pairs;
 
