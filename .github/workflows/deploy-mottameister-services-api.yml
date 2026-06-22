@@ -19,7 +19,7 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       SHOP_TEST_COUPON: ${{ secrets.SHOP_TEST_COUPON }}
       SHOP_TEST_COUPON_SKU: ${{ secrets.SHOP_TEST_COUPON_SKU }}
-      SHOP_TEST_COUPONS: ${{ secrets.SHOP_TEST_COUPONS }}
+      SHOP_TEST_COUPONS: ${{ secrets.SHOP_TEST_COUPONS || vars.SHOP_TEST_COUPONS }}
 
     steps:
       - name: Checkout
@@ -38,6 +38,14 @@ jobs:
         run: |
           node --check workers/mottameister-services-api/src/index.js
           node --check scripts/coruja-shop-worker.cjs
+
+      - name: Check shop test coupon list config
+        run: |
+          if [ -n "$SHOP_TEST_COUPONS" ]; then
+            echo "SHOP_TEST_COUPONS configured: yes"
+          else
+            echo "SHOP_TEST_COUPONS configured: no"
+          fi
 
       - name: Deploy Worker
         run: npx wrangler deploy --config workers/mottameister-services-api/wrangler.jsonc
