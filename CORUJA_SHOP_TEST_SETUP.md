@@ -66,6 +66,15 @@ Os pacotes estao gerando comandos no backend assim:
 - `cobbledollars give {nick} 1000000`
 - `cobbledollars give {nick} 5000000`
 - `cobbledollars give {nick} 10000000`
+- `opac-claims add {nick} 5`
+- `opac-claims add {nick} 12`
+- `opac-claims add {nick} 30`
+
+O worker traduz `opac-claims add` para Open Parties and Claims via RCON:
+
+1. `openpac player-config for {nick} get claims.bonusChunkClaims`
+2. soma o pacote comprado ao valor atual
+3. `openpac player-config for {nick} set claims.bonusChunkClaims {novo_total}`
 
 Se o plugin de economia usa outro comando, altere o mapa `products` em `workers/mottameister-services-api/src/index.js` antes do teste real.
 

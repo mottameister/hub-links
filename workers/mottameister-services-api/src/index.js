@@ -4,6 +4,7 @@ const products = {
   cobbledollars_1m: {
     sku: "cobbledollars_1m",
     title: "1 mi CobbleDollars",
+    type: "cobbledollars",
     amount: 10,
     currency: "BRL",
     cobbleDollars: 1000000,
@@ -12,6 +13,7 @@ const products = {
   cobbledollars_5m: {
     sku: "cobbledollars_5m",
     title: "5 mi CobbleDollars",
+    type: "cobbledollars",
     amount: 30,
     currency: "BRL",
     cobbleDollars: 5000000,
@@ -20,10 +22,41 @@ const products = {
   cobbledollars_10m: {
     sku: "cobbledollars_10m",
     title: "10 mi CobbleDollars",
+    type: "cobbledollars",
     amount: 40,
     currency: "BRL",
     cobbleDollars: 10000000,
     command: "cobbledollars give {nick} 10000000",
+  },
+  claims_5: {
+    sku: "claims_5",
+    title: "5 Claims",
+    type: "opac_claim_bonus",
+    amount: 10,
+    currency: "BRL",
+    cobbleDollars: 0,
+    claimChunks: 5,
+    command: "opac-claims add {nick} 5",
+  },
+  claims_12: {
+    sku: "claims_12",
+    title: "12 Claims",
+    type: "opac_claim_bonus",
+    amount: 20,
+    currency: "BRL",
+    cobbleDollars: 0,
+    claimChunks: 12,
+    command: "opac-claims add {nick} 12",
+  },
+  claims_30: {
+    sku: "claims_30",
+    title: "30 Claims",
+    type: "opac_claim_bonus",
+    amount: 40,
+    currency: "BRL",
+    cobbleDollars: 0,
+    claimChunks: 30,
+    command: "opac-claims add {nick} 30",
   },
 };
 
@@ -92,7 +125,7 @@ const validateTestCoupon = async (payload, env) => {
     throw Object.assign(new Error("Cupom invalido."), { statusCode: 400 });
   }
   if (String(payload.sku || "") !== expectedSku) {
-    throw Object.assign(new Error("Cupom de teste disponivel apenas para o pacote 1 mi."), { statusCode: 400 });
+    throw Object.assign(new Error(`Cupom de teste disponivel apenas para ${expectedSku}.`), { statusCode: 400 });
   }
   return coupon;
 };
@@ -256,7 +289,7 @@ const createOrder = async ({ env, request, payload }) => {
     productTitle: product.title,
     amount: product.amount,
     currency: product.currency,
-    cobbleDollars: product.cobbleDollars,
+    cobbleDollars: product.cobbleDollars || 0,
     minecraftNick: profile.name || cleanNick,
     minecraftUuid: profile.id,
     discordName: sanitizeText(payload.discordName, 80),
@@ -308,13 +341,17 @@ const createPreference = async ({ env, request, order }) => {
       metadata: {
         order_id: order.id,
         sku: order.sku,
+        product_type: product.type,
         minecraft_nick: order.minecraftNick,
         cobbledollars: order.cobbleDollars,
+        claim_chunks: product.claimChunks || 0,
       },
       items: [{
         id: product.sku,
         title: product.title,
-        description: `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`,
+        description: product.type === "opac_claim_bonus"
+          ? `Claims de chunks para ${order.minecraftNick} na Toca da Coruja`
+          : `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`,
         quantity: 1,
         unit_price: product.amount,
         currency_id: product.currency,
@@ -340,7 +377,7 @@ const createDeliveryIfNeeded = async ({ env, order, payment }) => {
     status: "paid_pending_delivery",
     sku: order.sku,
     minecraftNick: order.minecraftNick,
-    cobbleDollars: order.cobbleDollars,
+    cobbleDollars: order.cobbleDollars || 0,
     command: product.command.replace("{nick}", order.minecraftNick),
     paymentId: String(payment.id || order.mercadoPagoPaymentId || ""),
     createdAt: new Date().toISOString(),

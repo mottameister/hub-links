@@ -1,5 +1,7 @@
 const net = require("node:net");
 
+const opacBonusClaimsKey = "claims.bonusChunkClaims";
+
 const config = {
   siteUrl: (process.env.SHOP_API_URL || process.env.SHOP_SITE_URL || process.env.SITE_URL || "https://mottameister-services-api.mottameister.xyz").replace(/\/+$/, ""),
   deliverySecret: process.env.SHOP_DELIVERY_SECRET || "",
@@ -117,6 +119,60 @@ const failDelivery = async (orderId, error) => {
   });
 };
 
+const parseOpacClaimBonusCommand = (command) => {
+  const match = String(command || "").trim().match(/^opac-claims\s+add\s+([A-Za-z0-9_]{3,16})\s+(\d+)$/i);
+  if (!match) return null;
+  return {
+    minecraftNick: match[1],
+    claimChunks: Number(match[2]),
+  };
+};
+
+const parseOpacBonusClaims = (output) => {
+  const text = String(output || "");
+  const direct = text.match(/claims\.bonusChunkClaims\s*=\s*(-?\d+)/i);
+  if (direct) return Number(direct[1]);
+
+  const option = text.match(/bonusChunkClaims.*?(-?\d+)/i);
+  if (option) return Number(option[1]);
+
+  throw new Error(`Could not read ${opacBonusClaimsKey} from OPAC output: ${text.slice(0, 220) || "(empty)"}`);
+};
+
+const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks }) => {
+  if (!Number.isInteger(claimChunks) || claimChunks <= 0) {
+    throw new Error(`Invalid claim chunk amount for ${delivery.orderId}: ${claimChunks}`);
+  }
+
+  const getCommand = `openpac player-config for ${minecraftNick} get ${opacBonusClaimsKey}`;
+  if (config.dryRun) {
+    const setCommand = `openpac player-config for ${minecraftNick} set ${opacBonusClaimsKey} ${claimChunks}`;
+    return `dry-run: ${getCommand}\ndry-run: ${setCommand}`;
+  }
+
+  const currentOutput = await rconCommand(getCommand);
+  const currentClaims = parseOpacBonusClaims(currentOutput);
+  const nextClaims = currentClaims + claimChunks;
+  const setCommand = `openpac player-config for ${minecraftNick} set ${opacBonusClaimsKey} ${nextClaims}`;
+  const setOutput = await rconCommand(setCommand);
+  return [
+    `OPAC bonus claims: ${currentClaims} + ${claimChunks} = ${nextClaims}`,
+    `get: ${currentOutput || "Command executed."}`,
+    `set: ${setOutput || "Command executed."}`,
+  ].join("\n");
+};
+
+const executeDeliveryCommand = async (delivery, command) => {
+  const opacClaimBonus = parseOpacClaimBonusCommand(command);
+  if (opacClaimBonus) {
+    return deliverOpacClaimBonus({ delivery, ...opacClaimBonus });
+  }
+
+  return config.dryRun
+    ? `dry-run: ${command}`
+    : rconCommand(command);
+};
+
 const deliver = async (delivery) => {
   const claim = await requestJson("/api/shop/claim", {
     method: "POST",
@@ -134,9 +190,7 @@ const deliver = async (delivery) => {
   console.log(`[shop] delivering ${delivery.orderId}: ${command}`);
   let output = "";
   try {
-    output = config.dryRun
-      ? `dry-run: ${command}`
-      : await rconCommand(command);
+    output = await executeDeliveryCommand(delivery, command);
   } catch (error) {
     await failDelivery(delivery.orderId, error);
     throw error;

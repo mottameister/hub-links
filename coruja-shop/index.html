@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coruja Shop | Toca da Coruja</title>
-  <meta name="description" content="Compre CobbleDollars para usar nos merchants da Toca da Coruja e disputar o topo do leaderboard." />
+  <meta name="description" content="Compre CobbleDollars e pacotes de Claims para evoluir sua base na Toca da Coruja." />
   <meta name="theme-color" content="#ffbf38" />
   <meta property="og:title" content="Coruja Shop | Toca da Coruja" />
-  <meta property="og:description" content="Pacotes de CobbleDollars para acelerar sua economia no servidor, comprar nos shops do spawn e mirar o topo do leaderboard." />
+  <meta property="og:description" content="Pacotes de CobbleDollars e Claims para acelerar sua economia, proteger chunks e expandir sua base no servidor." />
   <meta property="og:image" content="https://mottameister.xyz/coruja-shop/assets/spawn-shop.png" />
   <meta property="og:url" content="https://mottameister.xyz/coruja-shop/" />
   <link rel="stylesheet" href="/site-controls.css" />
@@ -17,27 +17,27 @@
   <main class="page">
     <nav class="topbar" aria-label="Navegacao">
       <a class="back" href="/">voltar ao hub</a>
-      <span class="pill">CobbleDollars</span>
+      <span class="pill">CobbleDollars + Claims</span>
     </nav>
 
     <section class="hero" aria-label="Coruja Shop">
       <div class="hero-copy">
         <span class="kicker">Toca da Coruja apresenta</span>
         <h1>Coruja Shop</h1>
-        <p class="lead">CobbleDollars para comprar itens nos merchants do spawn, acelerar treino competitivo e entrar de vez na briga pelo topo da economia.</p>
+        <p class="lead">CobbleDollars para movimentar os merchants do spawn e Claims para proteger mais chunks, construir uma base maior e deixar seu canto da Toca com cara de lar.</p>
         <div class="cta-row">
-          <a class="button" href="#comprar">Comprar CobbleDollars</a>
+          <a class="button" href="#comprar">Comprar pacotes</a>
           <a class="button secondary" href="#leaderboard">Ver leaderboard</a>
         </div>
       </div>
 
     </section>
 
-    <section class="shop-section" id="comprar" aria-label="Comprar CobbleDollars">
+    <section class="shop-section" id="comprar" aria-label="Comprar pacotes do Coruja Shop">
       <div class="shop-intro">
         <span class="kicker">pacotes</span>
         <h2>Escolha seu pacote</h2>
-        <p>Digite seu nick original do Minecraft antes de comprar. A entrega e a conferencia usam esse nome.</p>
+        <p>Digite seu nick original do Minecraft antes de comprar. A entrega e a conferencia usam esse nome para liberar moedas ou Claims na conta certa.</p>
       </div>
 
       <div class="price-panel">
@@ -53,7 +53,13 @@
 
         <div class="status" role="status" aria-live="polite" data-shop-status>Digite seu nick antes de escolher o pacote.</div>
 
-        <div class="packs">
+        <div class="pack-group">
+          <div class="pack-group-head">
+            <span class="kicker">economia</span>
+            <h3>CobbleDollars</h3>
+          </div>
+
+          <div class="packs">
           <button class="pack pack-white" type="button" data-shop-checkout data-sku="cobbledollars_1m">
             <span class="pack-icon" aria-hidden="true"><img src="/coruja-shop/assets/cobbledollar.png" alt="" /></span>
             <span><strong>1 mi CobbleDollars</strong><span>Um empurrao para itens, consumiveis e primeiros testes no spawn.</span></span>
@@ -71,13 +77,41 @@
             <span><strong>10 mi CobbleDollars</strong><span>O pacote para quem quer disputar mercado, leaderboard e preparar varias builds.</span></span>
             <span class="pack-price">R$ 40</span>
           </button>
+          </div>
+        </div>
+
+        <div class="pack-group pack-group-claims">
+          <div class="pack-group-head">
+            <span class="kicker">territorio</span>
+            <h3>Claims de chunks</h3>
+          </div>
+
+          <div class="packs">
+          <button class="pack pack-claim pack-claim-starter" type="button" data-shop-checkout data-sku="claims_5">
+            <span class="pack-icon claim-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            <span><strong>5 Claims</strong><span>Mais 5 chunks protegidos para ampliar a primeira base sem perder o controle do espaco.</span></span>
+            <span class="pack-price">R$ 10</span>
+          </button>
+
+          <button class="pack pack-claim pack-claim-builder" type="button" data-shop-checkout data-sku="claims_12">
+            <span class="pack-icon claim-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            <span><strong>12 Claims</strong><span>O pacote intermediario para abrir terreno de farm, deposito, breeder ou vila pequena.</span></span>
+            <span class="pack-price">R$ 20</span>
+          </button>
+
+          <button class="pack pack-claim pack-claim-village" type="button" data-shop-checkout data-sku="claims_30">
+            <span class="pack-icon claim-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+            <span><strong>30 Claims</strong><span>Para quem quer uma base grande, areas tematicas e margem para continuar expandindo.</span></span>
+            <span class="pack-price">R$ 40</span>
+          </button>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="section stats" aria-label="Resumo da loja">
       <div class="panel"><strong>spawn</strong><span>Merchants fixos para comprar Poke Balls, itens, treino e utilidades sem depender de chat.</span></div>
-      <div class="panel"><strong>top 1</strong><span>O leaderboard fica ali cutucando: quem movimenta mais a economia aparece para todo mundo.</span></div>
+      <div class="panel"><strong>claims</strong><span>Pacotes para proteger mais chunks e construir uma base maior dentro da Toca da Coruja.</span></div>
       <div class="panel"><strong>pix</strong><span>Checkout seguro via Mercado Pago, com pedido registrado para entrega no servidor.</span></div>
     </section>
 
@@ -87,7 +121,7 @@
           <span class="kicker">placar da economia</span>
           <h2>Ganhe dinheiro. Gaste melhor. Suba no ranking.</h2>
         </div>
-        <p>Os shops do spawn ajudam a transformar CobbleDollars em progresso real: Poke Balls, treino, itens de competitivo e o gostinho de aparecer acima dos amigos.</p>
+        <p>Os shops do spawn transformam CobbleDollars em progresso real. Os Claims deixam esse progresso ter espaco para virar base, vila, farm e projeto grande.</p>
       </div>
 
       <div class="leaderboard-live">
@@ -127,7 +161,7 @@
       </div>
     </section>
 
-    <p class="note">CobbleDollars sao moeda interna da Toca da Coruja, podem ser obtidos jogando, nao tem valor real fora do servidor, nao podem ser sacados e nao sao afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokemon.</p>
+    <p class="note">CobbleDollars e Claims sao recursos internos da Toca da Coruja, podem existir ou ser obtidos dentro das regras do servidor, nao tem valor real fora do servidor, nao podem ser sacados e nao sao afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokemon.</p>
   </main>
 
   <div class="site-controls" aria-label="Preferencias do site">

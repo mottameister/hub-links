@@ -283,6 +283,13 @@
       || /paid|delivering|delivered|review|mismatch/.test(order.status || "")
     );
 
+    const productDetail = (order) => {
+      if (String(order.sku || "").startsWith("claims_")) return "Pacote de Claims";
+      const cobbleDollars = Number(order.cobbleDollars || 0);
+      if (cobbleDollars > 0) return `${cobbleDollars.toLocaleString("pt-BR")} CobbleDollars`;
+      return "-";
+    };
+
     const render = (orders) => {
       currentOrders = orders;
       visibleOrders = showAttemptsInput.checked ? orders : orders.filter(isRelevantOrder);
@@ -304,7 +311,7 @@
               <strong>${escapeHtml(order.minecraftNick)}</strong><br>
               <code>${escapeHtml(order.minecraftUuid || "sem uuid salvo")}</code>
             </td>
-            <td>${escapeHtml(order.productTitle || order.sku)}<br>${Number(order.cobbleDollars || 0).toLocaleString("pt-BR")} CobbleDollars</td>
+            <td>${escapeHtml(order.productTitle || order.sku)}<br>${escapeHtml(productDetail(order))}</td>
             <td>${escapeHtml(money(order))}</td>
             <td>
               <span class="pill ${pillClass(order.lastPaymentStatus || status)}">${escapeHtml(order.lastPaymentStatus || "-")}</span><br>
@@ -397,6 +404,7 @@
         "amount",
         "currency",
         "cobbleDollars",
+        "sku",
         "mercadoPagoPaymentId",
         "lastPaymentStatus",
         "deliveryStatus",
