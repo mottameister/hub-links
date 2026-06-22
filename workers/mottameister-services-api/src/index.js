@@ -573,9 +573,12 @@ const handleLeaderboardPost = async (request, env) => {
   const entries = normalizeEntries(payload.entries).length ? normalizeEntries(payload.entries) : parseLeaderboardText(payload.text);
   if (!entries.length) throw Object.assign(new Error("Leaderboard vazio ou invalido."), { statusCode: 400 });
   const updatedAt = new Date().toISOString();
-  await env.DB.prepare("INSERT INTO shop_leaderboard (environment, entries, updated_at) VALUES (?, ?, ?) ON CONFLICT(environment) DO UPDATE SET entries = excluded.entries, updated_at = excluded.updated_at")
-    .bind(getEnvironment(env), JSON.stringify(entries), updatedAt)
-    .run();
+  const environment = getEnvironment(env);
+  await env.DB.batch([
+    env.DB.prepare("DELETE FROM shop_leaderboard WHERE environment = ?").bind(environment),
+    env.DB.prepare("INSERT INTO shop_leaderboard (environment, entries, updated_at) VALUES (?, ?, ?)")
+      .bind(environment, JSON.stringify(entries), updatedAt),
+  ]);
   return { ok: true, source: "server", updatedAt, entries };
 };
 
@@ -616,7 +619,14 @@ const handlePending = async (request, env) => {
   const url = new URL(request.url);
   if (url.searchParams.get("leaderboard") === "1") {
     if (request.method === "GET") return getLeaderboard(env, request);
-    if (request.method === "POST") return json(await handleLeaderboardPost(request, env), 200, request);
+    if (request.method === "POST") {
+      try {
+        return json(await handleLeaderboardPost(request, env), 200, request);
+      } catch (error) {
+        if ((error.statusCode || 500) < 500) throw error;
+        return json({ error: error.message || "Falha ao publicar leaderboard." }, 500, request);
+      }
+    }
   }
   if (request.method !== "GET") return json({ error: "Method not allowed." }, 405, request);
   await requireDeliveryAuth(request, env);

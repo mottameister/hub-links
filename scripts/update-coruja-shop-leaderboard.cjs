@@ -111,9 +111,16 @@ const publish = async (text) => {
     body: JSON.stringify({ text }),
   });
 
-  const payload = await response.json().catch(() => ({}));
+  const responseText = await response.text();
+  let payload = {};
+  try {
+    payload = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    payload = {};
+  }
   if (!response.ok) {
-    throw new Error(payload.error || `Falha ao publicar leaderboard (${response.status}).`);
+    const detail = payload.error || responseText.trim();
+    throw new Error(detail ? `Falha ao publicar leaderboard (${response.status}): ${detail}` : `Falha ao publicar leaderboard (${response.status}).`);
   }
 
   return payload;
