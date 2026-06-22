@@ -25,6 +25,7 @@ Este fluxo ainda nao deve ir para producao antes de uma compra teste completa.
    - `MERCADOPAGO_ACCESS_TOKEN=APP_USR...` ou token de teste
    - `MERCADOPAGO_WEBHOOK_SECRET=...`
    - `SHOP_DELIVERY_SECRET=um_token_longo_aleatorio`
+   - `SHOP_TEST_COUPONS={"CORUJA-CLAIMS-C33E27B7":"claims_5","CORUJA-CD1M-4F8A9C2B":"cobbledollars_1m"}`
    - Nao use `um_token_longo` literalmente. Gere um valor forte, por exemplo:
      `ea49ba24f35b6ea11730d7be92a06ae37ce06f2708404fad0283a4ce7fb300b7`
 
@@ -56,7 +57,31 @@ $env:SHOP_DRY_RUN="false"
 $env:RCON_HOST="127.0.0.1"
 $env:RCON_PORT="25575"
 $env:RCON_PASSWORD="senha_do_server_properties"
+$env:SHOP_LEADERBOARD_ENABLED="true"
+$env:SHOP_LEADERBOARD_POLL_MS="60000"
+$env:SHOP_LEADERBOARD_COMMAND="cobbledollars leaderboard"
 npm run shop:worker
+```
+
+O mesmo worker tambem atualiza o ranking da pagina. Por padrao ele roda o comando
+`cobbledollars leaderboard` a cada 60 segundos e publica o resultado em
+`/api/shop/pending?leaderboard=1`.
+
+## Cupons de teste
+
+Cupons configurados para teste completo sem Mercado Pago:
+
+- `CORUJA-CLAIMS-C33E27B7` -> `claims_5`
+- `CORUJA-CD1M-4F8A9C2B` -> `cobbledollars_1m`
+
+O Worker da Cloudflare aceita esses pares pelo secret `SHOP_TEST_COUPONS`.
+O formato recomendado e um JSON simples:
+
+```json
+{
+  "CORUJA-CLAIMS-C33E27B7": "claims_5",
+  "CORUJA-CD1M-4F8A9C2B": "cobbledollars_1m"
+}
 ```
 
 ## Comando atual

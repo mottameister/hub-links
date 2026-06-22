@@ -116,16 +116,64 @@ const getProduct = (sku) => products[String(sku || "")] || null;
 
 const normalizeCoupon = (value) => sanitizeText(value, 80).toUpperCase();
 
+const parseTestCouponPairs = (env) => {
+  const pairs = [];
+  const legacyCoupon = normalizeCoupon(env.SHOP_TEST_COUPON);
+  const legacySku = sanitizeText(env.SHOP_TEST_COUPON_SKU || "cobbledollars_1m", 80);
+  if (legacyCoupon && legacySku) pairs.push({ coupon: legacyCoupon, sku: legacySku });
+
+  const raw = String(env.SHOP_TEST_COUPONS || "").trim();
+  if (!raw) return pairs;
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      for (const item of parsed) {
+        const coupon = normalizeCoupon(item?.coupon || item?.code);
+        const sku = sanitizeText(item?.sku, 80);
+        if (coupon && sku) pairs.push({ coupon, sku });
+      }
+      return pairs;
+    }
+
+    if (parsed && typeof parsed === "object") {
+      for (const [couponValue, skuValue] of Object.entries(parsed)) {
+        const coupon = normalizeCoupon(couponValue);
+        const sku = sanitizeText(skuValue, 80);
+        if (coupon && sku) pairs.push({ coupon, sku });
+      }
+      return pairs;
+    }
+  } catch {}
+
+  for (const line of raw.split(/\r?\n|,/)) {
+    const match = line.trim().match(/^([^:=]+)\s*[:=]\s*(\S+)$/);
+    if (!match) continue;
+    const coupon = normalizeCoupon(match[1]);
+    const sku = sanitizeText(match[2], 80);
+    if (coupon && sku) pairs.push({ coupon, sku });
+  }
+
+  return pairs;
+};
+
 const validateTestCoupon = async (payload, env) => {
   const coupon = normalizeCoupon(payload.coupon);
   if (!coupon) return "";
-  const expected = normalizeCoupon(env.SHOP_TEST_COUPON);
-  const expectedSku = sanitizeText(env.SHOP_TEST_COUPON_SKU || "cobbledollars_1m", 80);
-  if (!expected || !(await isSafeEqual(coupon, expected))) {
+  const pairs = parseTestCouponPairs(env);
+  let matched = null;
+  for (const pair of pairs) {
+    if (await isSafeEqual(coupon, pair.coupon)) {
+      matched = pair;
+      break;
+    }
+  }
+
+  if (!matched) {
     throw Object.assign(new Error("Cupom invalido."), { statusCode: 400 });
   }
-  if (String(payload.sku || "") !== expectedSku) {
-    throw Object.assign(new Error(`Cupom de teste disponivel apenas para ${expectedSku}.`), { statusCode: 400 });
+  if (String(payload.sku || "") !== matched.sku) {
+    throw Object.assign(new Error(`Cupom de teste disponivel apenas para ${matched.sku}.`), { statusCode: 400 });
   }
   return coupon;
 };

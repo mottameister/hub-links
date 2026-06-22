@@ -4,7 +4,7 @@ const config = {
   host: process.env.RCON_HOST || "127.0.0.1",
   port: Number(process.env.RCON_PORT || 25575),
   password: process.env.RCON_PASSWORD || "",
-  command: (process.env.RCON_COMMAND || "cobbledollares leaderboard").replace(/^\//, ""),
+  command: (process.env.RCON_COMMAND || process.env.SHOP_LEADERBOARD_COMMAND || "cobbledollars leaderboard").replace(/^\//, ""),
   endpoint: process.env.SHOP_LEADERBOARD_ENDPOINT || "https://mottameister-services-api.mottameister.xyz/api/shop/pending?leaderboard=1",
   secret: process.env.SHOP_DELIVERY_SECRET || "",
 };

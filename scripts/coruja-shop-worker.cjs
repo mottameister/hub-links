@@ -12,7 +12,12 @@ const config = {
   rconPassword: process.env.RCON_PASSWORD || "",
   rconTimeoutMs: Number(process.env.RCON_TIMEOUT_MS || 10000),
   workerId: process.env.SHOP_WORKER_ID || `worker-${Date.now()}`,
+  leaderboardEnabled: process.env.SHOP_LEADERBOARD_ENABLED !== "false",
+  leaderboardPollMs: Number(process.env.SHOP_LEADERBOARD_POLL_MS || 60000),
+  leaderboardCommand: (process.env.SHOP_LEADERBOARD_COMMAND || "cobbledollars leaderboard").replace(/^\//, ""),
 };
+
+let nextLeaderboardAt = 0;
 
 const assertConfig = () => {
   if (!config.siteUrl) throw new Error("Missing SHOP_API_URL, SHOP_SITE_URL, or SITE_URL.");
@@ -267,6 +272,25 @@ const deliver = async (delivery) => {
   }
 };
 
+const updateLeaderboardIfNeeded = async () => {
+  if (!config.leaderboardEnabled) return;
+  if (Date.now() < nextLeaderboardAt) return;
+  nextLeaderboardAt = Date.now() + config.leaderboardPollMs;
+
+  try {
+    const text = await rconCommand(config.leaderboardCommand);
+    if (!String(text || "").trim()) throw new Error("RCON nao retornou texto para o ranking.");
+
+    const result = await requestJson("/api/shop/pending?leaderboard=1", {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    });
+    console.log(`[shop] leaderboard updated: ${result.entries.length} rows`);
+  } catch (error) {
+    console.error(`[shop] leaderboard update failed: ${error.message}`);
+  }
+};
+
 const tick = async () => {
   const payload = await requestJson("/api/shop/pending");
   for (const row of payload.synced || []) {
@@ -280,6 +304,8 @@ const tick = async () => {
       console.error(`[shop] delivery ${delivery.orderId} failed: ${error.message}`);
     }
   }
+
+  await updateLeaderboardIfNeeded();
 };
 
 const main = async () => {
