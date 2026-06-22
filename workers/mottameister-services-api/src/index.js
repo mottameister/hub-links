@@ -554,10 +554,29 @@ const parseLeaderboardText = (text) => String(text || "")
   .map((match) => ({ rank: Number(match[1]), name: sanitizeText(match[2], 32), amount: sanitizeText(match[3].replace(",", ".").toUpperCase(), 20) }))
   .slice(0, 10);
 
+const ensureLeaderboardSnapshotsTable = async (env) => {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS shop_leaderboard_snapshots (
+      environment TEXT PRIMARY KEY,
+      entries TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `).run();
+};
+
 const getLeaderboard = async (env, request) => {
-  const row = await env.DB.prepare("SELECT * FROM shop_leaderboard WHERE environment = ?")
+  await ensureLeaderboardSnapshotsTable(env);
+  let row = await env.DB.prepare("SELECT * FROM shop_leaderboard_snapshots WHERE environment = ?")
     .bind(getEnvironment(env))
     .first();
+
+  if (!row) {
+    row = await env.DB.prepare("SELECT * FROM shop_leaderboard WHERE environment = ?")
+      .bind(getEnvironment(env))
+      .first()
+      .catch(() => null);
+  }
+
   const entries = normalizeEntries(jsonParse(row?.entries, []));
   return json({
     ok: true,
@@ -576,20 +595,15 @@ const handleLeaderboardPost = async (request, env) => {
   const environment = getEnvironment(env);
   const entriesJson = JSON.stringify(entries);
 
-  await env.DB.prepare("DELETE FROM shop_leaderboard WHERE environment = ?").bind(environment).run();
-  try {
-    await env.DB.prepare("INSERT INTO shop_leaderboard (environment, entries, updated_at) VALUES (?, ?, ?)")
-      .bind(environment, entriesJson, updatedAt)
-      .run();
-  } catch (insertError) {
-    try {
-      await env.DB.prepare("INSERT INTO shop_leaderboard (id, environment, entries, updated_at) VALUES (?, ?, ?, ?)")
-        .bind(environment, environment, entriesJson, updatedAt)
-        .run();
-    } catch (fallbackError) {
-      throw new Error(`D1 leaderboard save failed: ${insertError.message}; fallback with id failed: ${fallbackError.message}`);
-    }
-  }
+  await ensureLeaderboardSnapshotsTable(env);
+  await env.DB.prepare(`
+    INSERT INTO shop_leaderboard_snapshots (environment, entries, updated_at)
+    VALUES (?, ?, ?)
+    ON CONFLICT(environment) DO UPDATE SET
+      entries = excluded.entries,
+      updated_at = excluded.updated_at
+  `).bind(environment, entriesJson, updatedAt).run();
+
   return { ok: true, source: "server", updatedAt, entries };
 };
 
