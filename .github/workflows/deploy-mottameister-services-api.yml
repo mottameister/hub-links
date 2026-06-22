@@ -1,0 +1,48 @@
+name: Deploy mottameister services API
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "workers/mottameister-services-api/**"
+      - "scripts/coruja-shop-worker.cjs"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/deploy-mottameister-services-api.yml"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      SHOP_TEST_COUPON: ${{ secrets.SHOP_TEST_COUPON }}
+      SHOP_TEST_COUPON_SKU: ${{ secrets.SHOP_TEST_COUPON_SKU }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Worker syntax
+        run: |
+          node --check workers/mottameister-services-api/src/index.js
+          node --check scripts/coruja-shop-worker.cjs
+
+      - name: Deploy Worker
+        run: npx wrangler deploy --config workers/mottameister-services-api/wrangler.jsonc
+
+      - name: Configure test coupon
+        if: ${{ env.SHOP_TEST_COUPON != '' && env.SHOP_TEST_COUPON_SKU != '' }}
+        run: |
+          printf "%s" "$SHOP_TEST_COUPON" | npx wrangler secret put SHOP_TEST_COUPON --config workers/mottameister-services-api/wrangler.jsonc
+          printf "%s" "$SHOP_TEST_COUPON_SKU" | npx wrangler secret put SHOP_TEST_COUPON_SKU --config workers/mottameister-services-api/wrangler.jsonc
