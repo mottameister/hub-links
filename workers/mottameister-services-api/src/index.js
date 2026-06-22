@@ -574,11 +574,22 @@ const handleLeaderboardPost = async (request, env) => {
   if (!entries.length) throw Object.assign(new Error("Leaderboard vazio ou invalido."), { statusCode: 400 });
   const updatedAt = new Date().toISOString();
   const environment = getEnvironment(env);
-  await env.DB.batch([
-    env.DB.prepare("DELETE FROM shop_leaderboard WHERE environment = ?").bind(environment),
-    env.DB.prepare("INSERT INTO shop_leaderboard (environment, entries, updated_at) VALUES (?, ?, ?)")
-      .bind(environment, JSON.stringify(entries), updatedAt),
-  ]);
+  const entriesJson = JSON.stringify(entries);
+
+  await env.DB.prepare("DELETE FROM shop_leaderboard WHERE environment = ?").bind(environment).run();
+  try {
+    await env.DB.prepare("INSERT INTO shop_leaderboard (environment, entries, updated_at) VALUES (?, ?, ?)")
+      .bind(environment, entriesJson, updatedAt)
+      .run();
+  } catch (insertError) {
+    try {
+      await env.DB.prepare("INSERT INTO shop_leaderboard (id, environment, entries, updated_at) VALUES (?, ?, ?, ?)")
+        .bind(environment, environment, entriesJson, updatedAt)
+        .run();
+    } catch (fallbackError) {
+      throw new Error(`D1 leaderboard save failed: ${insertError.message}; fallback with id failed: ${fallbackError.message}`);
+    }
+  }
   return { ok: true, source: "server", updatedAt, entries };
 };
 

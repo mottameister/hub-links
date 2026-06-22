@@ -35,8 +35,17 @@ const requestJson = async (path, options = {}) => {
       ...(options.headers || {}),
     },
   });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+  const responseText = await response.text();
+  let body = {};
+  try {
+    body = responseText ? JSON.parse(responseText) : {};
+  } catch {
+    body = {};
+  }
+  if (!response.ok) {
+    const detail = body.error || responseText.trim();
+    throw new Error(detail ? `HTTP ${response.status}: ${detail}` : `HTTP ${response.status}`);
+  }
   return body;
 };
 
