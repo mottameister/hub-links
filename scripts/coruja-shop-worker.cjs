@@ -119,6 +119,49 @@ const failDelivery = async (orderId, error) => {
   });
 };
 
+class RetryableDeliveryError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "RetryableDeliveryError";
+  }
+}
+
+const retryDelivery = async (orderId, reason) => {
+  await requestJson("/api/shop/retry-delivery", {
+    method: "POST",
+    body: JSON.stringify({
+      orderId,
+      reason,
+    }),
+  }).catch((retryError) => {
+    console.error(`[shop] could not reset ${orderId} for retry: ${retryError.message}`);
+  });
+};
+
+const retryableOutputPatterns = [
+  /player\s+not\s+found/i,
+  /no\s+such\s+player/i,
+  /unknown\s+player/i,
+  /player\s+is\s+not\s+online/i,
+  /player\s+not\s+online/i,
+  /can't\s+find\s+player/i,
+  /cannot\s+find\s+player/i,
+  /could\s+not\s+find\s+player/i,
+  /target\s+not\s+found/i,
+  /entity\s+not\s+found/i,
+  /no\s+player\s+was\s+found/i,
+  /jogador\s+nao\s+encontrado/i,
+  new RegExp("jogador\\s+n(?:a|\\u00e3)o\\s+encontrado", "i"),
+  /jogador\s+offline/i,
+];
+
+const ensureDeliveryOutputSucceeded = (output, context) => {
+  const text = String(output || "").trim();
+  if (retryableOutputPatterns.some((pattern) => pattern.test(text))) {
+    throw new RetryableDeliveryError(`${context}: jogador offline ou nao encontrado. Output: ${text.slice(0, 220) || "(empty)"}`);
+  }
+};
+
 const parseOpacClaimBonusCommand = (command) => {
   const match = String(command || "").trim().match(/^opac-claims\s+add\s+([A-Za-z0-9_]{3,16})\s+(\d+)$/i);
   if (!match) return null;
@@ -151,10 +194,12 @@ const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks }) =
   }
 
   const currentOutput = await rconCommand(getCommand);
+  ensureDeliveryOutputSucceeded(currentOutput, getCommand);
   const currentClaims = parseOpacBonusClaims(currentOutput);
   const nextClaims = currentClaims + claimChunks;
   const setCommand = `openpac player-config for ${minecraftNick} set ${opacBonusClaimsKey} ${nextClaims}`;
   const setOutput = await rconCommand(setCommand);
+  ensureDeliveryOutputSucceeded(setOutput, setCommand);
   return [
     `OPAC bonus claims: ${currentClaims} + ${claimChunks} = ${nextClaims}`,
     `get: ${currentOutput || "Command executed."}`,
@@ -170,7 +215,10 @@ const executeDeliveryCommand = async (delivery, command) => {
 
   return config.dryRun
     ? `dry-run: ${command}`
-    : rconCommand(command);
+    : rconCommand(command).then((output) => {
+      ensureDeliveryOutputSucceeded(output, command);
+      return output;
+    });
 };
 
 const deliver = async (delivery) => {
@@ -192,6 +240,11 @@ const deliver = async (delivery) => {
   try {
     output = await executeDeliveryCommand(delivery, command);
   } catch (error) {
+    if (error instanceof RetryableDeliveryError) {
+      await retryDelivery(delivery.orderId, error.message);
+      console.warn(`[shop] delivery ${delivery.orderId} will retry: ${error.message}`);
+      return;
+    }
     await failDelivery(delivery.orderId, error);
     throw error;
   }

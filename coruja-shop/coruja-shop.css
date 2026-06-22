@@ -62,7 +62,6 @@ a { color: inherit; }
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 88px;
-  padding-right: 176px;
 }
 
 .back,
@@ -634,7 +633,6 @@ html[data-theme="light"] .field input {
 
   .topbar {
     margin-bottom: 42px;
-    padding-right: 176px;
   }
 
   .hero { min-height: 0; }
@@ -663,7 +661,6 @@ html[data-theme="light"] .field input {
     align-items: stretch;
     flex-direction: column;
     margin-bottom: 26px;
-    padding-right: 0;
   }
 
   .hero-copy,

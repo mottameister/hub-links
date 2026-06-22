@@ -85,7 +85,7 @@
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
 
-  const renderLeaderboard = (entries, stateText = "snapshot") => {
+  const renderLeaderboard = (entries, stateText = "prévia") => {
     if (!leaderboardList) return;
     leaderboardList.innerHTML = entries
       .slice(0, 10)
@@ -104,7 +104,7 @@
   };
 
   const loadLeaderboard = async () => {
-    renderLeaderboard(fallbackLeaderboard, "snapshot");
+    renderLeaderboard(fallbackLeaderboard, "prévia");
 
     try {
       const response = await fetch(`${apiBase}/api/shop/pending?leaderboard=1`, { headers: { Accept: "application/json,text/plain" } });
@@ -119,7 +119,7 @@
           : parseLeaderboardText(String(payload.text || payload));
 
       if (entries.length) {
-        renderLeaderboard(entries, payload.source === "server" ? "ao vivo" : "snapshot");
+        renderLeaderboard(entries, payload.source === "server" ? "ao vivo" : "prévia");
       }
     } catch {}
   };
@@ -129,7 +129,7 @@
     const coupon = couponInput ? couponInput.value.trim() : "";
 
     if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) {
-      setStatus("Use seu nick original com 3 a 16 letras, numeros ou underline.", "error");
+      setStatus("Use seu nick original com 3 a 16 letras, números ou underline.", "error");
       nickInput.focus();
       return;
     }
@@ -151,19 +151,19 @@
       window.clearTimeout(timeoutId);
 
       if (payload.couponApplied) {
-        setStatus("Cupom aplicado. Pedido entrou na fila de entrega do servidor.", "ok");
+        setStatus("Cupom aplicado. O pedido entrou na fila de entrega do servidor.", "ok");
         setLoading(false);
         return;
       }
 
       if (!response.ok || !payload.checkoutUrl) {
-        throw new Error(payload.error || "Nao foi possivel iniciar o pagamento.");
+        throw new Error(payload.error || "Não foi possível iniciar o pagamento.");
       }
 
       window.location.href = payload.checkoutUrl;
     } catch (error) {
       window.clearTimeout(timeoutId);
-      setStatus(error.name === "AbortError" ? "A conexao demorou demais. Atualize a pagina e tente de novo." : error.message || "Nao foi possivel iniciar o pagamento agora.", "error");
+      setStatus(error.name === "AbortError" ? "A conexão demorou demais. Atualize a página e tente de novo." : error.message || "Não foi possível iniciar o pagamento agora.", "error");
       setLoading(false);
     }
   };

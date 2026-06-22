@@ -185,6 +185,13 @@ const requireShopAdminAuth = async (request, env) => {
   if (!(await isSafeEqual(adminSecret(request), expected))) throw Object.assign(new Error("Unauthorized."), { statusCode: 401 });
 };
 
+const requireRetryAuth = async (request, env) => {
+  const expectedAdmin = env.SHOP_ADMIN_TOKEN || env.CORUJA_CUP_ADMIN_TOKEN || "";
+  const adminOk = expectedAdmin && await isSafeEqual(adminSecret(request), expectedAdmin);
+  const deliveryOk = env.SHOP_DELIVERY_SECRET && await isSafeEqual(deliverySecret(request), env.SHOP_DELIVERY_SECRET);
+  if (!adminOk && !deliveryOk) throw Object.assign(new Error("Unauthorized."), { statusCode: 401 });
+};
+
 const mercadoPagoFetch = async (env, path, options = {}) => {
   if (!env.MERCADOPAGO_ACCESS_TOKEN) throw Object.assign(new Error("Mercado Pago ainda nao esta configurado."), { statusCode: 503 });
   const response = await fetch(`https://api.mercadopago.com${path}`, {
@@ -662,16 +669,20 @@ const handleFailed = async (request, env) => {
 };
 
 const handleRetryDelivery = async (request, env) => {
-  await requireShopAdminAuth(request, env);
   const payload = await parseBody(request);
+  if (payload.force) {
+    await requireShopAdminAuth(request, env);
+  } else {
+    await requireRetryAuth(request, env);
+  }
   const orderId = sanitizeText(payload.orderId, 80);
   if (!orderId) throw Object.assign(new Error("Pedido invalido."), { statusCode: 400 });
   const delivery = deliveryFromRow(await env.DB.prepare("SELECT * FROM shop_deliveries WHERE environment = ? AND order_id = ?")
     .bind(getEnvironment(env), orderId).first());
   if (!delivery) throw Object.assign(new Error("Entrega nao encontrada."), { statusCode: 404 });
-  if (delivery.status === "delivered") throw Object.assign(new Error("Entrega ja foi concluida."), { statusCode: 409 });
-  await env.DB.prepare("UPDATE shop_deliveries SET status = ?, claimed_at = ?, worker_id = ?, delivery_log = ? WHERE environment = ? AND order_id = ?")
-    .bind("paid_pending_delivery", "", "", sanitizeText(payload.reason || "retry requested", 500), getEnvironment(env), orderId)
+  if (delivery.status === "delivered" && !payload.force) throw Object.assign(new Error("Entrega ja foi concluida."), { statusCode: 409 });
+  await env.DB.prepare("UPDATE shop_deliveries SET status = ?, claimed_at = ?, worker_id = ?, delivered_at = ?, delivery_log = ? WHERE environment = ? AND order_id = ?")
+    .bind("paid_pending_delivery", "", "", "", sanitizeText(payload.reason || "retry requested", 500), getEnvironment(env), orderId)
     .run();
   await updateOrder(env, orderId, { status: "paid_pending_delivery" });
   return { ok: true, delivery: { id: delivery.id, status: "paid_pending_delivery" } };

@@ -321,6 +321,7 @@
             <td>
               <span class="pill ${pillClass(deliveryStatus)}">${escapeHtml(deliveryStatus || "-")}</span><br>
               ${escapeHtml(formatDate(order.deliveredAt))}
+              ${deliveryStatus ? `<br><button class="small secondary" type="button" data-retry-order="${escapeHtml(order.id)}" data-delivery-status="${escapeHtml(deliveryStatus)}">Reentregar</button>` : ""}
             </td>
             <td><code>${escapeHtml(order.deliveryCommand || "-")}</code></td>
             <td><code>${escapeHtml(order.id)}</code></td>
@@ -390,6 +391,48 @@
         await loadOrders();
       } catch (error) {
         showStatus(error.message || "Nao foi possivel sincronizar pagamento.", "error");
+        button.disabled = false;
+      }
+    };
+
+    const retryDelivery = async (orderId, deliveryStatus, button) => {
+      const token = tokenInput.value.trim();
+      if (!token) {
+        showStatus("Digite o token admin.", "error");
+        tokenInput.focus();
+        return;
+      }
+
+      const force = deliveryStatus === "delivered";
+      if (force) {
+        const ok = window.confirm("Essa entrega já está marcada como entregue. Reabrir mesmo assim?");
+        if (!ok) return;
+      }
+
+      button.disabled = true;
+      showStatus("Reabrindo entrega para nova tentativa...");
+
+      try {
+        const response = await fetch(`${apiBase}/api/shop/retry-delivery`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderId,
+            force,
+            reason: force ? "admin forced retry after false positive delivery" : "admin requested retry",
+          }),
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || "Não foi possível reabrir a entrega.");
+        }
+        showStatus("Entrega reaberta para nova tentativa.", "ok");
+        await loadOrders();
+      } catch (error) {
+        showStatus(error.message || "Não foi possível reabrir a entrega.", "error");
         button.disabled = false;
       }
     };
@@ -472,9 +515,16 @@
     archiveTestsButton.addEventListener("click", archiveTests);
     showAttemptsInput.addEventListener("change", () => render(currentOrders));
     rowsBox.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-sync-order]");
-      if (!button) return;
-      syncPayment(button.dataset.syncOrder, button);
+      const syncButton = event.target.closest("[data-sync-order]");
+      if (syncButton) {
+        syncPayment(syncButton.dataset.syncOrder, syncButton);
+        return;
+      }
+
+      const retryButton = event.target.closest("[data-retry-order]");
+      if (retryButton) {
+        retryDelivery(retryButton.dataset.retryOrder, retryButton.dataset.deliveryStatus, retryButton);
+      }
     });
     tokenInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") loadOrders();
