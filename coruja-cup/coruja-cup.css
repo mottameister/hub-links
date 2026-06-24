@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
 :root {
   --bg: #090711;
   --panel: rgba(255, 255, 255, .078);
@@ -448,5 +450,357 @@ html[data-theme="light"] .message.is-success {
   .event-pill,
   .back {
     justify-content: center;
+  }
+}
+
+/* 2026 visual system */
+html {
+  background: #08070d;
+}
+
+body.coruja-cup-page,
+html[data-theme="dark"] body.coruja-cup-page,
+html[data-theme="light"] body.coruja-cup-page {
+  min-width: 320px;
+  color: #f5f2fb !important;
+  background:
+    radial-gradient(circle at 70% 0%, rgba(124, 58, 237, .14), transparent 32%),
+    linear-gradient(180deg, rgba(8, 7, 13, .2), #08070d 65%, #0a0810 100%) !important;
+  font-family: 'DM Sans', system-ui, sans-serif;
+}
+
+body.coruja-cup-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(8, 7, 13, .2), rgba(8, 7, 13, .66) 48%, #08070d 100%),
+    radial-gradient(circle at 15% 18%, rgba(255, 79, 216, .08), transparent 30%);
+}
+
+#coruja-cup-rays {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: .82;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 70%, transparent 100%);
+}
+
+.coruja-cup-page .page {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 40px));
+  padding: 0 0 54px;
+}
+
+.coruja-cup-page .topbar {
+  min-height: 90px;
+  margin: 0 0 58px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.coruja-cup-page .back,
+.coruja-cup-page .event-pill {
+  min-height: 42px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.coruja-cup-page .back {
+  border-color: rgba(255, 255, 255, .1);
+  color: #d1cad9 !important;
+  background: rgba(13, 11, 22, .62);
+  backdrop-filter: blur(16px);
+}
+
+.coruja-cup-page .event-pill {
+  border: 1px solid rgba(255, 79, 216, .18);
+  color: #ff8be6;
+  background: rgba(255, 79, 216, .07);
+}
+
+.coruja-cup-page .hero {
+  grid-template-columns: minmax(0, 1.12fr) minmax(350px, .66fr);
+  gap: 16px;
+}
+
+.coruja-cup-page .hero-copy,
+.coruja-cup-page .form-panel,
+.coruja-cup-page .panel,
+html[data-theme="light"] .coruja-cup-page .hero-copy,
+html[data-theme="light"] .coruja-cup-page .form-panel,
+html[data-theme="light"] .coruja-cup-page .panel {
+  border: 1px solid rgba(255, 255, 255, .1) !important;
+  color: #f5f2fb !important;
+  background: rgba(13, 11, 22, .76) !important;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, .34) !important;
+  backdrop-filter: blur(20px);
+}
+
+.coruja-cup-page .hero-copy {
+  min-height: 690px;
+  justify-content: center;
+  padding: clamp(38px, 6vw, 76px);
+  border-radius: 30px;
+  background:
+    linear-gradient(145deg, rgba(124, 58, 237, .13), transparent 48%),
+    rgba(10, 8, 17, .72) !important;
+}
+
+.coruja-cup-page .hero-copy::after {
+  content: "";
+  position: absolute;
+  top: 88px;
+  right: 70px;
+  width: 128px;
+  height: 128px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 35%, #ff8be6 0 3%, transparent 4%),
+    radial-gradient(circle at 50% 50%, rgba(255, 79, 216, .22), rgba(124, 58, 237, .06) 55%, transparent 70%);
+  box-shadow: 0 0 80px rgba(255, 79, 216, .18);
+}
+
+.coruja-cup-page .hero-copy > * {
+  position: relative;
+  z-index: 1;
+}
+
+.coruja-cup-page .kicker {
+  display: inline-flex;
+  align-items: center;
+  color: #a69ead;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.coruja-cup-page .kicker::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-right: 9px;
+  border-radius: 50%;
+  background: #ff4fd8;
+  box-shadow: 0 0 13px rgba(255, 79, 216, .75);
+}
+
+.coruja-cup-page h1,
+.coruja-cup-page h2,
+.coruja-cup-page strong {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.coruja-cup-page h1 {
+  max-width: 760px;
+  margin: 22px 0 28px;
+  font-size: clamp(68px, 10vw, 132px);
+  font-weight: 600;
+  line-height: .84;
+  letter-spacing: -.075em;
+}
+
+.coruja-cup-page .lead,
+html[data-theme="light"] .coruja-cup-page .lead {
+  max-width: 650px;
+  color: #aaa3b4 !important;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.coruja-cup-page .quick-grid {
+  gap: 8px;
+  margin-top: 56px;
+}
+
+.coruja-cup-page .quick,
+.coruja-cup-page .stat,
+html[data-theme="light"] .coruja-cup-page .quick,
+html[data-theme="light"] .coruja-cup-page .stat {
+  border-color: rgba(255, 255, 255, .09) !important;
+  color: #f5f2fb !important;
+  background: rgba(255, 255, 255, .035) !important;
+}
+
+.coruja-cup-page .quick {
+  min-height: 110px;
+  padding: 17px;
+  border-radius: 18px;
+}
+
+.coruja-cup-page .quick strong,
+.coruja-cup-page .stat strong {
+  font-size: 19px;
+  letter-spacing: -.035em;
+}
+
+.coruja-cup-page .quick span,
+.coruja-cup-page .stat span,
+html[data-theme="light"] .coruja-cup-page .quick span,
+html[data-theme="light"] .coruja-cup-page .stat span {
+  color: #91899b !important;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.coruja-cup-page .form-panel {
+  padding: 24px;
+  border-radius: 30px;
+}
+
+.coruja-cup-page .spots {
+  gap: 7px;
+  margin-bottom: 28px;
+}
+
+.coruja-cup-page .stat {
+  min-height: 88px;
+  padding: 14px 11px;
+  text-align: center;
+}
+
+.coruja-cup-page .form-title {
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -.05em;
+}
+
+.coruja-cup-page .form-copy,
+html[data-theme="light"] .coruja-cup-page .form-copy {
+  margin-bottom: 22px;
+  color: #91899b !important;
+  font-size: 13px;
+}
+
+.coruja-cup-page label,
+html[data-theme="light"] .coruja-cup-page label {
+  color: #cfc7d8 !important;
+  font-size: 11px;
+  letter-spacing: .04em;
+}
+
+.coruja-cup-page input,
+.coruja-cup-page textarea,
+html[data-theme="light"] .coruja-cup-page input,
+html[data-theme="light"] .coruja-cup-page textarea {
+  border-color: rgba(255, 255, 255, .1) !important;
+  border-radius: 12px;
+  color: #f5f2fb !important;
+  background: rgba(255, 255, 255, .045) !important;
+}
+
+.coruja-cup-page input:focus,
+.coruja-cup-page textarea:focus {
+  border-color: rgba(255, 79, 216, .52) !important;
+  box-shadow: 0 0 0 3px rgba(255, 79, 216, .1);
+}
+
+.coruja-cup-page .check,
+html[data-theme="light"] .coruja-cup-page .check {
+  color: #91899b !important;
+  font-weight: 500;
+}
+
+.coruja-cup-page .button,
+.coruja-cup-page .button:hover,
+.coruja-cup-page .button:focus-visible {
+  min-height: 52px;
+  border-radius: 13px;
+  color: #100d16 !important;
+  background: #f5f2fb;
+  box-shadow: 0 14px 40px rgba(255, 255, 255, .08);
+}
+
+.coruja-cup-page .content {
+  gap: 14px;
+  margin-top: 76px;
+  padding-top: 76px;
+  border-top: 1px solid rgba(255, 255, 255, .075);
+}
+
+.coruja-cup-page .panel {
+  padding: 28px;
+  border-radius: 24px;
+}
+
+.coruja-cup-page .panel h2 {
+  margin-bottom: 22px;
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -.055em;
+}
+
+.coruja-cup-page .rule-list {
+  gap: 8px;
+}
+
+.coruja-cup-page .rule-list li,
+html[data-theme="light"] .coruja-cup-page .rule-list li {
+  position: relative;
+  padding: 14px 14px 14px 38px;
+  border: 1px solid rgba(255, 255, 255, .07) !important;
+  border-radius: 14px;
+  color: #aaa3b4 !important;
+  background: rgba(255, 255, 255, .025) !important;
+  font-size: 13px;
+}
+
+.coruja-cup-page .rule-list li::before {
+  content: "";
+  position: absolute;
+  top: 20px;
+  left: 17px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff4fd8;
+  box-shadow: 0 0 11px rgba(255, 79, 216, .65);
+}
+
+@media (max-width: 900px) {
+  .coruja-cup-page .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .coruja-cup-page .hero-copy {
+    min-height: 580px;
+  }
+}
+
+@media (max-width: 580px) {
+  .coruja-cup-page .page {
+    width: min(100% - 22px, 720px);
+  }
+
+  .coruja-cup-page .topbar {
+    margin-bottom: 28px;
+  }
+
+  .coruja-cup-page .hero-copy {
+    min-height: 520px;
+    padding: 30px 22px;
+  }
+
+  .coruja-cup-page h1 {
+    font-size: clamp(58px, 22vw, 88px);
+  }
+
+  .coruja-cup-page .hero-copy::after {
+    top: 34px;
+    right: 24px;
+    width: 78px;
+    height: 78px;
+  }
+
+  .coruja-cup-page .content {
+    margin-top: 44px;
+    padding-top: 44px;
   }
 }

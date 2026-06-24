@@ -9,7 +9,10 @@ const staticEntries = [
   'coruja-shop/admin',
   'coruja-shop/coruja-shop.js',
   'coruja-shop/coruja-shop.css',
-  'coruja-cup',
+  'coruja-cup/admin',
+  'coruja-cup/controls.js',
+  'coruja-cup/coruja-cup.js',
+  'coruja-cup/coruja-cup.css',
   'prompts',
   'propostas',
   'honey',
@@ -49,7 +52,8 @@ export default defineConfig({
       input: {
         main: resolve('index.html'),
         mediaKit: resolve('media-kit/index.html'),
-        corujaShop: resolve('coruja-shop/index.html')
+        corujaShop: resolve('coruja-shop/index.html'),
+        corujaCup: resolve('coruja-cup/index.html')
       }
     }
   }
