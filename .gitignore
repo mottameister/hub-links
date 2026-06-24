@@ -3,4 +3,5 @@
 !.env.example
 !.env.worker.example
 node_modules/
+dist/
 npm-debug.log*

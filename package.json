@@ -1,9 +1,19 @@
 {
   "private": true,
   "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
     "shop:worker": "node scripts/coruja-shop-worker.cjs"
   },
+  "dependencies": {
+    "ogl": "^1.0.11",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
   "devDependencies": {
+    "@vitejs/plugin-react": "^4.4.1",
+    "vite": "^6.3.5",
     "wrangler": "^4.103.0"
   }
 }
