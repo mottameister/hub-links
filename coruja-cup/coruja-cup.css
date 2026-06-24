@@ -708,9 +708,12 @@ html[data-theme="light"] .coruja-cup-page .check {
   font-weight: 500;
 }
 
-.coruja-cup-page .button,
-.coruja-cup-page .button:hover,
-.coruja-cup-page .button:focus-visible {
+html[data-theme] body.coruja-cup-page .button,
+html[data-theme] body.coruja-cup-page .button:visited,
+html[data-theme] body.coruja-cup-page .button:hover,
+html[data-theme] body.coruja-cup-page .button:focus-visible,
+html[data-theme] body.coruja-cup-page .button:active,
+html[data-theme] body.coruja-cup-page .button[disabled] {
   min-height: 52px;
   border-radius: 13px;
   color: #100d16 !important;
