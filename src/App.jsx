@@ -127,7 +127,7 @@ const modalContent = {
     links: [
       ['Enviar email', 'contato@mottameister.xyz', 'mailto:contato@mottameister.xyz'],
       ['Abrir propostas', 'Área reservada para propostas comerciais.', '/propostas/'],
-      ['Media kit', 'Números, formatos e possibilidades.', '/media-kit/']
+      ['Media kit', 'Números, formatos e possibilidades.', 'https://www.mottameister.xyz/media-kit/']
     ]
   },
   server: {
@@ -274,7 +274,6 @@ export default function App() {
               <h2>Toca da Coruja</h2>
               <p>Servidor Cobblemon, campanha própria e uma comunidade que já virou família.</p>
             </div>
-            <span className="section-number">01 / TOCA</span>
           </div>
 
           <div className="toca-grid">
