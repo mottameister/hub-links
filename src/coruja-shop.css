@@ -190,6 +190,13 @@ h1 {
   box-shadow: 0 12px 40px rgba(255, 255, 255, .08);
 }
 
+.coruja-shop-page .button:not(.secondary),
+.coruja-shop-page .button:not(.secondary):visited,
+.coruja-shop-page .button:not(.secondary):hover,
+.coruja-shop-page .button:not(.secondary):focus-visible {
+  color: #100d16 !important;
+}
+
 .button.secondary {
   border: 1px solid rgba(255, 255, 255, .1);
   color: #d1cad9;
