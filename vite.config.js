@@ -5,7 +5,10 @@ import react from '@vitejs/plugin-react';
 
 const staticEntries = [
   'status',
-  'coruja-shop',
+  'coruja-shop/assets',
+  'coruja-shop/admin',
+  'coruja-shop/coruja-shop.js',
+  'coruja-shop/coruja-shop.css',
   'coruja-cup',
   'prompts',
   'propostas',
@@ -45,7 +48,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve('index.html'),
-        mediaKit: resolve('media-kit/index.html')
+        mediaKit: resolve('media-kit/index.html'),
+        corujaShop: resolve('coruja-shop/index.html')
       }
     }
   }

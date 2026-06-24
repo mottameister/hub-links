@@ -7,9 +7,13 @@
     "shop:worker": "node scripts/coruja-shop-worker.cjs"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.6.1",
+    "@react-three/postprocessing": "^3.0.4",
     "ogl": "^1.0.11",
+    "postprocessing": "^6.39.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.4.1",
