@@ -9,7 +9,6 @@ const staticEntries = [
   'coruja-cup',
   'prompts',
   'propostas',
-  'media-kit',
   'honey',
   'profile.jpeg',
   'preview.png',
@@ -41,5 +40,13 @@ function copyLegacyStaticRoutes() {
 }
 
 export default defineConfig({
-  plugins: [react(), copyLegacyStaticRoutes()]
+  plugins: [react(), copyLegacyStaticRoutes()],
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve('index.html'),
+        mediaKit: resolve('media-kit/index.html')
+      }
+    }
+  }
 });
