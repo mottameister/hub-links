@@ -201,9 +201,9 @@ const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks }) =
     throw new Error(`Invalid claim chunk amount for ${delivery.orderId}: ${claimChunks}`);
   }
 
-  const getCommand = `openpac player-config for ${minecraftNick} get ${opacBonusClaimsKey}`;
+  const getCommand = `execute as ${minecraftNick} run openpac player-config get ${opacBonusClaimsKey}`;
   if (config.dryRun) {
-    const setCommand = `openpac player-config for ${minecraftNick} set ${opacBonusClaimsKey} ${claimChunks}`;
+    const setCommand = `execute as ${minecraftNick} run openpac player-config set ${opacBonusClaimsKey} ${claimChunks}`;
     return `dry-run: ${getCommand}\ndry-run: ${setCommand}`;
   }
 
@@ -211,7 +211,7 @@ const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks }) =
   ensureDeliveryOutputSucceeded(currentOutput, getCommand);
   const currentClaims = parseOpacBonusClaims(currentOutput);
   const nextClaims = currentClaims + claimChunks;
-  const setCommand = `openpac player-config for ${minecraftNick} set ${opacBonusClaimsKey} ${nextClaims}`;
+  const setCommand = `execute as ${minecraftNick} run openpac player-config set ${opacBonusClaimsKey} ${nextClaims}`;
   const setOutput = await rconCommand(setCommand);
   ensureDeliveryOutputSucceeded(setOutput, setCommand);
   return [
