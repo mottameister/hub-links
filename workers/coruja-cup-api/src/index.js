@@ -1,5 +1,5 @@
-const capacity = 9;
-const defaultEventId = "coruja-cup-2026-06-28";
+const defaultEventId = "coruja-cup-next";
+const eventCapacities = {};
 const legacyEventIds = ["poison-edition-001"];
 
 const allowedOrigins = new Set([
@@ -102,6 +102,8 @@ const getCounts = (registrations) => ({
   total: registrations.length,
 });
 
+const capacityFor = (eventId) => eventCapacities[eventId] || Number.POSITIVE_INFINITY;
+
 const isAuthorized = (request, env) => {
   const expected = env.CORUJA_CUP_ADMIN_TOKEN;
   if (!expected) return false;
@@ -165,13 +167,13 @@ const handleRegister = async (request, env) => {
 
   if (duplicate) {
     return json(request, {
-      error: "Voce ja esta inscrito ou na lista de espera.",
+      error: "Voce ja esta na lista de interessados.",
       status: duplicate.status,
     }, 409);
   }
 
   const counts = getCounts(registrations);
-  const status = counts.confirmed >= capacity ? "waitlist" : "confirmed";
+  const status = counts.confirmed >= capacityFor(eventId) ? "waitlist" : "confirmed";
   const id = crypto.randomUUID();
   const createdAt = new Date().toISOString();
   const registration = {

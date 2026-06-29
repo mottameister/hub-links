@@ -48,8 +48,8 @@ const tocaLinks = [
   },
   {
     title: 'Coruja Cup',
-    description: 'O torneio quinzenal de VGC da Toca.',
-    meta: '28 JUN · 9 VAGAS',
+    description: 'Inscrições abertas para a próxima edição.',
+    meta: 'VAGAS LIMITADAS',
     icon: '♕',
     href: '/coruja-cup/',
     tone: 'violet'

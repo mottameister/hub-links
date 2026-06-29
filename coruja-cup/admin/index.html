@@ -18,7 +18,7 @@
     <section class="panel">
       <span class="kicker">Organização</span>
       <h1 style="font-size: clamp(42px, 7vw, 72px);">Inscrições</h1>
-      <p class="lead">Use o token admin para carregar os inscritos, acompanhar confirmados/lista de espera e exportar CSV.</p>
+      <p class="lead">Use o token admin para carregar interessados da próxima edição e exportar CSV.</p>
 
       <div class="field" style="max-width: 520px; margin-top: 22px;">
         <label for="adminToken">Token admin</label>
@@ -48,7 +48,7 @@
 
   <script src="/coruja-cup/controls.js?v=20260613-1"></script>
   <script>
-    const eventId = "coruja-cup-2026-06-28";
+    const eventId = "coruja-cup-next";
     const apiBaseUrl = "https://coruja-cup-api.mottameister.xyz";
     const tokenInput = document.querySelector("#adminToken");
     const message = document.querySelector("[data-message]");

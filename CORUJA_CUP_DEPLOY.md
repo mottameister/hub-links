@@ -16,15 +16,14 @@ Recursos:
 - Worker: `coruja-cup-api`
 - KV binding: `CORUJA_CUP`
 - Secret: `CORUJA_CUP_ADMIN_TOKEN`
-- Evento atual: `coruja-cup-2026-06-28`
-- Capacidade: 9 vagas
+- Evento atual: `coruja-cup-next`
+- Capacidade: a definir
 
 Rotas usadas:
 
-- `GET /api/coruja-cup/status?eventId=coruja-cup-2026-06-28`
 - `POST /api/coruja-cup/register`
-- `GET /api/coruja-cup/registrations?eventId=coruja-cup-2026-06-28`
-- `GET /api/coruja-cup/registrations?eventId=coruja-cup-2026-06-28&format=csv`
+- `GET /api/coruja-cup/registrations?eventId=coruja-cup-next`
+- `GET /api/coruja-cup/registrations?eventId=coruja-cup-next&format=csv`
 
 O CSV e exportado pelo admin usando o token via header `Authorization: Bearer`.
 
