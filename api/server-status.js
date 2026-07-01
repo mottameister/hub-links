@@ -1,4 +1,4 @@
-const SERVER_HOST = "cbmn.mottameister.xyz";
+const SERVER_HOST = "enx-cirion-71.enx.host:10079";
 const STATUS_SOURCE = `https://api.mcstatus.io/v2/status/java/${SERVER_HOST}?timeout=5`;
 
 function compactUuid(uuid) {
