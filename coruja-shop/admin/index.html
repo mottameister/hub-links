@@ -284,7 +284,10 @@
     );
 
     const productDetail = (order) => {
-      if (String(order.sku || "").startsWith("claims_")) return "Pacote de Claims";
+      if (String(order.sku || "").startsWith("claims_")) {
+        const claimChunks = Number(order.paymentValidation?.claimChunks || String(order.deliveryCommand || "").match(/\s(\d+)$/)?.[1] || 0);
+        return claimChunks > 0 ? `${claimChunks.toLocaleString("pt-BR")} Claims` : "Pacote de Claims";
+      }
       const cobbleDollars = Number(order.cobbleDollars || 0);
       if (cobbleDollars > 0) return `${cobbleDollars.toLocaleString("pt-BR")} CobbleDollars`;
       return "-";

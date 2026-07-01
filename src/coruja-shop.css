@@ -248,6 +248,17 @@ h1 {
   line-height: 1.55;
 }
 
+.shop-reminder {
+  margin-top: 14px;
+  border: 1px solid rgba(102, 242, 139, .22);
+  border-radius: 14px;
+  background: rgba(102, 242, 139, .08);
+  color: #d8ffe4 !important;
+  font-size: 13px;
+  font-weight: 760;
+  padding: 11px 13px;
+}
+
 .price-panel {
   padding: 22px;
 }
@@ -269,7 +280,9 @@ h1 {
 }
 
 .field input,
-html[data-theme="light"] .field input {
+.field select,
+html[data-theme="light"] .field input,
+html[data-theme="light"] .field select {
   min-height: 50px;
   border-color: rgba(255, 255, 255, .1);
   border-radius: 14px;
@@ -278,7 +291,25 @@ html[data-theme="light"] .field input {
   font-weight: 600;
 }
 
-.field input:focus {
+.field select {
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, var(--gold) 50%) right 18px center / 7px 7px no-repeat,
+    linear-gradient(135deg, var(--gold) 50%, transparent 50%) right 13px center / 7px 7px no-repeat,
+    rgba(8, 7, 13, .7);
+}
+
+.quantity-field span {
+  display: block;
+  margin-top: 7px;
+  color: #9992a3;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.field input:focus,
+.field select:focus {
   border-color: rgba(181, 23, 255, .7);
   box-shadow: 0 0 0 3px rgba(181, 23, 255, .14);
 }

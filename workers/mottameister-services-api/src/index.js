@@ -1,4 +1,5 @@
 const defaultEnvironment = "test";
+const maxCheckoutQuantity = 10;
 
 const products = {
   cobbledollars_1m: {
@@ -113,6 +114,45 @@ const sanitizeMinecraftNick = (value) => {
 const getEnvironment = (env) => sanitizeText(env.SHOP_ENV || defaultEnvironment, 24) || defaultEnvironment;
 
 const getProduct = (sku) => products[String(sku || "")] || null;
+
+const parseCheckoutQuantity = (value) => {
+  const quantity = Number(value ?? 1);
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > maxCheckoutQuantity) {
+    throw Object.assign(new Error(`Quantidade deve ser entre 1 e ${maxCheckoutQuantity}.`), { statusCode: 400 });
+  }
+  return quantity;
+};
+
+const getOrderQuantity = (order, product) => {
+  const savedQuantity = Number(order.paymentValidation?.quantity || 0);
+  if (Number.isInteger(savedQuantity) && savedQuantity > 0) return savedQuantity;
+
+  const unitAmount = Number(product?.amount || 0);
+  const orderAmount = Number(order.amount || 0);
+  const amountQuantity = unitAmount > 0 ? orderAmount / unitAmount : 1;
+  if (Number.isInteger(amountQuantity) && amountQuantity > 0) return amountQuantity;
+
+  return 1;
+};
+
+const getOrderClaimChunks = (order, product) => {
+  const savedChunks = Number(order.paymentValidation?.claimChunks || 0);
+  if (Number.isInteger(savedChunks) && savedChunks > 0) return savedChunks;
+  return Number(product?.claimChunks || 0) * getOrderQuantity(order, product);
+};
+
+const getOrderDeliveryCommand = (order, product) => {
+  if (product.type === "cobbledollars") {
+    const totalCobbleDollars = Number(order.cobbleDollars || product.cobbleDollars || 0);
+    return `cobbledollars give ${order.minecraftNick} ${totalCobbleDollars}`;
+  }
+
+  if (product.type === "opac_claim_bonus") {
+    return `opac-claims add ${order.minecraftNick} ${getOrderClaimChunks(order, product)}`;
+  }
+
+  return product.command.replace("{nick}", order.minecraftNick);
+};
 
 const normalizeCoupon = (value) => sanitizeText(value, 80).toUpperCase();
 
@@ -334,21 +374,32 @@ const deliveryFromRow = (row) => row && ({
 const createOrder = async ({ env, request, payload }) => {
   const product = getProduct(payload.sku);
   if (!product) throw Object.assign(new Error("Produto invalido."), { statusCode: 400 });
+  const quantity = parseCheckoutQuantity(payload.quantity);
   const cleanNick = sanitizeMinecraftNick(payload.minecraftNick);
   if (!cleanNick) throw Object.assign(new Error("Nick do Minecraft invalido."), { statusCode: 400 });
   const profile = await validateMinecraftProfile(cleanNick);
   const now = new Date().toISOString();
+  const totalAmount = product.amount * quantity;
+  const totalCobbleDollars = (product.cobbleDollars || 0) * quantity;
+  const totalClaimChunks = (product.claimChunks || 0) * quantity;
   const order = {
     id: crypto.randomUUID(),
     status: "created",
     sku: product.sku,
-    productTitle: product.title,
-    amount: product.amount,
+    productTitle: quantity > 1 ? `${product.title} x${quantity}` : product.title,
+    amount: totalAmount,
     currency: product.currency,
-    cobbleDollars: product.cobbleDollars || 0,
+    cobbleDollars: totalCobbleDollars,
     minecraftNick: profile.name || cleanNick,
     minecraftUuid: profile.id,
     discordName: sanitizeText(payload.discordName, 80),
+    paymentValidation: {
+      quantity,
+      unitAmount: product.amount,
+      unitCobbleDollars: product.cobbleDollars || 0,
+      unitClaimChunks: product.claimChunks || 0,
+      claimChunks: totalClaimChunks,
+    },
     createdAt: now,
     updatedAt: now,
     requester: {
@@ -381,6 +432,8 @@ const updateOrder = async (env, orderId, patch) => {
 
 const createPreference = async ({ env, request, order }) => {
   const product = getProduct(order.sku);
+  const quantity = getOrderQuantity(order, product);
+  const claimChunks = getOrderClaimChunks(order, product);
   const siteUrl = sanitizeText(env.SITE_URL, 180).replace(/\/+$/, "") || "https://mottameister.xyz";
   const apiUrl = sanitizeText(env.API_URL, 180).replace(/\/+$/, "") || new URL(request.url).origin;
   return mercadoPagoFetch(env, "/checkout/preferences", {
@@ -400,7 +453,9 @@ const createPreference = async ({ env, request, order }) => {
         product_type: product.type,
         minecraft_nick: order.minecraftNick,
         cobbledollars: order.cobbleDollars,
-        claim_chunks: product.claimChunks || 0,
+        claim_chunks: claimChunks,
+        quantity,
+        unit_amount: product.amount,
       },
       items: [{
         id: product.sku,
@@ -408,7 +463,7 @@ const createPreference = async ({ env, request, order }) => {
         description: product.type === "opac_claim_bonus"
           ? `Claims de chunks para ${order.minecraftNick} na Toca da Coruja`
           : `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`,
-        quantity: 1,
+        quantity,
         unit_price: product.amount,
         currency_id: product.currency,
       }],
@@ -434,7 +489,7 @@ const createDeliveryIfNeeded = async ({ env, order, payment }) => {
     sku: order.sku,
     minecraftNick: order.minecraftNick,
     cobbleDollars: order.cobbleDollars || 0,
-    command: product.command.replace("{nick}", order.minecraftNick),
+    command: getOrderDeliveryCommand(order, product),
     paymentId: String(payment.id || order.mercadoPagoPaymentId || ""),
     createdAt: new Date().toISOString(),
   };
@@ -449,7 +504,7 @@ const applyApprovedPayment = async ({ env, order, payment }) => {
   const paidAmount = Number(payment.transaction_amount);
   const isApproved = payment.status === "approved";
   const belongsToOrder = paymentBelongsToOrder({ order, payment });
-  const hasExpectedAmount = paidAmount === Number(product.amount);
+  const hasExpectedAmount = paidAmount === Number(order.amount);
   const hasExpectedCurrency = payment.currency_id === product.currency;
 
   if (!belongsToOrder) {
@@ -474,7 +529,8 @@ const applyApprovedPayment = async ({ env, order, payment }) => {
       status: isApproved ? "payment_review_required" : `payment_${payment.status || "unknown"}`,
       paymentValidation: {
         paidAmount,
-        expectedAmount: product.amount,
+        expectedAmount: order.amount,
+        quantity: getOrderQuantity(order, product),
         currency: payment.currency_id,
         expectedCurrency: product.currency,
       },
@@ -619,6 +675,7 @@ const handleCheckout = async (request, env) => {
       lastPaymentStatus: "coupon_test",
       paidAt: new Date().toISOString(),
       paymentValidation: {
+        ...(order.paymentValidation || {}),
         source: "test_coupon",
         originalAmount: order.amount,
       },

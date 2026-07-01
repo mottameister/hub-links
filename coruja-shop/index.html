@@ -40,6 +40,7 @@
         <span class="kicker">pacotes</span>
         <h2>Escolha seu pacote</h2>
         <p>Digite seu nick original do Minecraft antes de comprar. A entrega e a conferência usam esse nome para liberar moedas ou Claims na conta certa.</p>
+        <p class="shop-reminder">Ideal você estar online no server no momento da compra para receber automaticamente.</p>
       </div>
 
       <div class="price-panel">
@@ -51,6 +52,23 @@
         <div class="field coupon-field">
           <label for="shopCoupon">Cupom</label>
           <input id="shopCoupon" name="shopCoupon" autocomplete="off" maxlength="80" placeholder="Opcional" data-shop-coupon />
+        </div>
+
+        <div class="field quantity-field">
+          <label for="shopQuantity">Quantidade do pacote</label>
+          <select id="shopQuantity" name="shopQuantity" data-shop-quantity>
+            <option value="1">1x pacote</option>
+            <option value="2">2x pacotes</option>
+            <option value="3">3x pacotes</option>
+            <option value="4">4x pacotes</option>
+            <option value="5">5x pacotes</option>
+            <option value="6">6x pacotes</option>
+            <option value="7">7x pacotes</option>
+            <option value="8">8x pacotes</option>
+            <option value="9">9x pacotes</option>
+            <option value="10">10x pacotes</option>
+          </select>
+          <span>Ex.: 2x no pacote de 10 mi entrega 20 mi no mesmo checkout.</span>
         </div>
 
         <div class="status" role="status" aria-live="polite" data-shop-status>Digite seu nick antes de escolher o pacote.</div>

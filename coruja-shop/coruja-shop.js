@@ -3,6 +3,7 @@
   const root = document.documentElement;
   const nickInput = document.querySelector("[data-shop-nick]");
   const couponInput = document.querySelector("[data-shop-coupon]");
+  const quantityInput = document.querySelector("[data-shop-quantity]");
   const status = document.querySelector("[data-shop-status]");
   const checkoutButtons = document.querySelectorAll("[data-shop-checkout]");
   const leaderboardList = document.querySelector("[data-leaderboard-list]");
@@ -63,6 +64,12 @@
     checkoutButtons.forEach((button) => {
       button.disabled = isLoading;
     });
+    if (quantityInput) quantityInput.disabled = isLoading;
+  };
+
+  const getQuantity = () => {
+    const quantity = Number.parseInt(quantityInput?.value || "1", 10);
+    return Number.isInteger(quantity) && quantity >= 1 && quantity <= 10 ? quantity : 1;
   };
 
   const parseLeaderboardText = (text) => {
@@ -127,6 +134,7 @@
   const createCheckout = async (sku) => {
     const minecraftNick = nickInput.value.trim();
     const coupon = couponInput ? couponInput.value.trim() : "";
+    const quantity = getQuantity();
 
     if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) {
       setStatus("Use seu nick original com 3 a 16 letras, números ou underline.", "error");
@@ -138,13 +146,13 @@
     const timeoutId = window.setTimeout(() => controller.abort(), 15000);
 
     setLoading(true);
-    setStatus(coupon ? "Aplicando cupom de teste no servidor..." : "Criando checkout seguro no Mercado Pago...", "ok");
+    setStatus(coupon ? "Aplicando cupom de teste no servidor..." : `Criando checkout seguro no Mercado Pago (${quantity}x)...`, "ok");
 
     try {
       const response = await fetch(`${apiBase}/api/shop/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sku, minecraftNick, coupon }),
+        body: JSON.stringify({ sku, minecraftNick, coupon, quantity }),
         signal: controller.signal,
       });
       const payload = await response.json();
