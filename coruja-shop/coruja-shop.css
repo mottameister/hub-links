@@ -267,6 +267,55 @@ h1 {
     rgba(0, 0, 0, .32);
 }
 
+.quantity-stepper {
+  width: 100%;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .32);
+  overflow: hidden;
+}
+
+.quantity-button {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: rgba(255, 255, 255, .06);
+  color: var(--gold);
+  cursor: pointer;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.quantity-button:last-child {
+  border-right: 0;
+  border-left: 1px solid var(--line);
+}
+
+.quantity-button:hover,
+.quantity-button:focus-visible {
+  background: rgba(255, 191, 56, .14);
+  outline: none;
+}
+
+.quantity-button:disabled {
+  color: rgba(255, 255, 255, .28);
+  cursor: not-allowed;
+}
+
+.quantity-value {
+  min-width: 0;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 900;
+  text-align: center;
+}
+
 .quantity-field span {
   display: block;
   margin-top: 7px;
@@ -613,7 +662,7 @@ h1 {
 }
 
 .site-controls {
-  z-index: 1000;
+  display: none !important;
 }
 
 html[data-theme="light"] body.coruja-shop-page {
@@ -737,12 +786,5 @@ html[data-theme="light"] .field input {
 
   .pack-price {
     grid-column: auto;
-  }
-
-  .coruja-shop-page .site-controls {
-    position: static;
-    width: max-content;
-    margin: 18px auto 12px;
-    transform: none;
   }
 }

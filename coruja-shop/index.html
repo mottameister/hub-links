@@ -10,7 +10,6 @@
   <meta property="og:description" content="Pacotes de CobbleDollars e Claims para acelerar sua economia, proteger chunks e expandir sua base no servidor." />
   <meta property="og:image" content="https://mottameister.xyz/coruja-shop/assets/spawn-shop.png" />
   <meta property="og:url" content="https://mottameister.xyz/coruja-shop/" />
-  <link rel="stylesheet" href="/site-controls.css" />
   <link rel="stylesheet" href="/coruja-shop/coruja-shop.css?v=claims-retry-1" />
   <link rel="stylesheet" href="/src/coruja-shop.css" />
 </head>
@@ -56,18 +55,11 @@
 
         <div class="field quantity-field">
           <label for="shopQuantity">Quantidade do pacote</label>
-          <select id="shopQuantity" name="shopQuantity" data-shop-quantity>
-            <option value="1">1x pacote</option>
-            <option value="2">2x pacotes</option>
-            <option value="3">3x pacotes</option>
-            <option value="4">4x pacotes</option>
-            <option value="5">5x pacotes</option>
-            <option value="6">6x pacotes</option>
-            <option value="7">7x pacotes</option>
-            <option value="8">8x pacotes</option>
-            <option value="9">9x pacotes</option>
-            <option value="10">10x pacotes</option>
-          </select>
+          <div class="quantity-stepper" id="shopQuantity" data-shop-quantity>
+            <button class="quantity-button" type="button" data-shop-quantity-dec aria-label="Diminuir quantidade">-</button>
+            <span class="quantity-value" data-shop-quantity-value data-value="1">1x pacote</span>
+            <button class="quantity-button" type="button" data-shop-quantity-inc aria-label="Aumentar quantidade">+</button>
+          </div>
           <span>Ex.: 2x no pacote de 10 mi entrega 20 mi no mesmo checkout.</span>
         </div>
 
@@ -207,13 +199,6 @@
 
     <p class="note">CobbleDollars e Claims são recursos internos da Toca da Coruja, podem existir ou ser obtidos dentro das regras do servidor, não têm valor real fora do servidor, não podem ser sacados e não são afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon.</p>
   </main>
-
-  <div class="site-controls" aria-label="Preferências do site">
-    <div class="site-control-group" aria-label="Tema">
-      <button class="site-control" type="button" data-theme-choice="dark" aria-label="Dark mode">Dark</button>
-      <button class="site-control" type="button" data-theme-choice="light" aria-label="Light mode">Light</button>
-    </div>
-  </div>
 
   <script type="module" src="/src/coruja-shop.jsx"></script>
   <script src="/coruja-shop/coruja-shop.js?v=claims-retry-1"></script>

@@ -1,9 +1,11 @@
 (function () {
-  const themeKey = "motta-theme";
   const root = document.documentElement;
   const nickInput = document.querySelector("[data-shop-nick]");
   const couponInput = document.querySelector("[data-shop-coupon]");
-  const quantityInput = document.querySelector("[data-shop-quantity]");
+  const quantityControl = document.querySelector("[data-shop-quantity]");
+  const quantityValue = document.querySelector("[data-shop-quantity-value]");
+  const quantityDec = document.querySelector("[data-shop-quantity-dec]");
+  const quantityInc = document.querySelector("[data-shop-quantity-inc]");
   const status = document.querySelector("[data-shop-status]");
   const checkoutButtons = document.querySelectorAll("[data-shop-checkout]");
   const leaderboardList = document.querySelector("[data-leaderboard-list]");
@@ -23,36 +25,7 @@
     { rank: 10, name: "Miquesl", amount: "215K" },
   ];
 
-  const getStoredTheme = () => {
-    try {
-      return localStorage.getItem(themeKey) || "dark";
-    } catch {
-      return "dark";
-    }
-  };
-
-  const setStoredTheme = (theme) => {
-    try {
-      localStorage.setItem(themeKey, theme);
-    } catch {}
-  };
-
-  let currentTheme = getStoredTheme();
-
-  const applyTheme = () => {
-    root.dataset.theme = currentTheme;
-    document.querySelectorAll("[data-theme-choice]").forEach((button) => {
-      button.classList.toggle("is-active", button.dataset.themeChoice === currentTheme);
-    });
-  };
-
-  document.querySelectorAll("[data-theme-choice]").forEach((button) => {
-    button.addEventListener("click", () => {
-      currentTheme = button.dataset.themeChoice;
-      setStoredTheme(currentTheme);
-      applyTheme();
-    });
-  });
+  root.dataset.theme = "dark";
 
   const setStatus = (message, type = "") => {
     status.textContent = message;
@@ -64,13 +37,34 @@
     checkoutButtons.forEach((button) => {
       button.disabled = isLoading;
     });
-    if (quantityInput) quantityInput.disabled = isLoading;
+    if (isLoading) {
+      [quantityDec, quantityInc].forEach((button) => {
+        if (button) button.disabled = true;
+      });
+      return;
+    }
+
+    setQuantity(getQuantity());
   };
 
   const getQuantity = () => {
-    const quantity = Number.parseInt(quantityInput?.value || "1", 10);
+    const quantity = Number.parseInt(quantityValue?.dataset.value || "1", 10);
     return Number.isInteger(quantity) && quantity >= 1 && quantity <= 10 ? quantity : 1;
   };
+
+  const setQuantity = (nextQuantity) => {
+    const quantity = Math.min(10, Math.max(1, Number.parseInt(nextQuantity, 10) || 1));
+    if (quantityValue) {
+      quantityValue.dataset.value = String(quantity);
+      quantityValue.textContent = `${quantity}x pacote${quantity > 1 ? "s" : ""}`;
+    }
+    if (quantityControl) quantityControl.dataset.value = String(quantity);
+    if (quantityDec) quantityDec.disabled = quantity <= 1;
+    if (quantityInc) quantityInc.disabled = quantity >= 10;
+  };
+
+  quantityDec?.addEventListener("click", () => setQuantity(getQuantity() - 1));
+  quantityInc?.addEventListener("click", () => setQuantity(getQuantity() + 1));
 
   const parseLeaderboardText = (text) => {
     return text
@@ -181,5 +175,5 @@
   });
 
   loadLeaderboard();
-  applyTheme();
+  setQuantity(1);
 })();
