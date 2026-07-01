@@ -655,7 +655,17 @@ const handlePending = async (request, env) => {
   }
   if (request.method !== "GET") return json({ error: "Method not allowed." }, 405, request);
   await requireDeliveryAuth(request, env);
-  const synced = await reconcileRecentPaidOrders(env);
+  let synced = [];
+  let syncError = "";
+  try {
+    synced = await reconcileRecentPaidOrders(env);
+  } catch (error) {
+    syncError = error.message || "Falha ao reconciliar pagamentos recentes.";
+    console.error(JSON.stringify({
+      event: "shop_pending_reconcile_failed",
+      error: syncError,
+    }));
+  }
   const deliveries = await pendingDeliveries(env);
   return json({ ok: true, synced, deliveries: deliveries.map((delivery) => ({
     id: delivery.id,
@@ -665,7 +675,7 @@ const handlePending = async (request, env) => {
     cobbleDollars: delivery.cobbleDollars,
     command: delivery.command,
     createdAt: delivery.createdAt,
-  })) }, 200, request);
+  })), syncError }, 200, request);
 };
 
 const verifyMercadoPagoSignature = async ({ request, env, payload }) => {
@@ -858,7 +868,7 @@ export default {
     try {
       if (url.pathname === "/health") return json({ ok: true, service: "mottameister-services-api" }, 200, request);
       if (url.pathname === "/api/shop/checkout" && request.method === "POST") return json(await handleCheckout(request, env), 200, request);
-      if (url.pathname === "/api/shop/pending") return handlePending(request, env);
+      if (url.pathname === "/api/shop/pending") return await handlePending(request, env);
       if (url.pathname === "/api/shop/webhook/mercadopago" && request.method === "POST") return json(await handleMercadoPagoWebhook(request, env), 200, request);
       if (url.pathname === "/api/shop/orders" && request.method === "GET") {
         await requireShopAdminAuth(request, env);
