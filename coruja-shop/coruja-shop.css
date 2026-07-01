@@ -547,14 +547,16 @@ h1 {
   grid-column: 1 / -1;
 }
 
-.shot-card img {
+.shot-card img,
+.shot-card video {
   width: 100%;
   display: block;
   aspect-ratio: 16 / 9;
   object-fit: cover;
 }
 
-.shot-card:not(.wide) img {
+.shot-card:not(.wide) img,
+.shot-card:not(.wide) video {
   aspect-ratio: 4 / 3;
 }
 

@@ -507,7 +507,8 @@ html[data-theme="light"] .gallery-head p {
   border-radius: 22px;
 }
 
-.shot-card img {
+.shot-card img,
+.shot-card video {
   filter: saturate(.82) contrast(1.04);
 }
 
