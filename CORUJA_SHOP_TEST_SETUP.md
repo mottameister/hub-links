@@ -58,13 +58,13 @@ $env:RCON_HOST="127.0.0.1"
 $env:RCON_PORT="25575"
 $env:RCON_PASSWORD="senha_do_server_properties"
 $env:SHOP_LEADERBOARD_ENABLED="true"
-$env:SHOP_LEADERBOARD_POLL_MS="60000"
+$env:SHOP_LEADERBOARD_POLL_MS="600000"
 $env:SHOP_LEADERBOARD_COMMAND="cobbledollars leaderboard"
 npm run shop:worker
 ```
 
 O mesmo worker tambem atualiza o ranking da pagina. Por padrao ele roda o comando
-`cobbledollars leaderboard` a cada 60 segundos e publica o resultado em
+`cobbledollars leaderboard` a cada 10 minutos e publica o resultado em
 `/api/shop/pending?leaderboard=1`.
 
 ## Cupons de teste

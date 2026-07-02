@@ -13,7 +13,7 @@ const config = {
   rconTimeoutMs: Number(process.env.RCON_TIMEOUT_MS || 10000),
   workerId: process.env.SHOP_WORKER_ID || `worker-${Date.now()}`,
   leaderboardEnabled: process.env.SHOP_LEADERBOARD_ENABLED !== "false",
-  leaderboardPollMs: Number(process.env.SHOP_LEADERBOARD_POLL_MS || 60000),
+  leaderboardPollMs: Number(process.env.SHOP_LEADERBOARD_POLL_MS || 600000),
   leaderboardCommand: (process.env.SHOP_LEADERBOARD_COMMAND || "cobbledollars leaderboard").replace(/^\//, ""),
 };
 
