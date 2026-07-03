@@ -108,7 +108,8 @@ const modalContent = {
     title: 'Produtos que eu uso',
     subtitle: 'Links de curadoria, sem papo de vendedor.',
     links: [
-      ['Amazon', 'Setup, jogos, casa e recomendações.', 'https://www.amazon.com.br/shop/mottameister'],
+      ['Amazon BR', 'Setup, jogos, casa e recomendações no Brasil.', 'https://www.amazon.com.br/shop/mottameister'],
+      ['Amazon US', 'Setup, jogos, casa e recomendações nos EUA.', 'https://www.amazon.com/shop/mottameister?ccs_id=e601d8bd-0a1b-421a-bc96-e0ce5841f050'],
       ['Temu', 'Achadinhos do programa de influencer.', 'https://temu.to/k/p3fxhtj7nzz']
     ]
   },
