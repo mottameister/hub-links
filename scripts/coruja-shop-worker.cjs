@@ -15,7 +15,7 @@ const config = {
   leaderboardEnabled: process.env.SHOP_LEADERBOARD_ENABLED !== "false",
   leaderboardPollMs: Number(process.env.SHOP_LEADERBOARD_POLL_MS || 600000),
   leaderboardCommand: (process.env.SHOP_LEADERBOARD_COMMAND || "cobbledollars leaderboard").replace(/^\//, ""),
-  shinyEggPool: (process.env.SHOP_SHINY_EGG_POOL || "trapinch,skrelp,axew,horsea,sprigatito,fuecoco,quaxly")
+  shinyEggPool: (process.env.SHOP_SHINY_EGG_POOL || "random")
     .split(",")
     .map((name) => name.trim().toLowerCase())
     .filter(Boolean),

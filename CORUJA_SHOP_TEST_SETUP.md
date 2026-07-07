@@ -60,7 +60,7 @@ $env:RCON_PASSWORD="senha_do_server_properties"
 $env:SHOP_LEADERBOARD_ENABLED="true"
 $env:SHOP_LEADERBOARD_POLL_MS="600000"
 $env:SHOP_LEADERBOARD_COMMAND="cobbledollars leaderboard"
-$env:SHOP_SHINY_EGG_POOL="trapinch,skrelp,axew,horsea,sprigatito,fuecoco,quaxly"
+$env:SHOP_SHINY_EGG_POOL="random"
 $env:SHOP_SHINY_EGG_COMMAND_TEMPLATE="givepokemonegg {nick} {species} shiny=yes"
 $env:SHOP_LUCKPERMS_PLUS_GROUP="coruja_plus"
 $env:SHOP_LUCKPERMS_PLUS_PLUS_GROUP="coruja_plus_plus"
@@ -125,7 +125,7 @@ O worker entrega assinatura como um bundle:
 
 1. `cobbledollars give {nick} ...`
 2. `opac-claims add {nick} 5`
-3. `givepokemonegg {nick} {species} shiny=yes`, escolhendo species de `SHOP_SHINY_EGG_POOL`
+3. `givepokemonegg {nick} random shiny=yes`, usando `SHOP_SHINY_EGG_POOL=random`
 4. `lp user {nick} parent addtemp {group} 31d`
 
 Importante: o cargo LuckPerms expira sozinho por `addtemp`, mas os 5 Claims da assinatura ainda sao aplicados via `claims.bonusChunkClaims`, que nao tem TTL nativo neste worker. Antes de prometer remocao automatica em producao, implemente uma rotina de expiracao que leia `shop_memberships.expires_at` e execute a remocao dos 5 Claims quando a assinatura nao renovar.
