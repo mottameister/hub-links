@@ -59,6 +59,34 @@ const products = {
     claimChunks: 30,
     command: "opac-claims add {nick} 30",
   },
+  coruja_plus: {
+    sku: "coruja_plus",
+    title: "Coruja+",
+    type: "membership",
+    amount: 29.9,
+    currency: "BRL",
+    cobbleDollars: 2000000,
+    claimChunks: 5,
+    shinyEggs: 1,
+    membershipTier: "plus",
+    membershipDays: 31,
+    discountPercent: 10,
+    command: "coruja-membership grant {nick} plus 2000000 5 1 31",
+  },
+  coruja_plus_plus: {
+    sku: "coruja_plus_plus",
+    title: "Coruja++",
+    type: "membership",
+    amount: 39.9,
+    currency: "BRL",
+    cobbleDollars: 4000000,
+    claimChunks: 5,
+    shinyEggs: 2,
+    membershipTier: "plus_plus",
+    membershipDays: 31,
+    discountPercent: 10,
+    command: "coruja-membership grant {nick} plus_plus 4000000 5 2 31",
+  },
 };
 
 const fallbackLeaderboard = [
@@ -115,10 +143,15 @@ const getEnvironment = (env) => sanitizeText(env.SHOP_ENV || defaultEnvironment,
 
 const getProduct = (sku) => products[String(sku || "")] || null;
 
-const parseCheckoutQuantity = (value) => {
+const roundMoney = (value) => Math.round(Number(value || 0) * 100) / 100;
+
+const parseCheckoutQuantity = (value, product = null) => {
   const quantity = Number(value ?? 1);
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > maxCheckoutQuantity) {
     throw Object.assign(new Error(`Quantidade deve ser entre 1 e ${maxCheckoutQuantity}.`), { statusCode: 400 });
+  }
+  if (product?.type === "membership" && quantity !== 1) {
+    throw Object.assign(new Error("Assinaturas devem ser compradas uma por vez."), { statusCode: 400 });
   }
   return quantity;
 };
@@ -149,6 +182,15 @@ const getOrderDeliveryCommand = (order, product) => {
 
   if (product.type === "opac_claim_bonus") {
     return `opac-claims add ${order.minecraftNick} ${getOrderClaimChunks(order, product)}`;
+  }
+
+  if (product.type === "membership") {
+    const quantity = getOrderQuantity(order, product);
+    const totalCobbleDollars = Number(order.cobbleDollars || product.cobbleDollars || 0);
+    const totalClaimChunks = getOrderClaimChunks(order, product);
+    const shinyEggs = Number(product.shinyEggs || 0) * quantity;
+    const membershipDays = Number(product.membershipDays || 31);
+    return `coruja-membership grant ${order.minecraftNick} ${product.membershipTier} ${totalCobbleDollars} ${totalClaimChunks} ${shinyEggs} ${membershipDays}`;
   }
 
   return product.command.replace("{nick}", order.minecraftNick);
@@ -308,6 +350,72 @@ const validateMinecraftProfile = async (nick) => {
   return { id: sanitizeText(profile.id, 40), name: sanitizeMinecraftNick(profile.name) };
 };
 
+const ensureShopMembershipsTable = async (env) => {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS shop_memberships (
+      environment TEXT NOT NULL,
+      minecraft_uuid TEXT NOT NULL,
+      minecraft_nick TEXT NOT NULL,
+      tier TEXT NOT NULL,
+      status TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      discount_percent INTEGER NOT NULL DEFAULT 0,
+      claim_chunks INTEGER NOT NULL DEFAULT 0,
+      shiny_eggs INTEGER NOT NULL DEFAULT 0,
+      last_order_id TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (environment, minecraft_uuid)
+    )
+  `).run();
+};
+
+const getActiveMembership = async (env, minecraftUuid) => {
+  if (!minecraftUuid) return null;
+  await ensureShopMembershipsTable(env);
+  const row = await env.DB.prepare(`
+    SELECT * FROM shop_memberships
+    WHERE environment = ? AND minecraft_uuid = ? AND status = ? AND expires_at > ?
+  `).bind(getEnvironment(env), minecraftUuid, "active", new Date().toISOString()).first();
+  return row || null;
+};
+
+const upsertMembership = async ({ env, order, product }) => {
+  if (product.type !== "membership") return null;
+  await ensureShopMembershipsTable(env);
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + Number(product.membershipDays || 31) * 86400000).toISOString();
+  const updatedAt = now.toISOString();
+  await env.DB.prepare(`
+    INSERT INTO shop_memberships (environment, minecraft_uuid, minecraft_nick, tier, status, expires_at, discount_percent, claim_chunks, shiny_eggs, last_order_id, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(environment, minecraft_uuid) DO UPDATE SET
+      minecraft_nick = excluded.minecraft_nick,
+      tier = excluded.tier,
+      status = excluded.status,
+      expires_at = excluded.expires_at,
+      discount_percent = excluded.discount_percent,
+      claim_chunks = excluded.claim_chunks,
+      shiny_eggs = excluded.shiny_eggs,
+      last_order_id = excluded.last_order_id,
+      updated_at = excluded.updated_at
+  `).bind(
+    getEnvironment(env),
+    order.minecraftUuid || "",
+    order.minecraftNick,
+    product.membershipTier,
+    "active",
+    expiresAt,
+    Number(product.discountPercent || 0),
+    Number(product.claimChunks || 0),
+    Number(product.shinyEggs || 0),
+    order.id,
+    updatedAt,
+    updatedAt,
+  ).run();
+  return { tier: product.membershipTier, expiresAt };
+};
+
 const toOrderRow = ({ env, order }) => [
   order.id,
   getEnvironment(env),
@@ -374,12 +482,15 @@ const deliveryFromRow = (row) => row && ({
 const createOrder = async ({ env, request, payload }) => {
   const product = getProduct(payload.sku);
   if (!product) throw Object.assign(new Error("Produto invalido."), { statusCode: 400 });
-  const quantity = parseCheckoutQuantity(payload.quantity);
+  const quantity = parseCheckoutQuantity(payload.quantity, product);
   const cleanNick = sanitizeMinecraftNick(payload.minecraftNick);
   if (!cleanNick) throw Object.assign(new Error("Nick do Minecraft invalido."), { statusCode: 400 });
   const profile = await validateMinecraftProfile(cleanNick);
   const now = new Date().toISOString();
-  const totalAmount = product.amount * quantity;
+  const activeMembership = product.type === "membership" ? null : await getActiveMembership(env, profile.id);
+  const discountPercent = Number(activeMembership?.discount_percent || 0);
+  const originalAmount = roundMoney(product.amount * quantity);
+  const totalAmount = discountPercent > 0 ? roundMoney(originalAmount * (1 - discountPercent / 100)) : originalAmount;
   const totalCobbleDollars = (product.cobbleDollars || 0) * quantity;
   const totalClaimChunks = (product.claimChunks || 0) * quantity;
   const order = {
@@ -399,6 +510,13 @@ const createOrder = async ({ env, request, payload }) => {
       unitCobbleDollars: product.cobbleDollars || 0,
       unitClaimChunks: product.claimChunks || 0,
       claimChunks: totalClaimChunks,
+      shinyEggs: (product.shinyEggs || 0) * quantity,
+      membershipTier: product.membershipTier || "",
+      membershipDays: product.membershipDays || 0,
+      originalAmount,
+      discountPercent,
+      discountSource: discountPercent > 0 ? "active_membership" : "",
+      membershipExpiresAt: activeMembership?.expires_at || "",
     },
     createdAt: now,
     updatedAt: now,
@@ -434,6 +552,11 @@ const createPreference = async ({ env, request, order }) => {
   const product = getProduct(order.sku);
   const quantity = getOrderQuantity(order, product);
   const claimChunks = getOrderClaimChunks(order, product);
+  const productDescription = product.type === "opac_claim_bonus"
+    ? `Claims de chunks para ${order.minecraftNick} na Toca da Coruja`
+    : product.type === "membership"
+      ? `${product.title}: CobbleDollars, Claims extras, ovos shiny random e cargo especial para ${order.minecraftNick}`
+      : `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`;
   const siteUrl = sanitizeText(env.SITE_URL, 180).replace(/\/+$/, "") || "https://mottameister.xyz";
   const apiUrl = sanitizeText(env.API_URL, 180).replace(/\/+$/, "") || new URL(request.url).origin;
   return mercadoPagoFetch(env, "/checkout/preferences", {
@@ -454,17 +577,19 @@ const createPreference = async ({ env, request, order }) => {
         minecraft_nick: order.minecraftNick,
         cobbledollars: order.cobbleDollars,
         claim_chunks: claimChunks,
+        shiny_eggs: Number(product.shinyEggs || 0) * quantity,
+        membership_tier: product.membershipTier || "",
+        membership_days: product.membershipDays || 0,
+        discount_percent: Number(order.paymentValidation?.discountPercent || 0),
         quantity,
         unit_amount: product.amount,
       },
       items: [{
         id: product.sku,
         title: product.title,
-        description: product.type === "opac_claim_bonus"
-          ? `Claims de chunks para ${order.minecraftNick} na Toca da Coruja`
-          : `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`,
+        description: productDescription,
         quantity,
-        unit_price: product.amount,
+        unit_price: roundMoney(order.amount / quantity),
         currency_id: product.currency,
       }],
       payer: { name: order.minecraftNick },
@@ -501,10 +626,10 @@ const createDeliveryIfNeeded = async ({ env, order, payment }) => {
 
 const applyApprovedPayment = async ({ env, order, payment }) => {
   const product = getProduct(order.sku);
-  const paidAmount = Number(payment.transaction_amount);
+  const paidAmount = roundMoney(payment.transaction_amount);
   const isApproved = payment.status === "approved";
   const belongsToOrder = paymentBelongsToOrder({ order, payment });
-  const hasExpectedAmount = paidAmount === Number(order.amount);
+  const hasExpectedAmount = paidAmount === roundMoney(order.amount);
   const hasExpectedCurrency = payment.currency_id === product.currency;
 
   if (!belongsToOrder) {
@@ -543,6 +668,7 @@ const applyApprovedPayment = async ({ env, order, payment }) => {
     mercadoPagoPaymentId: String(payment.id || order.mercadoPagoPaymentId || ""),
     paidAt: payment.date_approved || new Date().toISOString(),
   });
+  await upsertMembership({ env, order: paidOrder, product });
   const delivery = await createDeliveryIfNeeded({ env, order: paidOrder, payment });
   return { order: paidOrder, delivery, delivered: false, validation: null };
 };
@@ -680,6 +806,7 @@ const handleCheckout = async (request, env) => {
         originalAmount: order.amount,
       },
     });
+    await upsertMembership({ env, order: paidOrder, product: getProduct(order.sku) });
     const delivery = await createDeliveryIfNeeded({
       env,
       order: paidOrder,

@@ -60,6 +60,11 @@ $env:RCON_PASSWORD="senha_do_server_properties"
 $env:SHOP_LEADERBOARD_ENABLED="true"
 $env:SHOP_LEADERBOARD_POLL_MS="600000"
 $env:SHOP_LEADERBOARD_COMMAND="cobbledollars leaderboard"
+$env:SHOP_SHINY_EGG_POOL="trapinch,skrelp,axew,horsea,sprigatito,fuecoco,quaxly"
+$env:SHOP_SHINY_EGG_COMMAND_TEMPLATE="givepokemonegg {nick} {species} shiny=yes"
+$env:SHOP_LUCKPERMS_PLUS_GROUP="coruja_plus"
+$env:SHOP_LUCKPERMS_PLUS_PLUS_GROUP="coruja_plus_plus"
+$env:SHOP_LUCKPERMS_COMMAND_TEMPLATE="lp user {nick} parent addtemp {group} {days}d"
 npm run shop:worker
 ```
 
@@ -94,6 +99,8 @@ Os pacotes estao gerando comandos no backend assim:
 - `opac-claims add {nick} 5`
 - `opac-claims add {nick} 12`
 - `opac-claims add {nick} 30`
+- `coruja-membership grant {nick} plus 2000000 5 1 31`
+- `coruja-membership grant {nick} plus_plus 4000000 5 2 31`
 
 O worker traduz `opac-claims add` para Open Parties and Claims via RCON.
 Como o comando `openpac player-config` exige um jogador como executor, ele roda via `execute as`.
@@ -104,6 +111,24 @@ Isso exige que o jogador esteja online no momento da entrega; se estiver offline
 3. `execute as {nick} run openpac player-config set claims.bonusChunkClaims {novo_total}`
 
 Se o plugin de economia usa outro comando, altere o mapa `products` em `workers/mottameister-services-api/src/index.js` antes do teste real.
+
+## Assinaturas Coruja+
+
+SKUs ativos:
+
+- `coruja_plus` -> R$ 29,90, 2 mi CobbleDollars, 5 Claims extras, 1 ovo shiny random, cargo `coruja_plus` por 31 dias e 10% de desconto em avulsos pelo UUID do Minecraft.
+- `coruja_plus_plus` -> R$ 39,90, 4 mi CobbleDollars, 5 Claims extras, 2 ovos shiny random, cargo `coruja_plus_plus` por 31 dias e 10% de desconto em avulsos pelo UUID do Minecraft.
+
+O desconto nao usa cupom: quando um pagamento de assinatura e aprovado, a API registra o UUID na tabela `shop_memberships`; compras avulsas futuras com o mesmo nick/UUID recebem o desconto automaticamente no valor enviado ao Mercado Pago.
+
+O worker entrega assinatura como um bundle:
+
+1. `cobbledollars give {nick} ...`
+2. `opac-claims add {nick} 5`
+3. `givepokemonegg {nick} {species} shiny=yes`, escolhendo species de `SHOP_SHINY_EGG_POOL`
+4. `lp user {nick} parent addtemp {group} 31d`
+
+Importante: o cargo LuckPerms expira sozinho por `addtemp`, mas os 5 Claims da assinatura ainda sao aplicados via `claims.bonusChunkClaims`, que nao tem TTL nativo neste worker. Antes de prometer remocao automatica em producao, implemente uma rotina de expiracao que leia `shop_memberships.expires_at` e execute a remocao dos 5 Claims quando a assinatura nao renovar.
 
 ## Checklist antes de publicar
 

@@ -15,6 +15,14 @@ const config = {
   leaderboardEnabled: process.env.SHOP_LEADERBOARD_ENABLED !== "false",
   leaderboardPollMs: Number(process.env.SHOP_LEADERBOARD_POLL_MS || 600000),
   leaderboardCommand: (process.env.SHOP_LEADERBOARD_COMMAND || "cobbledollars leaderboard").replace(/^\//, ""),
+  shinyEggPool: (process.env.SHOP_SHINY_EGG_POOL || "trapinch,skrelp,axew,horsea,sprigatito,fuecoco,quaxly")
+    .split(",")
+    .map((name) => name.trim().toLowerCase())
+    .filter(Boolean),
+  shinyEggCommandTemplate: process.env.SHOP_SHINY_EGG_COMMAND_TEMPLATE || "givepokemonegg {nick} {species} shiny=yes",
+  luckPermsPlusGroup: process.env.SHOP_LUCKPERMS_PLUS_GROUP || "coruja_plus",
+  luckPermsPlusPlusGroup: process.env.SHOP_LUCKPERMS_PLUS_PLUS_GROUP || "coruja_plus_plus",
+  luckPermsCommandTemplate: process.env.SHOP_LUCKPERMS_COMMAND_TEMPLATE || "lp user {nick} parent addtemp {group} {days}d",
 };
 
 let nextLeaderboardAt = 0;
@@ -185,6 +193,19 @@ const parseOpacClaimBonusCommand = (command) => {
   };
 };
 
+const parseMembershipCommand = (command) => {
+  const match = String(command || "").trim().match(/^coruja-membership\s+grant\s+([A-Za-z0-9_]{3,16})\s+(plus|plus_plus)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/i);
+  if (!match) return null;
+  return {
+    minecraftNick: match[1],
+    tier: match[2].toLowerCase(),
+    cobbleDollars: Number(match[3]),
+    claimChunks: Number(match[4]),
+    shinyEggs: Number(match[5]),
+    days: Number(match[6]),
+  };
+};
+
 const parseOpacBonusClaims = (output) => {
   const text = String(output || "");
   const direct = text.match(/claims\.bonusChunkClaims\s*=\s*(-?\d+)/i);
@@ -221,10 +242,58 @@ const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks }) =
   ].join("\n");
 };
 
+const pickShinySpecies = () => {
+  if (!config.shinyEggPool.length) throw new Error("SHOP_SHINY_EGG_POOL is empty.");
+  return config.shinyEggPool[Math.floor(Math.random() * config.shinyEggPool.length)];
+};
+
+const renderCommandTemplate = (template, replacements) => Object.entries(replacements)
+  .reduce((command, [key, value]) => command.replaceAll(`{${key}}`, String(value)), template)
+  .replace(/^\//, "");
+
+const runDeliveryCommand = async (command, context) => {
+  if (config.dryRun) return `dry-run: ${command}`;
+  const output = await rconCommand(command);
+  ensureDeliveryOutputSucceeded(output, context || command);
+  return output || "Command executed.";
+};
+
+const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars, claimChunks, shinyEggs, days }) => {
+  const logs = [];
+
+  if (cobbleDollars > 0) {
+    const command = `cobbledollars give ${minecraftNick} ${cobbleDollars}`;
+    logs.push(`money: ${await runDeliveryCommand(command, command)}`);
+  }
+
+  if (claimChunks > 0) {
+    logs.push(`claims: ${await deliverOpacClaimBonus({ delivery, minecraftNick, claimChunks })}`);
+  }
+
+  for (let index = 0; index < shinyEggs; index += 1) {
+    const species = pickShinySpecies();
+    const command = renderCommandTemplate(config.shinyEggCommandTemplate, { nick: minecraftNick, species });
+    logs.push(`shiny egg ${index + 1}/${shinyEggs} (${species}): ${await runDeliveryCommand(command, command)}`);
+  }
+
+  const group = tier === "plus_plus" ? config.luckPermsPlusPlusGroup : config.luckPermsPlusGroup;
+  if (group) {
+    const command = renderCommandTemplate(config.luckPermsCommandTemplate, { nick: minecraftNick, group, days });
+    logs.push(`luckperms: ${await runDeliveryCommand(command, command)}`);
+  }
+
+  return logs.join("\n");
+};
+
 const executeDeliveryCommand = async (delivery, command) => {
   const opacClaimBonus = parseOpacClaimBonusCommand(command);
   if (opacClaimBonus) {
     return deliverOpacClaimBonus({ delivery, ...opacClaimBonus });
+  }
+
+  const membership = parseMembershipCommand(command);
+  if (membership) {
+    return deliverMembership({ delivery, ...membership });
   }
 
   return config.dryRun

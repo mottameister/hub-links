@@ -259,6 +259,12 @@ h1 {
   padding: 11px 13px;
 }
 
+.shop-reminder-sub {
+  border-color: rgba(67, 217, 255, .24);
+  background: rgba(67, 217, 255, .07);
+  color: #dff8ff !important;
+}
+
 .price-panel {
   padding: 22px;
 }
@@ -392,6 +398,10 @@ html[data-theme="light"] .pack-group-head h3 {
   gap: 10px;
 }
 
+.packs-membership {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .pack,
 html[data-theme="light"] .pack {
   position: relative;
@@ -468,6 +478,44 @@ html[data-theme="light"] .pack span {
 .pack-claim:hover,
 .pack-claim:focus-visible {
   border-color: rgba(102, 242, 139, .42);
+}
+
+.pack-membership,
+html[data-theme="light"] .pack-membership {
+  min-height: 220px;
+  border-color: rgba(67, 217, 255, .2);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(67, 217, 255, .14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 191, 56, .08), rgba(181, 23, 255, .08)),
+    rgba(8, 7, 13, .6);
+}
+
+.pack-membership:hover,
+.pack-membership:focus-visible {
+  border-color: rgba(67, 217, 255, .5);
+}
+
+.pack-membership .pack-price {
+  color: #a8f6ff !important;
+}
+
+.membership-icon {
+  border-radius: 13px;
+  background:
+    linear-gradient(135deg, rgba(67, 217, 255, .95), rgba(255, 191, 56, .82)),
+    #11131c !important;
+  color: #08070d;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.pack-footnote {
+  margin: 10px 0 0;
+  color: #9992a3;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .claim-icon {
@@ -638,6 +686,10 @@ html[data-theme="light"] .note {
   .packs,
   .stats,
   .shots {
+    grid-template-columns: 1fr;
+  }
+
+  .packs-membership {
     grid-template-columns: 1fr;
   }
 

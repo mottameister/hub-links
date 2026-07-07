@@ -4,10 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coruja Shop | Toca da Coruja</title>
-  <meta name="description" content="Compre CobbleDollars e pacotes de Claims para evoluir sua base na Toca da Coruja." />
+  <meta name="description" content="Compre CobbleDollars, Claims e assinaturas Coruja+ para evoluir sua base na Toca da Coruja." />
   <meta name="theme-color" content="#ffbf38" />
   <meta property="og:title" content="Coruja Shop | Toca da Coruja" />
-  <meta property="og:description" content="Pacotes de CobbleDollars e Claims para acelerar sua economia, proteger chunks e expandir sua base no servidor." />
+  <meta property="og:description" content="Pacotes de CobbleDollars, Claims e assinaturas Coruja+ para acelerar sua economia, proteger chunks e expandir sua base no servidor." />
   <meta property="og:image" content="https://mottameister.xyz/coruja-shop/assets/spawn-shop.png" />
   <meta property="og:url" content="https://mottameister.xyz/coruja-shop/" />
   <link rel="stylesheet" href="/coruja-shop/coruja-shop.css?v=quantity-stepper-1" />
@@ -18,14 +18,14 @@
   <main class="page">
     <nav class="topbar" aria-label="Navegação">
       <a class="back" href="/">voltar ao hub</a>
-      <span class="pill">CobbleDollars + Claims</span>
+      <span class="pill">CobbleDollars + Claims + Coruja+</span>
     </nav>
 
     <section class="hero" aria-label="Coruja Shop">
       <div class="hero-copy">
         <span class="kicker">Toca da Coruja apresenta</span>
         <h1>Coruja Shop</h1>
-        <p class="lead">CobbleDollars para movimentar os merchants do spawn e Claims para proteger mais chunks, construir uma base maior e deixar seu canto da Toca com cara de lar.</p>
+        <p class="lead">CobbleDollars para movimentar os merchants do spawn, Claims para proteger mais chunks e assinaturas mensais com ovos shiny random e cargo especial na Toca.</p>
         <div class="cta-row">
           <a class="button" href="#comprar">Comprar pacotes</a>
           <a class="button secondary" href="#leaderboard">Ver ranking</a>
@@ -38,8 +38,9 @@
       <div class="shop-intro">
         <span class="kicker">pacotes</span>
         <h2>Escolha seu pacote</h2>
-        <p>Digite seu nick original do Minecraft antes de comprar. A entrega e a conferência usam esse nome para liberar moedas ou Claims na conta certa.</p>
+        <p>Digite seu nick original do Minecraft antes de comprar. A entrega e a conferência usam esse nome para liberar moedas, Claims, ovos e benefícios na conta certa.</p>
         <p class="shop-reminder">Ideal você estar online no server no momento da compra para receber automaticamente.</p>
+        <p class="shop-reminder shop-reminder-sub">Assinaturas são vinculadas ao seu nick/UUID. Se parar de assinar, os Claims extras da assinatura expiram.</p>
       </div>
 
       <div class="price-panel">
@@ -65,6 +66,29 @@
 
         <div class="status" role="status" aria-live="polite" data-shop-status>Digite seu nick antes de escolher o pacote.</div>
 
+        <div class="pack-group pack-group-membership">
+          <div class="pack-group-head">
+            <span class="kicker">assinatura</span>
+            <h3>Coruja+</h3>
+          </div>
+
+          <div class="packs packs-membership">
+          <button class="pack pack-membership pack-plus" type="button" data-shop-checkout data-sku="coruja_plus" data-fixed-quantity="1">
+            <span class="pack-icon membership-icon" aria-hidden="true">+</span>
+            <span><strong>Coruja+</strong><span>2 mi CobbleDollars, 5 Claims extras, 1 ovo shiny random, cargo especial no LuckPerms/Styled Chat e desconto em pacotes avulsos pelo seu nick.</span></span>
+            <span class="pack-price">R$ 29,90/mês</span>
+          </button>
+
+          <button class="pack pack-membership pack-plus-plus" type="button" data-shop-checkout data-sku="coruja_plus_plus" data-fixed-quantity="1">
+            <span class="pack-icon membership-icon" aria-hidden="true">++</span>
+            <span><strong>Coruja++</strong><span>4 mi CobbleDollars, 5 Claims extras, 2 ovos shiny random, cargo especial no LuckPerms/Styled Chat e desconto em pacotes avulsos pelo seu nick.</span></span>
+            <span class="pack-price">R$ 39,90/mês</span>
+          </button>
+          </div>
+
+          <p class="pack-footnote">Os 5 Claims da assinatura valem enquanto ela estiver ativa. O desconto em avulsos é aplicado automaticamente pelo nick original, sem cupom compartilhável.</p>
+        </div>
+
         <div class="pack-group">
           <div class="pack-group-head">
             <span class="kicker">economia</span>
@@ -76,12 +100,6 @@
             <span class="pack-icon" aria-hidden="true"><img src="/coruja-shop/assets/cobbledollar.png" alt="" /></span>
             <span><strong>1 mi CobbleDollars</strong><span>Um empurrão para itens, consumíveis e primeiros testes no spawn.</span></span>
             <span class="pack-price">R$ 10</span>
-          </button>
-
-          <button class="pack pack-gold" type="button" data-shop-checkout data-sku="cobbledollars_5m">
-            <span class="pack-icon" aria-hidden="true"><img src="/coruja-shop/assets/cobbledollar.png" alt="" /></span>
-            <span><strong>5 mi CobbleDollars</strong><span>Pacote intermediário para montar time, comprar Poké Balls e girar a economia.</span></span>
-            <span class="pack-price">R$ 30</span>
           </button>
 
           <button class="pack pack-diamond" type="button" data-shop-checkout data-sku="cobbledollars_10m">
@@ -124,6 +142,7 @@
     <section class="section stats" aria-label="Resumo da loja">
       <div class="panel"><strong>spawn</strong><span>Merchants fixos para comprar Poké Balls, itens, treino e utilidades sem depender de chat.</span></div>
       <div class="panel"><strong>claims</strong><span>Pacotes para proteger mais chunks e construir uma base maior dentro da Toca da Coruja.</span></div>
+      <div class="panel"><strong>coruja+</strong><span>Assinantes recebem cargo especial no chat, ovos shiny random e desconto automático nos avulsos pelo nick.</span></div>
       <div class="panel"><strong>pix</strong><span>Checkout seguro via Mercado Pago, com pedido registrado para entrega no servidor.</span></div>
     </section>
 
@@ -197,7 +216,7 @@
       </div>
     </section>
 
-    <p class="note">CobbleDollars e Claims são recursos internos da Toca da Coruja, podem existir ou ser obtidos dentro das regras do servidor, não têm valor real fora do servidor, não podem ser sacados e não são afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon.</p>
+    <p class="note">CobbleDollars, Claims, ovos e cargos são recursos internos da Toca da Coruja, podem existir ou ser obtidos dentro das regras do servidor, não têm valor real fora do servidor, não podem ser sacados e não são afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon. Benefícios de assinatura dependem da assinatura ativa.</p>
   </main>
 
   <script type="module" src="/src/coruja-shop.jsx"></script>

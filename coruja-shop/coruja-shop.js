@@ -33,6 +33,11 @@
     status.classList.toggle("is-ok", type === "ok");
   };
 
+  const isFixedQuantitySku = (sku) => {
+    const button = document.querySelector(`[data-shop-checkout][data-sku="${CSS.escape(String(sku || ""))}"]`);
+    return button?.dataset.fixedQuantity === "1";
+  };
+
   const setLoading = (isLoading) => {
     checkoutButtons.forEach((button) => {
       button.disabled = isLoading;
@@ -128,7 +133,8 @@
   const createCheckout = async (sku) => {
     const minecraftNick = nickInput.value.trim();
     const coupon = couponInput ? couponInput.value.trim() : "";
-    const quantity = getQuantity();
+    const fixedQuantity = isFixedQuantitySku(sku);
+    const quantity = fixedQuantity ? 1 : getQuantity();
 
     if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) {
       setStatus("Use seu nick original com 3 a 16 letras, números ou underline.", "error");
@@ -140,7 +146,11 @@
     const timeoutId = window.setTimeout(() => controller.abort(), 15000);
 
     setLoading(true);
-    setStatus(coupon ? "Aplicando cupom de teste no servidor..." : `Criando checkout seguro no Mercado Pago (${quantity}x)...`, "ok");
+    setStatus(coupon
+      ? "Aplicando cupom de teste no servidor..."
+      : fixedQuantity
+        ? "Criando checkout seguro da assinatura no Mercado Pago..."
+        : `Criando checkout seguro no Mercado Pago (${quantity}x)...`, "ok");
 
     try {
       const response = await fetch(`${apiBase}/api/shop/checkout`, {
