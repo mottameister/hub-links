@@ -29,6 +29,15 @@ const products = {
     cobbleDollars: 10000000,
     command: "cobbledollars give {nick} 10000000",
   },
+  cobbledollars_20m: {
+    sku: "cobbledollars_20m",
+    title: "20 mi CobbleDollars",
+    type: "cobbledollars",
+    amount: 70,
+    currency: "BRL",
+    cobbleDollars: 20000000,
+    command: "cobbledollars give {nick} 20000000",
+  },
   claims_5: {
     sku: "claims_5",
     title: "5 Claims",
