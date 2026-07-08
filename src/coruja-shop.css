@@ -25,25 +25,26 @@ html[data-theme="light"] body.coruja-shop-page {
   min-width: 320px;
   color: var(--text);
   background:
-    radial-gradient(circle at 50% 0%, rgba(181, 23, 255, .12), transparent 34%),
-    linear-gradient(180deg, rgba(8, 7, 13, .62), #08070d 48%, #0a0810 100%) !important;
+    radial-gradient(circle at 50% 0%, rgba(181, 23, 255, .1), transparent 34%),
+    linear-gradient(180deg, rgba(8, 7, 13, .34), #08070d 58%, #0a0810 100%) !important;
   font-family: 'DM Sans', system-ui, sans-serif;
 }
 
 body::before {
-  z-index: 0;
+  z-index: 1;
   background:
-    linear-gradient(180deg, rgba(8, 7, 13, .2), rgba(8, 7, 13, .7) 45%, #08070d 100%),
-    radial-gradient(circle at 18% 12%, rgba(255, 191, 56, .08), transparent 30%);
+    linear-gradient(180deg, rgba(8, 7, 13, .2), rgba(8, 7, 13, .62) 46%, #08070d 100%),
+    radial-gradient(circle at 18% 12%, rgba(255, 191, 56, .07), transparent 30%);
 }
 
 #coruja-shop-dither {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
-  opacity: .62;
-  mask-image: linear-gradient(to bottom, #000 0%, #000 66%, transparent 100%);
+  opacity: .9;
+  filter: saturate(1.08) contrast(1.04);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 74%, transparent 100%);
 }
 
 .dither-container {
