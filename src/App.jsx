@@ -88,10 +88,10 @@ const tocaLinks = [
   },
   {
     title: 'Virar Ace Trainer',
-    description: 'Treinador de end-game na campanha.',
-    meta: 'END-GAME',
+    description: 'Trainer personalizado combinado por conversa.',
+    meta: 'CORUJA SHOP',
     icon: '△',
-    href: 'https://www.patreon.com/posts/ace-trainer-toca-156636229',
+    href: '/coruja-shop/#ace-trainer',
     tone: 'pink'
   }
 ];
