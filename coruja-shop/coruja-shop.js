@@ -38,6 +38,8 @@
     return button?.dataset.fixedQuantity === "1";
   };
 
+  const isMembershipSku = (sku) => String(sku || "").startsWith("coruja_plus");
+
   const setLoading = (isLoading) => {
     checkoutButtons.forEach((button) => {
       button.disabled = isLoading;
@@ -148,9 +150,11 @@
     setLoading(true);
     setStatus(coupon
       ? "Aplicando cupom de teste no servidor..."
-      : fixedQuantity
+      : isMembershipSku(sku)
         ? "Criando checkout seguro da assinatura no Mercado Pago..."
-        : `Criando checkout seguro no Mercado Pago (${quantity}x)...`, "ok");
+        : fixedQuantity
+          ? "Criando checkout seguro no Mercado Pago..."
+          : `Criando checkout seguro no Mercado Pago (${quantity}x)...`, "ok");
 
     try {
       const response = await fetch(`${apiBase}/api/shop/checkout`, {
@@ -163,7 +167,7 @@
       window.clearTimeout(timeoutId);
 
       if (payload.couponApplied) {
-        setStatus("Cupom aplicado. O pedido entrou na fila de entrega do servidor.", "ok");
+        setStatus(payload.deliveryId ? "Cupom aplicado. O pedido entrou na fila de entrega do servidor." : "Cupom aplicado. O pedido ficou registrado para entrega manual.", "ok");
         setLoading(false);
         return;
       }

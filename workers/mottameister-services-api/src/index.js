@@ -6,7 +6,7 @@ const products = {
     sku: "cobbledollars_1m",
     title: "1 mi CobbleDollars",
     type: "cobbledollars",
-    amount: 10,
+    amount: 9.9,
     currency: "BRL",
     cobbleDollars: 1000000,
     command: "cobbledollars give {nick} 1000000",
@@ -15,7 +15,7 @@ const products = {
     sku: "cobbledollars_5m",
     title: "5 mi CobbleDollars",
     type: "cobbledollars",
-    amount: 30,
+    amount: 29.9,
     currency: "BRL",
     cobbleDollars: 5000000,
     command: "cobbledollars give {nick} 5000000",
@@ -24,7 +24,7 @@ const products = {
     sku: "cobbledollars_10m",
     title: "10 mi CobbleDollars",
     type: "cobbledollars",
-    amount: 40,
+    amount: 39.9,
     currency: "BRL",
     cobbleDollars: 10000000,
     command: "cobbledollars give {nick} 10000000",
@@ -33,7 +33,7 @@ const products = {
     sku: "cobbledollars_20m",
     title: "20 mi CobbleDollars",
     type: "cobbledollars",
-    amount: 70,
+    amount: 69.9,
     currency: "BRL",
     cobbleDollars: 20000000,
     command: "cobbledollars give {nick} 20000000",
@@ -42,7 +42,7 @@ const products = {
     sku: "claims_5",
     title: "5 Claims",
     type: "opac_claim_bonus",
-    amount: 10,
+    amount: 9.9,
     currency: "BRL",
     cobbleDollars: 0,
     claimChunks: 5,
@@ -52,7 +52,7 @@ const products = {
     sku: "claims_12",
     title: "12 Claims",
     type: "opac_claim_bonus",
-    amount: 20,
+    amount: 19.9,
     currency: "BRL",
     cobbleDollars: 0,
     claimChunks: 12,
@@ -62,7 +62,7 @@ const products = {
     sku: "claims_30",
     title: "30 Claims",
     type: "opac_claim_bonus",
-    amount: 40,
+    amount: 39.9,
     currency: "BRL",
     cobbleDollars: 0,
     claimChunks: 30,
@@ -95,6 +95,14 @@ const products = {
     membershipDays: 31,
     discountPercent: 10,
     command: "coruja-membership grant {nick} plus_plus 4000000 5 2 31",
+  },
+  ace_trainer_toca: {
+    sku: "ace_trainer_toca",
+    title: "Ace Trainer da Toca",
+    type: "manual_fulfillment",
+    amount: 19.9,
+    currency: "BRL",
+    cobbleDollars: 0,
   },
 };
 
@@ -159,8 +167,8 @@ const parseCheckoutQuantity = (value, product = null) => {
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > maxCheckoutQuantity) {
     throw Object.assign(new Error(`Quantidade deve ser entre 1 e ${maxCheckoutQuantity}.`), { statusCode: 400 });
   }
-  if (product?.type === "membership" && quantity !== 1) {
-    throw Object.assign(new Error("Assinaturas devem ser compradas uma por vez."), { statusCode: 400 });
+  if (["membership", "manual_fulfillment"].includes(product?.type) && quantity !== 1) {
+    throw Object.assign(new Error("Esse produto deve ser comprado uma unidade por vez."), { statusCode: 400 });
   }
   return quantity;
 };
@@ -565,7 +573,9 @@ const createPreference = async ({ env, request, order }) => {
     ? `Claims de chunks para ${order.minecraftNick} na Toca da Coruja`
     : product.type === "membership"
       ? `${product.title}: CobbleDollars, Claims extras, ovos shiny random e cargo especial para ${order.minecraftNick}`
-      : `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`;
+      : product.type === "manual_fulfillment"
+        ? `${product.title}: pedido personalizado combinado por conversa com o Motta`
+        : `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`;
   const siteUrl = sanitizeText(env.SITE_URL, 180).replace(/\/+$/, "") || "https://mottameister.xyz";
   const apiUrl = sanitizeText(env.API_URL, 180).replace(/\/+$/, "") || new URL(request.url).origin;
   return mercadoPagoFetch(env, "/checkout/preferences", {
@@ -611,11 +621,13 @@ const paymentExternalReference = (payment) => sanitizeText(payment.external_refe
 const paymentBelongsToOrder = ({ order, payment }) => paymentExternalReference(payment) === order.id;
 
 const createDeliveryIfNeeded = async ({ env, order, payment }) => {
+  const product = getProduct(order.sku);
+  if (product.type === "manual_fulfillment") return null;
+
   const existing = await env.DB.prepare("SELECT * FROM shop_deliveries WHERE environment = ? AND order_id = ?")
     .bind(getEnvironment(env), order.id)
     .first();
   if (existing) return deliveryFromRow(existing);
-  const product = getProduct(order.sku);
   const delivery = {
     id: order.id,
     orderId: order.id,
@@ -673,7 +685,7 @@ const applyApprovedPayment = async ({ env, order, payment }) => {
   }
 
   const paidOrder = await updateOrder(env, order.id, {
-    status: "paid_pending_delivery",
+    status: product.type === "manual_fulfillment" ? "paid_manual_fulfillment" : "paid_pending_delivery",
     mercadoPagoPaymentId: String(payment.id || order.mercadoPagoPaymentId || ""),
     paidAt: payment.date_approved || new Date().toISOString(),
   });
@@ -802,9 +814,10 @@ const handleCheckout = async (request, env) => {
   const payload = await parseBody(request);
   const testCoupon = await validateTestCoupon(payload, env);
   const order = await createOrder({ env, request, payload });
+  const product = getProduct(order.sku);
   if (testCoupon) {
     const paidOrder = await updateOrder(env, order.id, {
-      status: "paid_pending_delivery",
+      status: product.type === "manual_fulfillment" ? "paid_manual_fulfillment" : "paid_pending_delivery",
       amount: 0,
       mercadoPagoPaymentId: `coupon:${testCoupon}`,
       lastPaymentStatus: "coupon_test",
@@ -815,7 +828,7 @@ const handleCheckout = async (request, env) => {
         originalAmount: order.amount,
       },
     });
-    await upsertMembership({ env, order: paidOrder, product: getProduct(order.sku) });
+    await upsertMembership({ env, order: paidOrder, product });
     const delivery = await createDeliveryIfNeeded({
       env,
       order: paidOrder,
@@ -823,7 +836,7 @@ const handleCheckout = async (request, env) => {
         id: `coupon:${testCoupon}`,
       },
     });
-    return { ok: true, orderId: order.id, couponApplied: true, deliveryId: delivery.id, status: paidOrder.status };
+    return { ok: true, orderId: order.id, couponApplied: true, deliveryId: delivery?.id || null, status: paidOrder.status };
   }
   const preference = await createPreference({ env, request, order });
   await updateOrder(env, order.id, {
