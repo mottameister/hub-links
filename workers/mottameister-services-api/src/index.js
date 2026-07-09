@@ -737,12 +737,12 @@ const normalizeEntries = (entries) => (Array.isArray(entries) ? entries : [])
   .filter((entry) => entry.rank && entry.name && entry.amount)
   .slice(0, 10);
 
-const parseLeaderboardText = (text) => String(text || "")
-  .split(/\r?\n/)
-  .map((line) => line.trim())
-  .map((line) => line.match(/^(\d+)\.\s+(.+?)\s+\$?\s*([\d.,]+[KMB]?)/i))
-  .filter(Boolean)
-  .map((match) => ({ rank: Number(match[1]), name: sanitizeText(match[2], 32), amount: sanitizeText(match[3].replace(",", ".").toUpperCase(), 20) }))
+const parseLeaderboardText = (text) => [...String(text || "").matchAll(/(\d+)\.\s+(.+?)\s+\$?\s*([\d.,]+[KMB]?)(?=\s*\d+\.|\s*->>|$)/gi)]
+  .map((match) => ({
+    rank: Number(match[1]),
+    name: sanitizeText(match[2], 32),
+    amount: sanitizeText(match[3].replace(",", ".").toUpperCase(), 20),
+  }))
   .slice(0, 10);
 
 const ensureLeaderboardSnapshotsTable = async (env) => {
