@@ -103,12 +103,12 @@ Os pacotes estao gerando comandos no backend assim:
 - `coruja-membership grant {nick} plus_plus 4000000 5 2 31`
 
 O worker traduz `opac-claims add` para Open Parties and Claims via RCON.
-Como o comando `openpac player-config` exige um jogador como executor, ele roda via `execute as`.
-Isso exige que o jogador esteja online no momento da entrega; se estiver offline, o pedido volta para retry.
+Ele usa `openpac player-config for {nick}` para ler o valor atual e gravar a soma.
+Isso exige que o jogador exista para o OpenPAC no momento da entrega; se nao encontrar o player, o pedido volta para retry.
 
-1. `execute as {nick} run openpac player-config get claims.bonusChunkClaims`
+1. `openpac player-config for {nick} get claims.bonusChunkClaims`
 2. soma o pacote comprado ao valor atual
-3. `execute as {nick} run openpac player-config set claims.bonusChunkClaims {novo_total}`
+3. `openpac player-config for {nick} set claims.bonusChunkClaims {novo_total}`
 
 Se o plugin de economia usa outro comando, altere o mapa `products` em `workers/mottameister-services-api/src/index.js` antes do teste real.
 
