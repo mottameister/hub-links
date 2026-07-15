@@ -104,6 +104,14 @@ const products = {
     currency: "BRL",
     cobbleDollars: 0,
   },
+  mundo_toca_download: {
+    sku: "mundo_toca_download",
+    title: "Download do mundo da Toca",
+    type: "manual_fulfillment",
+    amount: 20,
+    currency: "BRL",
+    cobbleDollars: 0,
+  },
 };
 
 const fallbackLeaderboard = [

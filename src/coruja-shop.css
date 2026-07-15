@@ -519,6 +519,7 @@ html[data-theme="light"] .pack-membership {
   line-height: 1.45;
 }
 
+.info-service,
 .manual-service {
   display: grid;
   grid-template-columns: 70px minmax(0, 1fr) minmax(190px, .32fr);
@@ -533,6 +534,15 @@ html[data-theme="light"] .pack-membership {
   padding: 18px;
 }
 
+.info-service {
+  border-color: rgba(102, 242, 139, .18);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(102, 242, 139, .13), transparent 32%),
+    radial-gradient(circle at 8% 92%, rgba(67, 217, 255, .08), transparent 30%),
+    rgba(8, 7, 13, .58);
+}
+
+.info-service-icon,
 .manual-service-icon {
   width: 58px;
   height: 58px;
@@ -548,6 +558,10 @@ html[data-theme="light"] .pack-membership {
   letter-spacing: -.04em;
 }
 
+.info-service .service-label {
+  color: #8bffab;
+}
+
 .service-label {
   display: inline-flex;
   margin-bottom: 9px;
@@ -558,6 +572,7 @@ html[data-theme="light"] .pack-membership {
   text-transform: uppercase;
 }
 
+.info-service h4,
 .manual-service h4 {
   margin: 0 0 9px;
   color: #f5f2fb;
@@ -568,6 +583,8 @@ html[data-theme="light"] .pack-membership {
   letter-spacing: -.045em;
 }
 
+.info-service p,
+.info-service li,
 .manual-service p,
 .manual-service li {
   color: #9992a3;
@@ -575,10 +592,12 @@ html[data-theme="light"] .pack-membership {
   line-height: 1.55;
 }
 
+.info-service p,
 .manual-service p {
   margin-bottom: 12px;
 }
 
+.info-service ul,
 .manual-service ul {
   display: grid;
   gap: 6px;
@@ -586,11 +605,13 @@ html[data-theme="light"] .pack-membership {
   padding-left: 17px;
 }
 
+.info-service-actions,
 .manual-service-actions {
   display: grid;
   gap: 10px;
 }
 
+.info-service-actions .button,
 .manual-service-actions .button {
   width: 100%;
   min-width: 0;
@@ -777,15 +798,18 @@ html[data-theme="light"] .note {
     grid-template-columns: 1fr;
   }
 
+  .info-service,
   .manual-service {
     grid-template-columns: 58px minmax(0, 1fr);
   }
 
+  .info-service-actions,
   .manual-service-actions {
     grid-column: 1 / -1;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .info-service-actions .text-link,
   .manual-service-actions .text-link {
     grid-column: 1 / -1;
   }
@@ -802,11 +826,15 @@ html[data-theme="light"] .note {
     grid-template-columns: 1fr;
   }
 
+  .info-service,
   .manual-service,
+  .info-service-actions,
   .manual-service-actions {
     grid-template-columns: 1fr;
   }
 
+  .info-service-actions,
+  .info-service-actions .text-link,
   .manual-service-actions,
   .manual-service-actions .text-link {
     grid-column: auto;
