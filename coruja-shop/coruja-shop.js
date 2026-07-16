@@ -149,7 +149,7 @@
 
     setLoading(true);
     setStatus(coupon
-      ? "Aplicando cupom de teste no servidor..."
+      ? "Aplicando cupom no servidor..."
       : isMembershipSku(sku)
         ? "Criando checkout seguro da assinatura no Mercado Pago..."
         : fixedQuantity

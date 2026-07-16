@@ -54,7 +54,7 @@
 
         <div class="field coupon-field">
           <label for="shopCoupon">Cupom</label>
-          <input id="shopCoupon" name="shopCoupon" autocomplete="off" maxlength="80" placeholder="Opcional" data-shop-coupon />
+          <input id="shopCoupon" name="shopCoupon" autocomplete="off" maxlength="80" placeholder="Opcional / teste" data-shop-coupon />
         </div>
 
         <div class="field quantity-field">
@@ -95,24 +95,25 @@
         <div class="pack-group pack-group-referral" id="indique">
           <div class="pack-group-head">
             <span class="kicker">indique a toca</span>
-            <h3>Comissão por convite</h3>
+            <h3>Desconto por convite</h3>
           </div>
 
           <article class="info-service">
             <div class="info-service-icon" aria-hidden="true">%</div>
             <div class="info-service-copy">
               <span class="service-label">Traga players novos para o servidor</span>
-              <h4>Cupom de indicação por player</h4>
-              <p>Quem já joga pode pedir um cupom próprio para mandar para amigos. Quando um player novo entra, compra pelo Coruja Shop e a indicação é validada, o indicador recebe comissão em CobbleDollars dentro do servidor.</p>
+              <h4>Código de indicação dentro do server</h4>
+              <p>Quem já joga tem um código próprio. Quando um amigo novo entra na Toca e usa <strong>/indicado CODIGO</strong>, o indicador ganha 10% de desconto automático no Coruja Shop.</p>
               <ul>
-                <li>Cupom/link identifica quem indicou sem precisar depender de conversa solta.</li>
-                <li>Comissão paga em CobbleDollars depois da compra confirmada e do player novo validado.</li>
-                <li>Regra pensada para evitar autoindicação, conta secundária e abuso de cupom.</li>
+                <li>Cada indicação válida gera +10% de desconto por 30 dias.</li>
+                <li>O desconto acumula até 30% e fica preso ao UUID de quem indicou.</li>
+                <li>O indicado também recebe um código próprio para chamar mais gente.</li>
+                <li>Autoindicação e player que já usou indicação não contam.</li>
               </ul>
             </div>
             <div class="info-service-actions">
-              <a class="button secondary" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Pedir cupom</a>
-              <span class="text-link">A comissão é interna do servidor e não vira saldo em dinheiro real.</span>
+              <a class="button secondary" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Entrar no Discord</a>
+              <span class="text-link">Use /meucodigo no servidor para ver seu código de indicação.</span>
             </div>
           </article>
         </div>
@@ -229,7 +230,7 @@
       <div class="panel"><strong>spawn</strong><span>Merchants fixos para comprar Poké Balls, itens, treino e utilidades sem depender de chat.</span></div>
       <div class="panel"><strong>claims</strong><span>Pacotes para proteger mais chunks e construir uma base maior dentro da Toca da Coruja.</span></div>
       <div class="panel"><strong>coruja++</strong><span>Assinantes recebem cargo especial no chat, ovos shiny random, desconto nos avulsos e acesso ao download do mundo.</span></div>
-      <div class="panel"><strong>indicação</strong><span>Players podem pedir cupom próprio e receber comissão em CobbleDollars quando trouxerem gente nova validada.</span></div>
+      <div class="panel"><strong>indicação</strong><span>Players chamam amigos com /indicado e ganham 10% de desconto no shop por indicação válida.</span></div>
       <div class="panel"><strong>mundo</strong><span>Download do mapa vendido avulso ou liberado como benefício para quem for Coruja++.</span></div>
       <div class="panel"><strong>trainer</strong><span>Encomenda manual para transformar sua ideia em um Ace Trainer especial da campanha.</span></div>
       <div class="panel"><strong>pix</strong><span>Checkout seguro via Mercado Pago, com pedido registrado para entrega no servidor.</span></div>
@@ -305,7 +306,7 @@
       </div>
     </section>
 
-    <p class="note">CobbleDollars, Claims, ovos, cargos, comissões de indicação, download do mundo e pedidos de Ace Trainer são recursos internos da Toca da Coruja, podem existir ou ser obtidos dentro das regras do servidor, não têm valor real fora do servidor, não podem ser sacados e não são afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon. Benefícios de assinatura dependem da assinatura ativa.</p>
+    <p class="note">CobbleDollars, Claims, ovos, cargos, descontos de indicação, download do mundo e pedidos de Ace Trainer são recursos internos da Toca da Coruja, podem existir ou ser obtidos dentro das regras do servidor, não têm valor real fora do servidor, não podem ser sacados e não são afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon. Benefícios de assinatura dependem da assinatura ativa.</p>
   </main>
 
   <script type="module" src="/src/coruja-shop.jsx"></script>

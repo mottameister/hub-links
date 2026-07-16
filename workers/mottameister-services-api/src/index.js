@@ -147,7 +147,7 @@ const corsHeaders = (request) => {
   const origin = request ? request.headers.get("origin") : "";
   const headers = {
     "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-    "Access-Control-Allow-Headers": "authorization,content-type,x-shop-admin-token,x-shop-delivery-secret",
+    "Access-Control-Allow-Headers": "authorization,content-type,x-shop-admin-token,x-shop-delivery-secret,x-shop-referral-secret",
     "Access-Control-Max-Age": "86400",
   };
   if (origin && allowedOrigins.has(origin)) headers["Access-Control-Allow-Origin"] = origin;
@@ -330,6 +330,8 @@ const deliverySecret = (request) => request.headers.get("x-shop-delivery-secret"
 
 const adminSecret = (request) => request.headers.get("x-shop-admin-token") || bearerToken(request);
 
+const referralSecret = (request) => request.headers.get("x-shop-referral-secret") || bearerToken(request);
+
 const requireDeliveryAuth = async (request, env) => {
   if (!env.SHOP_DELIVERY_SECRET) throw Object.assign(new Error("SHOP_DELIVERY_SECRET ainda nao esta configurado."), { statusCode: 503 });
   if (!(await isSafeEqual(deliverySecret(request), env.SHOP_DELIVERY_SECRET))) throw Object.assign(new Error("Unauthorized."), { statusCode: 401 });
@@ -346,6 +348,12 @@ const requireRetryAuth = async (request, env) => {
   const adminOk = expectedAdmin && await isSafeEqual(adminSecret(request), expectedAdmin);
   const deliveryOk = env.SHOP_DELIVERY_SECRET && await isSafeEqual(deliverySecret(request), env.SHOP_DELIVERY_SECRET);
   if (!adminOk && !deliveryOk) throw Object.assign(new Error("Unauthorized."), { statusCode: 401 });
+};
+
+const requireReferralAuth = async (request, env) => {
+  const expected = env.SHOP_REFERRAL_SECRET || env.SHOP_DELIVERY_SECRET || "";
+  if (!expected) throw Object.assign(new Error("SHOP_REFERRAL_SECRET ainda nao esta configurado."), { statusCode: 503 });
+  if (!(await isSafeEqual(referralSecret(request), expected))) throw Object.assign(new Error("Unauthorized."), { statusCode: 401 });
 };
 
 const mercadoPagoFetch = async (env, path, options = {}) => {
@@ -441,6 +449,239 @@ const upsertMembership = async ({ env, order, product }) => {
   return { tier: product.membershipTier, expiresAt };
 };
 
+const referralRewardPercent = (env) => Math.max(1, Math.min(Number(env.SHOP_REFERRAL_REWARD_PERCENT || 10), 30));
+
+const referralMaxDiscountPercent = (env) => Math.max(1, Math.min(Number(env.SHOP_REFERRAL_MAX_DISCOUNT_PERCENT || 30), 80));
+
+const referralCreditDays = (env) => Math.max(1, Math.min(Number(env.SHOP_REFERRAL_CREDIT_DAYS || 30), 365));
+
+const referralClaimWindowHours = (env) => Math.max(1, Math.min(Number(env.SHOP_REFERRAL_WINDOW_HOURS || 24), 720));
+
+const normalizeReferralCode = (value) => sanitizeText(value, 40).toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 24);
+
+const referralCodeFromProfile = (minecraftNick, minecraftUuid) => {
+  const base = normalizeReferralCode(minecraftNick);
+  if (base.length >= 3) return base;
+  return `CORUJA${sanitizeText(minecraftUuid, 8).toUpperCase()}`;
+};
+
+const ensureReferralTables = async (env) => {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS shop_referral_codes (
+      environment TEXT NOT NULL,
+      code TEXT NOT NULL,
+      referrer_minecraft_uuid TEXT NOT NULL,
+      referrer_minecraft_nick TEXT NOT NULL,
+      status TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (environment, code)
+    )
+  `).run();
+  await env.DB.prepare(`
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_shop_referral_codes_referrer
+    ON shop_referral_codes (environment, referrer_minecraft_uuid)
+  `).run();
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS shop_referral_uses (
+      environment TEXT NOT NULL,
+      referred_minecraft_uuid TEXT NOT NULL,
+      referred_minecraft_nick TEXT NOT NULL,
+      referrer_minecraft_uuid TEXT NOT NULL,
+      referrer_minecraft_nick TEXT NOT NULL,
+      code TEXT NOT NULL,
+      status TEXT NOT NULL,
+      first_seen_at TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      PRIMARY KEY (environment, referred_minecraft_uuid)
+    )
+  `).run();
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS shop_referral_credits (
+      id TEXT PRIMARY KEY,
+      environment TEXT NOT NULL,
+      referrer_minecraft_uuid TEXT NOT NULL,
+      referrer_minecraft_nick TEXT NOT NULL,
+      referred_minecraft_uuid TEXT NOT NULL,
+      referred_minecraft_nick TEXT NOT NULL,
+      referral_code TEXT NOT NULL,
+      discount_percent INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      order_id TEXT NOT NULL DEFAULT '',
+      expires_at TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      used_at TEXT NOT NULL DEFAULT ''
+    )
+  `).run();
+  await env.DB.prepare(`
+    CREATE INDEX IF NOT EXISTS idx_shop_referral_credits_referrer
+    ON shop_referral_credits (environment, referrer_minecraft_uuid, status, expires_at)
+  `).run();
+};
+
+const getOrCreateReferralCode = async ({ env, minecraftUuid, minecraftNick }) => {
+  const cleanUuid = sanitizeText(minecraftUuid, 40);
+  const cleanNick = sanitizeMinecraftNick(minecraftNick);
+  if (!cleanUuid || !cleanNick) throw Object.assign(new Error("Perfil de indicacao invalido."), { statusCode: 400 });
+
+  await ensureReferralTables(env);
+  const environment = getEnvironment(env);
+  const existing = await env.DB.prepare(`
+    SELECT * FROM shop_referral_codes
+    WHERE environment = ? AND referrer_minecraft_uuid = ? AND status = ?
+  `).bind(environment, cleanUuid, "active").first();
+  if (existing) return existing;
+
+  const now = new Date().toISOString();
+  const baseCode = referralCodeFromProfile(cleanNick, cleanUuid);
+  let code = baseCode;
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const taken = await env.DB.prepare("SELECT referrer_minecraft_uuid FROM shop_referral_codes WHERE environment = ? AND code = ?")
+      .bind(environment, code)
+      .first();
+    if (!taken || taken.referrer_minecraft_uuid === cleanUuid) break;
+    code = `${baseCode}${cleanUuid.slice(attempt, attempt + 4).toUpperCase()}`.slice(0, 24);
+  }
+
+  await env.DB.prepare(`
+    INSERT INTO shop_referral_codes (environment, code, referrer_minecraft_uuid, referrer_minecraft_nick, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(environment, referrer_minecraft_uuid) DO UPDATE SET
+      referrer_minecraft_nick = excluded.referrer_minecraft_nick,
+      status = excluded.status,
+      updated_at = excluded.updated_at
+  `).bind(environment, code, cleanUuid, cleanNick, "active", now, now).run();
+
+  return env.DB.prepare("SELECT * FROM shop_referral_codes WHERE environment = ? AND referrer_minecraft_uuid = ?")
+    .bind(environment, cleanUuid)
+    .first();
+};
+
+const getActiveReferralDiscount = async (env, minecraftUuid) => {
+  const cleanUuid = sanitizeText(minecraftUuid, 40);
+  if (!cleanUuid) return { discountPercent: 0, credits: [] };
+  await ensureReferralTables(env);
+  const rows = await env.DB.prepare(`
+    SELECT * FROM shop_referral_credits
+    WHERE environment = ? AND referrer_minecraft_uuid = ? AND status = ? AND expires_at > ?
+    ORDER BY created_at ASC
+  `).bind(getEnvironment(env), cleanUuid, "active", new Date().toISOString()).all();
+  const maxPercent = referralMaxDiscountPercent(env);
+  const credits = [];
+  let discountPercent = 0;
+  for (const credit of rows.results || []) {
+    if (discountPercent >= maxPercent) break;
+    const creditPercent = Math.max(0, Number(credit.discount_percent || 0));
+    const usablePercent = Math.min(creditPercent, maxPercent - discountPercent);
+    if (!usablePercent) continue;
+    credits.push({
+      id: credit.id,
+      code: credit.referral_code,
+      referredMinecraftNick: credit.referred_minecraft_nick,
+      discountPercent: usablePercent,
+      expiresAt: credit.expires_at,
+    });
+    discountPercent += usablePercent;
+  }
+  return { discountPercent, credits };
+};
+
+const consumeReferralCreditsForOrder = async ({ env, order }) => {
+  const creditIds = Array.isArray(order.paymentValidation?.referralCreditIds) ? order.paymentValidation.referralCreditIds : [];
+  if (!creditIds.length) return 0;
+  await ensureReferralTables(env);
+  const now = new Date().toISOString();
+  let used = 0;
+  for (const creditId of creditIds) {
+    const result = await env.DB.prepare(`
+      UPDATE shop_referral_credits
+      SET status = ?, order_id = ?, used_at = ?
+      WHERE environment = ? AND id = ? AND referrer_minecraft_uuid = ? AND status = ?
+    `).bind("used", order.id, now, getEnvironment(env), sanitizeText(creditId, 80), order.minecraftUuid || "", "active").run();
+    used += Number(result.meta?.changes || 0);
+  }
+  return used;
+};
+
+const handleReferralCode = async (request, env) => {
+  await requireReferralAuth(request, env);
+  const payload = await parseBody(request);
+  const code = await getOrCreateReferralCode({
+    env,
+    minecraftUuid: payload.minecraftUuid,
+    minecraftNick: payload.minecraftNick,
+  });
+  const discount = await getActiveReferralDiscount(env, payload.minecraftUuid);
+  return {
+    ok: true,
+    code: code.code,
+    minecraftNick: code.referrer_minecraft_nick,
+    activeDiscountPercent: discount.discountPercent,
+    activeCredits: discount.credits.length,
+    maxDiscountPercent: referralMaxDiscountPercent(env),
+  };
+};
+
+const handleReferralClaim = async (request, env) => {
+  await requireReferralAuth(request, env);
+  const payload = await parseBody(request);
+  const code = normalizeReferralCode(payload.code);
+  const referredUuid = sanitizeText(payload.referredMinecraftUuid || payload.minecraftUuid, 40);
+  const referredNick = sanitizeMinecraftNick(payload.referredMinecraftNick || payload.minecraftNick);
+  const firstSeenAt = sanitizeText(payload.firstSeenAt, 40) || new Date().toISOString();
+
+  if (!code) throw Object.assign(new Error("Codigo de indicacao invalido."), { statusCode: 400 });
+  if (!referredUuid || !referredNick) throw Object.assign(new Error("Player indicado invalido."), { statusCode: 400 });
+
+  await ensureReferralTables(env);
+  const environment = getEnvironment(env);
+  const referral = await env.DB.prepare(`
+    SELECT * FROM shop_referral_codes
+    WHERE environment = ? AND code = ? AND status = ?
+  `).bind(environment, code, "active").first();
+  if (!referral) throw Object.assign(new Error("Codigo de indicacao nao encontrado."), { statusCode: 404 });
+  if (referral.referrer_minecraft_uuid === referredUuid) throw Object.assign(new Error("Voce nao pode usar seu proprio codigo de indicacao."), { statusCode: 400 });
+
+  const previousUse = await env.DB.prepare("SELECT * FROM shop_referral_uses WHERE environment = ? AND referred_minecraft_uuid = ?")
+    .bind(environment, referredUuid)
+    .first();
+  if (previousUse) throw Object.assign(new Error("Esse player ja usou uma indicacao."), { statusCode: 409 });
+
+  const firstSeenMs = Date.parse(firstSeenAt);
+  if (Number.isFinite(firstSeenMs)) {
+    const maxAgeMs = referralClaimWindowHours(env) * 60 * 60 * 1000;
+    if (Date.now() - firstSeenMs > maxAgeMs) {
+      throw Object.assign(new Error("A janela para registrar indicacao desse player expirou."), { statusCode: 400 });
+    }
+  }
+
+  const now = new Date().toISOString();
+  const expiresAt = new Date(Date.now() + referralCreditDays(env) * 86400000).toISOString();
+  const discountPercent = referralRewardPercent(env);
+  await env.DB.prepare(`
+    INSERT INTO shop_referral_uses (environment, referred_minecraft_uuid, referred_minecraft_nick, referrer_minecraft_uuid, referrer_minecraft_nick, code, status, first_seen_at, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(environment, referredUuid, referredNick, referral.referrer_minecraft_uuid, referral.referrer_minecraft_nick, code, "accepted", firstSeenAt, now).run();
+  await env.DB.prepare(`
+    INSERT INTO shop_referral_credits (id, environment, referrer_minecraft_uuid, referrer_minecraft_nick, referred_minecraft_uuid, referred_minecraft_nick, referral_code, discount_percent, status, expires_at, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(crypto.randomUUID(), environment, referral.referrer_minecraft_uuid, referral.referrer_minecraft_nick, referredUuid, referredNick, code, discountPercent, "active", expiresAt, now).run();
+
+  const referredCode = await getOrCreateReferralCode({ env, minecraftUuid: referredUuid, minecraftNick: referredNick });
+  const activeDiscount = await getActiveReferralDiscount(env, referral.referrer_minecraft_uuid);
+  return {
+    ok: true,
+    code,
+    referrerMinecraftNick: referral.referrer_minecraft_nick,
+    referredMinecraftNick: referredNick,
+    rewardDiscountPercent: discountPercent,
+    referrerActiveDiscountPercent: activeDiscount.discountPercent,
+    maxDiscountPercent: referralMaxDiscountPercent(env),
+    expiresAt,
+    referredCode: referredCode.code,
+  };
+};
+
 const toOrderRow = ({ env, order }) => [
   order.id,
   getEnvironment(env),
@@ -513,7 +754,13 @@ const createOrder = async ({ env, request, payload }) => {
   const profile = await validateMinecraftProfile(cleanNick);
   const now = new Date().toISOString();
   const activeMembership = product.type === "membership" ? null : await getActiveMembership(env, profile.id);
-  const discountPercent = Number(activeMembership?.discount_percent || 0);
+  const referralDiscount = await getActiveReferralDiscount(env, profile.id);
+  const membershipDiscountPercent = Number(activeMembership?.discount_percent || 0);
+  const discountPercent = Math.min(referralMaxDiscountPercent(env), membershipDiscountPercent + referralDiscount.discountPercent);
+  const discountSources = [
+    membershipDiscountPercent > 0 ? "active_membership" : "",
+    referralDiscount.discountPercent > 0 ? "referral_credits" : "",
+  ].filter(Boolean);
   const originalAmount = roundMoney(product.amount * quantity);
   const totalAmount = discountPercent > 0 ? roundMoney(originalAmount * (1 - discountPercent / 100)) : originalAmount;
   const totalCobbleDollars = (product.cobbleDollars || 0) * quantity;
@@ -540,7 +787,11 @@ const createOrder = async ({ env, request, payload }) => {
       membershipDays: product.membershipDays || 0,
       originalAmount,
       discountPercent,
-      discountSource: discountPercent > 0 ? "active_membership" : "",
+      membershipDiscountPercent,
+      referralDiscountPercent: referralDiscount.discountPercent,
+      referralCreditIds: referralDiscount.credits.map((credit) => credit.id),
+      referralCredits: referralDiscount.credits,
+      discountSource: discountSources.join("+"),
       membershipExpiresAt: activeMembership?.expires_at || "",
     },
     createdAt: now,
@@ -608,6 +859,8 @@ const createPreference = async ({ env, request, order }) => {
         membership_tier: product.membershipTier || "",
         membership_days: product.membershipDays || 0,
         discount_percent: Number(order.paymentValidation?.discountPercent || 0),
+        referral_discount_percent: Number(order.paymentValidation?.referralDiscountPercent || 0),
+        membership_discount_percent: Number(order.paymentValidation?.membershipDiscountPercent || 0),
         quantity,
         unit_amount: product.amount,
       },
@@ -698,6 +951,7 @@ const applyApprovedPayment = async ({ env, order, payment }) => {
     paidAt: payment.date_approved || new Date().toISOString(),
   });
   await upsertMembership({ env, order: paidOrder, product });
+  await consumeReferralCreditsForOrder({ env, order: paidOrder });
   const delivery = await createDeliveryIfNeeded({ env, order: paidOrder, payment });
   return { order: paidOrder, delivery, delivered: false, validation: null };
 };
@@ -1082,6 +1336,8 @@ export default {
     try {
       if (url.pathname === "/health") return json({ ok: true, service: "mottameister-services-api" }, 200, request);
       if (url.pathname === "/api/shop/checkout" && request.method === "POST") return json(await handleCheckout(request, env), 200, request);
+      if (url.pathname === "/api/shop/referrals/code" && request.method === "POST") return json(await handleReferralCode(request, env), 200, request);
+      if (url.pathname === "/api/shop/referrals/claim" && request.method === "POST") return json(await handleReferralClaim(request, env), 200, request);
       if (url.pathname === "/api/shop/pending") return await handlePending(request, env);
       if (url.pathname === "/api/shop/webhook/mercadopago" && request.method === "POST") return json(await handleMercadoPagoWebhook(request, env), 200, request);
       if (url.pathname === "/api/shop/orders" && request.method === "GET") {
