@@ -235,6 +235,72 @@ h1 {
   padding: 18px;
 }
 
+.referral-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr);
+  gap: 14px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 191, 56, .24);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 94% 12%, rgba(255, 191, 56, .20), transparent 34%),
+    linear-gradient(135deg, rgba(101, 239, 154, .12), rgba(67, 217, 255, .07)),
+    rgba(0, 0, 0, .26);
+  padding: 16px;
+}
+
+.referral-copy h3 {
+  margin-bottom: 8px;
+  color: #fff3d8;
+  font-size: clamp(24px, 3vw, 34px);
+  line-height: 1;
+}
+
+.referral-copy p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+.referral-copy strong {
+  color: #fff8ee;
+}
+
+.referral-steps {
+  display: grid;
+  gap: 8px;
+}
+
+.referral-steps span {
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .22);
+  color: #f8e9d0;
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.25;
+  padding: 7px 9px;
+}
+
+.referral-steps strong {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--gold), var(--coin));
+  color: #09110a;
+  font-size: 13px;
+  font-weight: 950;
+}
+
 .field {
   display: grid;
   gap: 7px;
@@ -938,6 +1004,10 @@ html[data-theme="light"] .field input {
   }
 
   .packs {
+    grid-template-columns: 1fr;
+  }
+
+  .referral-card {
     grid-template-columns: 1fr;
   }
 
