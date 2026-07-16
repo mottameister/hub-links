@@ -164,6 +164,8 @@ const sanitizeMinecraftNick = (value) => {
   return /^[A-Za-z0-9_]{3,16}$/.test(nick) ? nick : "";
 };
 
+const normalizeMinecraftUuid = (value) => sanitizeText(value, 48).replace(/-/g, "").toLowerCase().slice(0, 32);
+
 const getEnvironment = (env) => sanitizeText(env.SHOP_ENV || defaultEnvironment, 24) || defaultEnvironment;
 
 const getProduct = (sku) => products[String(sku || "")] || null;
@@ -380,7 +382,7 @@ const validateMinecraftProfile = async (nick) => {
   if (!response.ok) return { id: "", name: nick };
   const profile = await response.json();
   if (!profile?.id || !profile?.name) throw Object.assign(new Error("A Mojang nao retornou um perfil valido para esse nick."), { statusCode: 400 });
-  return { id: sanitizeText(profile.id, 40), name: sanitizeMinecraftNick(profile.name) };
+  return { id: normalizeMinecraftUuid(profile.id), name: sanitizeMinecraftNick(profile.name) };
 };
 
 const ensureShopMembershipsTable = async (env) => {
@@ -520,7 +522,7 @@ const ensureReferralTables = async (env) => {
 };
 
 const getOrCreateReferralCode = async ({ env, minecraftUuid, minecraftNick }) => {
-  const cleanUuid = sanitizeText(minecraftUuid, 40);
+  const cleanUuid = normalizeMinecraftUuid(minecraftUuid);
   const cleanNick = sanitizeMinecraftNick(minecraftNick);
   if (!cleanUuid || !cleanNick) throw Object.assign(new Error("Perfil de indicacao invalido."), { statusCode: 400 });
 
@@ -558,7 +560,7 @@ const getOrCreateReferralCode = async ({ env, minecraftUuid, minecraftNick }) =>
 };
 
 const getActiveReferralDiscount = async (env, minecraftUuid) => {
-  const cleanUuid = sanitizeText(minecraftUuid, 40);
+  const cleanUuid = normalizeMinecraftUuid(minecraftUuid);
   if (!cleanUuid) return { discountPercent: 0, credits: [] };
   await ensureReferralTables(env);
   const rows = await env.DB.prepare(`
@@ -626,7 +628,7 @@ const handleReferralClaim = async (request, env) => {
   await requireReferralAuth(request, env);
   const payload = await parseBody(request);
   const code = normalizeReferralCode(payload.code);
-  const referredUuid = sanitizeText(payload.referredMinecraftUuid || payload.minecraftUuid, 40);
+  const referredUuid = normalizeMinecraftUuid(payload.referredMinecraftUuid || payload.minecraftUuid);
   const referredNick = sanitizeMinecraftNick(payload.referredMinecraftNick || payload.minecraftNick);
   const firstSeenAt = sanitizeText(payload.firstSeenAt, 40) || new Date().toISOString();
 
