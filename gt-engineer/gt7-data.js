@@ -5242,6 +5242,10 @@ window.GT7_DATA = {
       "type": "fast"
     },
     {
+      "name": "Circuit Gilles-Villeneuve",
+      "type": "fast"
+    },
+    {
       "name": "Colorado Springs - Lake",
       "type": "technical"
     },
@@ -5256,6 +5260,14 @@ window.GT7_DATA = {
     {
       "name": "Deep Forest Raceway",
       "type": "balanced"
+    },
+    {
+      "name": "Eiger Nordwand",
+      "type": "technical"
+    },
+    {
+      "name": "Eiger Nordwand Reverse",
+      "type": "technical"
     },
     {
       "name": "Dragon Trail - Gardens",
@@ -5452,6 +5464,10 @@ window.GT7_DATA = {
     {
       "name": "Willow Springs - Horse Thief Mile",
       "type": "technical"
+    },
+    {
+      "name": "Yas Marina Circuit",
+      "type": "balanced"
     },
     {
       "name": "World Touring Car 600/700 Custom Event",
