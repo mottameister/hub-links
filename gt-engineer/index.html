@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GT7 Setup Engineer</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/gt-engineer/styles.css" />
   </head>
   <body>
     <main class="app-shell">
       <section class="workspace">
-        <aside class="reference-panel" aria-label="Referencia da tela de configuracao do GT7">
+        <aside class="reference-panel" aria-label="Referencia visual de carro de corrida">
           <div class="brand-row">
             <div class="mark">GT7</div>
             <div>
@@ -17,11 +17,7 @@
               <h1>Configurador guiado para Gran Turismo 7</h1>
             </div>
           </div>
-          <img src="gt7-reference.jpg" alt="Tela de configuracao de carro do Gran Turismo 7" />
-          <div class="status-card">
-            <span class="status-dot"></span>
-            <p>V1 focada em perguntas clicaveis, regras de corrida e setup inicial testavel.</p>
-          </div>
+          <img src="/gt-engineer/gt-engineer-hero.png" alt="Carro de corrida em box com telas de telemetria" />
         </aside>
 
         <section class="tool-panel" aria-label="Configurador">
@@ -39,47 +35,18 @@
             <div class="step active" data-step="0">
               <label>
                 Carro
-                <select name="car" required>
-                  <option value="Porsche 911 GT3 R (992) '22">Porsche 911 GT3 R (992) '22</option>
-                  <option value="Mazda RX-Vision GT3 Concept">Mazda RX-Vision GT3 Concept</option>
-                  <option value="Toyota GR Supra Racing Concept '18">Toyota GR Supra Racing Concept '18</option>
-                  <option value="Nissan GT-R NISMO GT3 '18">Nissan GT-R NISMO GT3 '18</option>
-                  <option value="Ferrari 458 Italia GT3 '13">Ferrari 458 Italia GT3 '13</option>
-                  <option value="Outro carro">Outro carro</option>
-                </select>
-              </label>
-              <label>
-                Tracao / comportamento base
-                <select name="drivetrain">
-                  <option value="MR/RR">MR/RR - motor atras, traseira sensivel</option>
-                  <option value="FR">FR - motor dianteiro, tracao traseira</option>
-                  <option value="4WD">4WD - tracao integral</option>
-                  <option value="FF">FF - tracao dianteira</option>
-                </select>
+                <input name="car" list="car-list" required autocomplete="off" placeholder="Digite para buscar: 911, Supra, GT-R..." />
+                <datalist id="car-list"></datalist>
+                <small id="car-meta">A tracao sera detectada automaticamente quando o carro estiver na base.</small>
               </label>
             </div>
 
             <div class="step" data-step="1">
               <label>
                 Pista
-                <select name="track">
-                  <option value="Interlagos">Interlagos</option>
-                  <option value="Spa-Francorchamps">Spa-Francorchamps</option>
-                  <option value="Suzuka Circuit">Suzuka Circuit</option>
-                  <option value="Nurburgring GP">Nurburgring GP</option>
-                  <option value="Le Mans">Le Mans</option>
-                  <option value="Tokyo Expressway">Tokyo Expressway</option>
-                  <option value="Outra pista">Outra pista</option>
-                </select>
-              </label>
-              <label>
-                Tipo de pista
-                <select name="trackType">
-                  <option value="balanced">Mista / equilibrada</option>
-                  <option value="technical">Travada / curvas lentas</option>
-                  <option value="fast">Alta velocidade / retas longas</option>
-                  <option value="flowing">Curvas medias e rapidas</option>
-                </select>
+                <input name="track" list="track-list" required autocomplete="off" placeholder="Digite para buscar: Spa, Suzuka, Tokyo..." />
+                <datalist id="track-list"></datalist>
+                <small id="track-meta">O tipo de pista sera inferido pela base.</small>
               </label>
             </div>
 
@@ -110,44 +77,43 @@
             </div>
 
             <div class="step" data-step="3">
-              <div class="grid-2">
+              <label>
+                Pneus
+                <select name="tires">
+                  <option value="Comfort Hard">Comfort Hard</option>
+                  <option value="Comfort Medium">Comfort Medium</option>
+                  <option value="Comfort Soft">Comfort Soft</option>
+                  <option value="Sports Hard">Sports Hard</option>
+                  <option value="Sports Medium">Sports Medium</option>
+                  <option value="Sports Soft">Sports Soft</option>
+                  <option value="Racing Hard" selected>Racing Hard</option>
+                  <option value="Racing Medium">Racing Medium</option>
+                  <option value="Racing Soft">Racing Soft</option>
+                  <option value="Racing Intermediate">Racing Intermediate</option>
+                  <option value="Racing Heavy Wet">Racing Heavy Wet</option>
+                  <option value="Dirt Tires">Dirt Tires</option>
+                  <option value="Snow Tires">Snow Tires</option>
+                </select>
+              </label>
+              <fieldset>
+                <legend>Duracao</legend>
+                <div class="segmented two">
+                  <label><input type="radio" name="durationType" value="laps" checked /> Voltas</label>
+                  <label><input type="radio" name="durationType" value="time" /> Tempo</label>
+                </div>
+              </fieldset>
+              <label>
+                Numero de voltas ou minutos
+                <input name="durationValue" type="number" min="1" max="1440" step="1" value="10" />
+              </label>
+              <div class="slider-grid">
                 <label>
-                  Pneus
-                  <select name="tires">
-                    <option value="Racing Hard">Racing Hard</option>
-                    <option value="Racing Medium">Racing Medium</option>
-                    <option value="Racing Soft">Racing Soft</option>
-                    <option value="Sports Soft">Sports Soft</option>
-                    <option value="Intermediates">Intermediates</option>
-                    <option value="Wet">Wet</option>
-                  </select>
+                  <span>Desgaste de pneu <strong id="tireWearValue">5x</strong></span>
+                  <input name="tireWear" type="range" min="0" max="50" step="1" value="5" />
                 </label>
                 <label>
-                  Duracao
-                  <select name="duration">
-                    <option value="hotlap">Hotlap / quali</option>
-                    <option value="short">Corrida curta</option>
-                    <option value="medium" selected>Corrida media</option>
-                    <option value="long">Corrida longa</option>
-                  </select>
-                </label>
-                <label>
-                  Desgaste pneu
-                  <select name="tireWear">
-                    <option value="1">1x</option>
-                    <option value="3">3x</option>
-                    <option value="5" selected>5x</option>
-                    <option value="8">8x+</option>
-                  </select>
-                </label>
-                <label>
-                  Consumo combustivel
-                  <select name="fuel">
-                    <option value="0">Sem consumo</option>
-                    <option value="1">1x</option>
-                    <option value="2" selected>2x</option>
-                    <option value="5">5x+</option>
-                  </select>
+                  <span>Consumo de combustivel <strong id="fuelValue">2x</strong></span>
+                  <input name="fuel" type="range" min="0" max="50" step="1" value="2" />
                 </label>
               </div>
             </div>
@@ -197,6 +163,7 @@
       </section>
     </main>
 
-    <script src="app.js"></script>
+    <script src="/gt-engineer/gt7-data.js"></script>
+    <script src="/gt-engineer/app.js"></script>
   </body>
 </html>
