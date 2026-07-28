@@ -5134,59 +5134,115 @@ window.GT7_DATA = {
   ],
   "tracks": [
     {
-      "name": "24 Heures du Mans Racing Circuit",
+      "name": "24 Heures du Mans race track",
       "type": "fast"
     },
     {
-      "name": "24 Heures du Mans Racing Circuit - No Chicane",
+      "name": "24 Heures du Mans race track, no chicane",
       "type": "fast"
+    },
+    {
+      "name": "Alsace - Test Course",
+      "type": "balanced"
+    },
+    {
+      "name": "Alsace - Test Course Reverse",
+      "type": "balanced"
     },
     {
       "name": "Alsace - Village",
       "type": "balanced"
     },
     {
-      "name": "Alsace - Test Course",
-      "type": "technical"
+      "name": "Alsace - Village Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - Center",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - Center Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - East",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - East End",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - East End Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - East Reverse",
+      "type": "balanced"
     },
     {
       "name": "Autodrome Lago Maggiore - Full Course",
       "type": "balanced"
     },
     {
-      "name": "Autodrome Lago Maggiore - Centre",
-      "type": "technical"
-    },
-    {
-      "name": "Autodrome Lago Maggiore - East End",
-      "type": "technical"
-    },
-    {
-      "name": "Autodrome Lago Maggiore - West End",
-      "type": "technical"
-    },
-    {
-      "name": "Autodrome Lago Maggiore - East",
-      "type": "technical"
-    },
-    {
-      "name": "Autodrome Lago Maggiore - West",
-      "type": "technical"
-    },
-    {
-      "name": "Autopolis International Racing Course",
+      "name": "Autodrome Lago Maggiore - Full Course Reverse",
       "type": "balanced"
     },
     {
-      "name": "Autopolis International Racing Course - Shortcut Course",
+      "name": "Autodrome Lago Maggiore - West",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - West End",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - West End Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodrome Lago Maggiore - West Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodromo de Interlagos",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodromo Nazionale Monza",
+      "type": "balanced"
+    },
+    {
+      "name": "Autodromo Nazionale Monza No Chicane",
+      "type": "balanced"
+    },
+    {
+      "name": "Autopolis International Racing Course",
       "type": "technical"
     },
     {
+      "name": "Autopolis International Racing Course - Short Course",
+      "type": "balanced"
+    },
+    {
+      "name": "BB Raceway",
+      "type": "balanced"
+    },
+    {
+      "name": "BB Raceway Reverse",
+      "type": "balanced"
+    },
+    {
       "name": "Blue Moon Bay Speedway",
-      "type": "fast"
+      "type": "oval"
     },
     {
       "name": "Blue Moon Bay Speedway - Infield A",
+      "type": "balanced"
+    },
+    {
+      "name": "Blue Moon Bay Speedway - Infield A Reverse",
       "type": "balanced"
     },
     {
@@ -5194,72 +5250,108 @@ window.GT7_DATA = {
       "type": "balanced"
     },
     {
+      "name": "Blue Moon Bay Speedway - Infield B Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Blue Moon Bay Speedway Reverse",
+      "type": "balanced"
+    },
+    {
       "name": "Brands Hatch Grand Prix Circuit",
-      "type": "flowing"
+      "type": "balanced"
     },
     {
       "name": "Brands Hatch Indy Circuit",
-      "type": "technical"
-    },
-    {
-      "name": "Broad Bean Raceway",
-      "type": "technical"
+      "type": "balanced"
     },
     {
       "name": "Circuit de Barcelona-Catalunya GP Layout",
       "type": "balanced"
     },
     {
-      "name": "Circuit de Barcelona-Catalunya GP No Chicane",
+      "name": "Circuit de Barcelona-Catalunya GP Layout No Chicane",
       "type": "balanced"
     },
     {
       "name": "Circuit de Barcelona-Catalunya National Layout",
-      "type": "technical"
+      "type": "balanced"
     },
     {
       "name": "Circuit de Barcelona-Catalunya Rallycross Layout",
-      "type": "technical"
+      "type": "dirt"
     },
     {
       "name": "Circuit de Sainte-Croix - A",
-      "type": "fast"
+      "type": "technical"
+    },
+    {
+      "name": "Circuit de Sainte-Croix - A Reverse",
+      "type": "technical"
     },
     {
       "name": "Circuit de Sainte-Croix - B",
       "type": "balanced"
     },
     {
-      "name": "Circuit de Sainte-Croix - C",
+      "name": "Circuit de Sainte-Croix - B Reverse",
       "type": "balanced"
+    },
+    {
+      "name": "Circuit de Sainte-Croix - C",
+      "type": "fast"
+    },
+    {
+      "name": "Circuit de Sainte-Croix - C Reverse",
+      "type": "fast"
     },
     {
       "name": "Circuit de Spa-Francorchamps",
-      "type": "fast"
-    },
-    {
-      "name": "Circuit de Spa-Francorchamps 24h Layout",
-      "type": "fast"
-    },
-    {
-      "name": "Circuit Gilles-Villeneuve",
-      "type": "fast"
-    },
-    {
-      "name": "Colorado Springs - Lake",
       "type": "technical"
     },
     {
-      "name": "Daytona International Speedway",
-      "type": "fast"
+      "name": "Circuit Gilles-Villeneuve",
+      "type": "balanced"
+    },
+    {
+      "name": "Colorado Springs - Lake",
+      "type": "dirt"
+    },
+    {
+      "name": "Colorado Springs - Lake Reverse",
+      "type": "dirt"
     },
     {
       "name": "Daytona Road Course",
-      "type": "fast"
+      "type": "balanced"
+    },
+    {
+      "name": "Daytona Tri-Oval",
+      "type": "oval"
     },
     {
       "name": "Deep Forest Raceway",
-      "type": "balanced"
+      "type": "technical"
+    },
+    {
+      "name": "Deep Forest Raceway Reverse",
+      "type": "technical"
+    },
+    {
+      "name": "Dragon Trail - Gardens",
+      "type": "technical"
+    },
+    {
+      "name": "Dragon Trail - Gardens Reverse",
+      "type": "technical"
+    },
+    {
+      "name": "Dragon Trail - Seaside",
+      "type": "technical"
+    },
+    {
+      "name": "Dragon Trail - Seaside Reverse",
+      "type": "technical"
     },
     {
       "name": "Eiger Nordwand",
@@ -5270,104 +5362,132 @@ window.GT7_DATA = {
       "type": "technical"
     },
     {
-      "name": "Dragon Trail - Gardens",
-      "type": "balanced"
-    },
-    {
-      "name": "Dragon Trail - Seaside",
-      "type": "balanced"
-    },
-    {
       "name": "Fishermans Ranch",
-      "type": "technical"
+      "type": "dirt"
+    },
+    {
+      "name": "Fishermans Ranch Reverse",
+      "type": "dirt"
     },
     {
       "name": "Fuji International Speedway",
-      "type": "fast"
-    },
-    {
-      "name": "Fuji International Speedway Short",
-      "type": "fast"
-    },
-    {
-      "name": "Goodwood Motor Circuit",
-      "type": "flowing"
-    },
-    {
-      "name": "Grand Valley - Highway 1",
       "type": "balanced"
     },
     {
-      "name": "Grand Valley - South",
+      "name": "Fuji International Speedway (Short)",
+      "type": "balanced"
+    },
+    {
+      "name": "Goodwood Motor Circuit",
+      "type": "balanced"
+    },
+    {
+      "name": "Grand Valley - Highway 1",
       "type": "technical"
     },
     {
+      "name": "Grand Valley - Highway 1 Reverse",
+      "type": "technical"
+    },
+    {
+      "name": "Grand Valley - South",
+      "type": "balanced"
+    },
+    {
+      "name": "Grand Valley - South Reverse",
+      "type": "balanced"
+    },
+    {
       "name": "High Speed Ring",
-      "type": "fast"
+      "type": "balanced"
+    },
+    {
+      "name": "High Speed Ring Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Kyoto Driving Park - Miyabi",
+      "type": "balanced"
     },
     {
       "name": "Kyoto Driving Park - Yamagiwa",
       "type": "balanced"
     },
     {
-      "name": "Kyoto Driving Park - Miyabi",
-      "type": "technical"
+      "name": "Kyoto Driving Park - Yamagiwa Reverse",
+      "type": "balanced"
     },
     {
       "name": "Kyoto Driving Park - Yamagiwa+Miyabi",
-      "type": "balanced"
-    },
-    {
-      "name": "Lake Louise - Long Track",
       "type": "technical"
     },
     {
-      "name": "Lake Louise - Short Track",
+      "name": "Kyoto Driving Park - Yamagiwa+Miyabi Reverse",
       "type": "technical"
     },
     {
-      "name": "Lake Louise - Tri-Oval",
-      "type": "technical"
+      "name": "Lake Louise Long Track",
+      "type": "snow"
+    },
+    {
+      "name": "Lake Louise Long Track Reverse",
+      "type": "snow"
+    },
+    {
+      "name": "Lake Louise Short Track",
+      "type": "snow"
+    },
+    {
+      "name": "Lake Louise Short Track Reverse",
+      "type": "snow"
+    },
+    {
+      "name": "Lake Louise Tri-Oval",
+      "type": "snow"
+    },
+    {
+      "name": "Lake Louise Tri-Oval Reverse",
+      "type": "snow"
     },
     {
       "name": "Michelin Raceway Road Atlanta",
-      "type": "flowing"
-    },
-    {
-      "name": "Monza Circuit",
-      "type": "fast"
-    },
-    {
-      "name": "Monza Circuit No Chicane",
-      "type": "fast"
+      "type": "balanced"
     },
     {
       "name": "Mount Panorama Motor Racing Circuit",
-      "type": "fast"
-    },
-    {
-      "name": "Nurburgring - Nordschleife",
-      "type": "balanced"
-    },
-    {
-      "name": "Nurburgring - 24h",
-      "type": "balanced"
-    },
-    {
-      "name": "Nurburgring - GP",
-      "type": "balanced"
-    },
-    {
-      "name": "Nurburgring - Sprint",
       "type": "technical"
     },
     {
-      "name": "Nurburgring - Endurance",
+      "name": "Northern Isle Speedway",
+      "type": "oval"
+    },
+    {
+      "name": "Nurburgring 24h",
+      "type": "fast"
+    },
+    {
+      "name": "Nurburgring Endurance",
+      "type": "fast"
+    },
+    {
+      "name": "Nurburgring Endurance II",
+      "type": "fast"
+    },
+    {
+      "name": "Nurburgring GP",
       "type": "balanced"
     },
     {
-      "name": "Northern Isle Speedway",
+      "name": "Nurburgring Nordschleife",
       "type": "fast"
+    },
+    {
+      "name": "Nurburgring Nordschleife Tourist",
+      "type": "fast"
+    },
+    {
+      "name": "Nurburgring Sprint",
+      "type": "balanced"
     },
     {
       "name": "Red Bull Ring",
@@ -5375,75 +5495,95 @@ window.GT7_DATA = {
     },
     {
       "name": "Red Bull Ring Short Track",
-      "type": "technical"
-    },
-    {
-      "name": "Road Atlanta",
-      "type": "flowing"
+      "type": "balanced"
     },
     {
       "name": "Sardegna - Road Track - A",
       "type": "balanced"
     },
     {
+      "name": "Sardegna - Road Track - A Reverse",
+      "type": "balanced"
+    },
+    {
       "name": "Sardegna - Road Track - B",
-      "type": "technical"
+      "type": "balanced"
+    },
+    {
+      "name": "Sardegna - Road Track - B Reverse",
+      "type": "balanced"
     },
     {
       "name": "Sardegna - Road Track - C",
-      "type": "technical"
+      "type": "balanced"
+    },
+    {
+      "name": "Sardegna - Road Track - C Reverse",
+      "type": "balanced"
     },
     {
       "name": "Sardegna - Windmills",
-      "type": "technical"
+      "type": "dirt"
+    },
+    {
+      "name": "Sardegna - Windmills Reverse",
+      "type": "dirt"
+    },
+    {
+      "name": "Spa 24h layout",
+      "type": "fast"
     },
     {
       "name": "Special Stage Route X",
-      "type": "fast"
+      "type": "oval"
     },
     {
       "name": "Suzuka Circuit",
-      "type": "flowing"
-    },
-    {
-      "name": "Suzuka Circuit East Course",
       "type": "technical"
     },
     {
+      "name": "Suzuka Circuit East Course",
+      "type": "balanced"
+    },
+    {
       "name": "Tokyo Expressway - Central Clockwise",
-      "type": "fast"
+      "type": "technical"
     },
     {
       "name": "Tokyo Expressway - Central Counterclockwise",
-      "type": "fast"
+      "type": "technical"
     },
     {
       "name": "Tokyo Expressway - East Clockwise",
-      "type": "fast"
+      "type": "technical"
     },
     {
       "name": "Tokyo Expressway - East Counterclockwise",
-      "type": "fast"
+      "type": "technical"
     },
     {
       "name": "Tokyo Expressway - South Clockwise",
-      "type": "fast"
+      "type": "technical"
     },
     {
       "name": "Tokyo Expressway - South Counterclockwise",
-      "type": "fast"
+      "type": "technical"
     },
     {
       "name": "Trial Mountain Circuit",
       "type": "balanced"
     },
     {
+      "name": "Trial Mountain Circuit Reverse",
+      "type": "balanced"
+    },
+    {
       "name": "Tsukuba Circuit",
-      "type": "technical"
+      "type": "balanced"
     },
     {
       "name": "Watkins Glen Long Course",
-      "type": "fast"
+      "type": "balanced"
     },
     {
       "name": "Watkins Glen Short Course",
@@ -5451,27 +5591,32 @@ window.GT7_DATA = {
     },
     {
       "name": "WeatherTech Raceway Laguna Seca",
-      "type": "technical"
+      "type": "balanced"
     },
     {
-      "name": "Willow Springs - Big Willow",
-      "type": "fast"
+      "name": "Willow Springs International Raceway: Big Willow",
+      "type": "balanced"
     },
     {
-      "name": "Willow Springs - Streets of Willow Springs",
-      "type": "technical"
+      "name": "Willow Springs International Raceway: Horse Thief Mile",
+      "type": "balanced"
     },
     {
-      "name": "Willow Springs - Horse Thief Mile",
-      "type": "technical"
+      "name": "Willow Springs International Raceway: Horse Thief Mile Reverse",
+      "type": "balanced"
+    },
+    {
+      "name": "Willow Springs International Raceway: Streets of Willow Springs",
+      "type": "balanced"
+    },
+    {
+      "name": "Willow Springs International Raceway: Streets of Willow Springs Reverse",
+      "type": "balanced"
     },
     {
       "name": "Yas Marina Circuit",
       "type": "balanced"
-    },
-    {
-      "name": "World Touring Car 600/700 Custom Event",
-      "type": "balanced"
     }
-  ]
+  ],
+  "trackGeneratedFrom": "https://www.gran-turismo.com/common/dist/gt7/tracklist/assets/tracks.us-B2aONKWl.js"
 };
