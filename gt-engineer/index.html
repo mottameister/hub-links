@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GT7 Setup Engineer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace">
+        <aside class="reference-panel" aria-label="Referencia da tela de configuracao do GT7">
+          <div class="brand-row">
+            <div class="mark">GT7</div>
+            <div>
+              <p class="eyebrow">Setup Engineer</p>
+              <h1>Configurador guiado para Gran Turismo 7</h1>
+            </div>
+          </div>
+          <img src="gt7-reference.jpg" alt="Tela de configuracao de carro do Gran Turismo 7" />
+          <div class="status-card">
+            <span class="status-dot"></span>
+            <p>V1 focada em perguntas clicaveis, regras de corrida e setup inicial testavel.</p>
+          </div>
+        </aside>
+
+        <section class="tool-panel" aria-label="Configurador">
+          <div class="step-header">
+            <div>
+              <p class="eyebrow" id="step-kicker">Etapa 1 de 5</p>
+              <h2 id="step-title">Escolha o carro</h2>
+            </div>
+            <div class="progress" aria-hidden="true">
+              <span id="progress-bar"></span>
+            </div>
+          </div>
+
+          <form id="setup-form">
+            <div class="step active" data-step="0">
+              <label>
+                Carro
+                <select name="car" required>
+                  <option value="Porsche 911 GT3 R (992) '22">Porsche 911 GT3 R (992) '22</option>
+                  <option value="Mazda RX-Vision GT3 Concept">Mazda RX-Vision GT3 Concept</option>
+                  <option value="Toyota GR Supra Racing Concept '18">Toyota GR Supra Racing Concept '18</option>
+                  <option value="Nissan GT-R NISMO GT3 '18">Nissan GT-R NISMO GT3 '18</option>
+                  <option value="Ferrari 458 Italia GT3 '13">Ferrari 458 Italia GT3 '13</option>
+                  <option value="Outro carro">Outro carro</option>
+                </select>
+              </label>
+              <label>
+                Tracao / comportamento base
+                <select name="drivetrain">
+                  <option value="MR/RR">MR/RR - motor atras, traseira sensivel</option>
+                  <option value="FR">FR - motor dianteiro, tracao traseira</option>
+                  <option value="4WD">4WD - tracao integral</option>
+                  <option value="FF">FF - tracao dianteira</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="step" data-step="1">
+              <label>
+                Pista
+                <select name="track">
+                  <option value="Interlagos">Interlagos</option>
+                  <option value="Spa-Francorchamps">Spa-Francorchamps</option>
+                  <option value="Suzuka Circuit">Suzuka Circuit</option>
+                  <option value="Nurburgring GP">Nurburgring GP</option>
+                  <option value="Le Mans">Le Mans</option>
+                  <option value="Tokyo Expressway">Tokyo Expressway</option>
+                  <option value="Outra pista">Outra pista</option>
+                </select>
+              </label>
+              <label>
+                Tipo de pista
+                <select name="trackType">
+                  <option value="balanced">Mista / equilibrada</option>
+                  <option value="technical">Travada / curvas lentas</option>
+                  <option value="fast">Alta velocidade / retas longas</option>
+                  <option value="flowing">Curvas medias e rapidas</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="step" data-step="2">
+              <fieldset>
+                <legend>Modo</legend>
+                <div class="segmented">
+                  <label><input type="radio" name="mode" value="Online lobby" checked /> Online</label>
+                  <label><input type="radio" name="mode" value="Sport Mode" /> Sport</label>
+                  <label><input type="radio" name="mode" value="Offline" /> Offline</label>
+                  <label><input type="radio" name="mode" value="GT Sophy" /> GT Sophy</label>
+                </div>
+              </fieldset>
+              <div class="grid-2">
+                <label>
+                  BoP
+                  <select name="bop">
+                    <option value="off">Desligado</option>
+                    <option value="on-tuning">Ligado, tuning permitido</option>
+                    <option value="on-locked">Ligado, tuning proibido</option>
+                  </select>
+                </label>
+                <label>
+                  Limite PP
+                  <input name="ppLimit" type="number" min="300" max="1200" step="1" placeholder="Ex: 800" />
+                </label>
+              </div>
+            </div>
+
+            <div class="step" data-step="3">
+              <div class="grid-2">
+                <label>
+                  Pneus
+                  <select name="tires">
+                    <option value="Racing Hard">Racing Hard</option>
+                    <option value="Racing Medium">Racing Medium</option>
+                    <option value="Racing Soft">Racing Soft</option>
+                    <option value="Sports Soft">Sports Soft</option>
+                    <option value="Intermediates">Intermediates</option>
+                    <option value="Wet">Wet</option>
+                  </select>
+                </label>
+                <label>
+                  Duracao
+                  <select name="duration">
+                    <option value="hotlap">Hotlap / quali</option>
+                    <option value="short">Corrida curta</option>
+                    <option value="medium" selected>Corrida media</option>
+                    <option value="long">Corrida longa</option>
+                  </select>
+                </label>
+                <label>
+                  Desgaste pneu
+                  <select name="tireWear">
+                    <option value="1">1x</option>
+                    <option value="3">3x</option>
+                    <option value="5" selected>5x</option>
+                    <option value="8">8x+</option>
+                  </select>
+                </label>
+                <label>
+                  Consumo combustivel
+                  <select name="fuel">
+                    <option value="0">Sem consumo</option>
+                    <option value="1">1x</option>
+                    <option value="2" selected>2x</option>
+                    <option value="5">5x+</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+
+            <div class="step" data-step="4">
+              <label>
+                Principal problema hoje
+                <select name="problem">
+                  <option value="rear-exit">Sai de traseira na saida de curva</option>
+                  <option value="understeer-entry">Sai de frente na entrada</option>
+                  <option value="understeer-mid">Sai de frente no meio da curva</option>
+                  <option value="brake-instability">Instavel freando</option>
+                  <option value="tire-wear">Come pneu demais</option>
+                  <option value="top-speed">Falta velocidade de reta</option>
+                  <option value="safe">Quero um carro facil e consistente</option>
+                </select>
+              </label>
+              <label>
+                Controle
+                <select name="controller">
+                  <option value="Volante">Volante</option>
+                  <option value="Controle">Controle</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="actions">
+              <button type="button" id="back" class="ghost">Voltar</button>
+              <button type="button" id="next">Proximo</button>
+              <button type="submit" id="generate" class="primary hidden">Gerar setup</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="result-panel" aria-live="polite">
+          <div class="result-header">
+            <div>
+              <p class="eyebrow">Setup gerado</p>
+              <h2 id="result-title">Aguardando respostas</h2>
+            </div>
+            <button id="copy" class="ghost" type="button">Copiar</button>
+          </div>
+          <div id="result" class="result-empty">
+            Complete as etapas para receber pneus, suspensao, diferencial, aero, ECU, ballast, cambio e plano de teste.
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

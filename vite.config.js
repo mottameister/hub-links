@@ -16,6 +16,7 @@ const staticEntries = [
   'prompts',
   'propostas',
   'honey',
+  'gt-engineer',
   'profile.jpeg',
   'preview.png',
   'site-controls.js',
@@ -52,6 +53,7 @@ export default defineConfig({
       input: {
         main: resolve('index.html'),
         mediaKit: resolve('media-kit/index.html'),
+        gtEngineer: resolve('gt-engineer/index.html'),
         corujaShop: resolve('coruja-shop/index.html'),
         corujaCup: resolve('coruja-cup/index.html')
       }
