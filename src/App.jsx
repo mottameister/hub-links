@@ -97,6 +97,7 @@ const tocaLinks = [
 ];
 
 const specialLinks = [
+  { title: 'GT Engineer', description: 'Ferramenta para acertar carros, pistas e eventos no Gran Turismo 7.', icon: 'GT', href: '/gt-engineer/', tone: 'gold', featured: true },
   { title: 'Prompt Lab', description: 'Prompts para criar, editar e brincar com IA.', icon: '✧', href: '/prompts/', tone: 'violet' },
   { title: 'GitHub', description: 'Projetos, código e coisas em construção.', icon: '{ }', href: 'https://github.com/mottameister', tone: 'neutral' },
   { title: 'Wallpapers favoritos', description: 'Minha curadoria do Wallpaper Engine.', icon: '▧', href: 'https://steamcommunity.com/id/mottameister/myworkshopfiles?appid=431960&browsefilter=mysubscriptions', tone: 'cyan' },
@@ -147,7 +148,7 @@ function Arrow() {
 
 function LinkCard({ item, compact = false, onOpen }) {
   const shared = {
-    className: `link-card tone-${item.tone} ${compact ? 'is-compact' : ''}`,
+    className: `link-card tone-${item.tone} ${compact ? 'is-compact' : ''} ${item.featured ? 'is-featured' : ''}`,
     colors: item.tone === 'gold'
       ? ['#ffbf38', '#ff8a3d', '#ff4fd8']
       : item.tone === 'green'
@@ -219,7 +220,7 @@ function Modal({ type, onClose }) {
 
 export default function App() {
   const [modal, setModal] = useState(null);
-  const [specialOpen, setSpecialOpen] = useState(false);
+  const [specialOpen, setSpecialOpen] = useState(true);
 
   return (
     <div className="app-shell">
