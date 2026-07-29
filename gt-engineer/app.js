@@ -1,4 +1,6 @@
 const form = document.querySelector("#setup-form");
+const start = document.querySelector("#start");
+const configurator = document.querySelector("#configurator");
 const steps = [...document.querySelectorAll(".step")];
 const back = document.querySelector("#back");
 const next = document.querySelector("#next");
@@ -635,6 +637,18 @@ copy.addEventListener("click", async () => {
 });
 
 restart.addEventListener("click", resetFlow);
+
+start.addEventListener("click", () => {
+  document.body.classList.remove("intro-active");
+  configurator.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.setTimeout(() => {
+    try {
+      carSearch.focus({ preventScroll: true });
+    } catch {
+      carSearch.focus();
+    }
+  }, 280);
+});
 
 fillFilters();
 renderCarResults();

@@ -6,10 +6,30 @@
     <title>GT7 Setup Engineer</title>
     <link rel="stylesheet" href="/gt-engineer/styles.css" />
   </head>
-  <body>
+  <body class="intro-active">
     <main class="app-shell">
-      <section class="workspace">
-        <aside class="reference-panel" aria-label="Referência visual de carro de corrida">
+      <section class="intro-screen" aria-label="GT7 Setup Engineer">
+        <div class="intro-slideshow" aria-hidden="true">
+          <img class="slide slide-1" src="/gt-engineer/slideshow-1.jpg" alt="" />
+          <img class="slide slide-2" src="/gt-engineer/slideshow-2.jpg" alt="" />
+          <img class="slide slide-3" src="/gt-engineer/slideshow-3.jpg" alt="" />
+          <img class="slide slide-4" src="/gt-engineer/slideshow-4.jpg" alt="" />
+          <img class="slide slide-5" src="/gt-engineer/slideshow-5.jpg" alt="" />
+          <img class="slide slide-6" src="/gt-engineer/slideshow-6.jpg" alt="" />
+        </div>
+        <div class="intro-content">
+          <div class="intro-mark">GT7</div>
+          <div>
+            <p class="eyebrow">Setup Engineer</p>
+            <h1>Setup de corrida em poucos cliques</h1>
+            <p class="intro-copy">Escolha carro, pista e regras da corrida. O GT Engineer entrega uma base completa para você testar no Gran Turismo 7.</p>
+          </div>
+          <button id="start" class="primary intro-cta" type="button">Vamos começar</button>
+        </div>
+      </section>
+
+      <section class="workspace" id="configurator">
+        <header class="config-header">
           <div class="brand-row">
             <div class="mark">GT7</div>
             <div>
@@ -17,8 +37,7 @@
               <h1>Configurador guiado para Gran Turismo 7</h1>
             </div>
           </div>
-          <img src="/gt-engineer/gt-engineer-hero.png" alt="Carro de corrida em box com telas de telemetria" />
-        </aside>
+        </header>
 
         <section class="tool-panel" aria-label="Configurador">
           <div class="step-header">
