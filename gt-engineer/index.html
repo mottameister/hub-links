@@ -9,7 +9,7 @@
   <body>
     <main class="app-shell">
       <section class="workspace">
-        <aside class="reference-panel" aria-label="Referencia visual de carro de corrida">
+        <aside class="reference-panel" aria-label="Referência visual de carro de corrida">
           <div class="brand-row">
             <div class="mark">GT7</div>
             <div>
@@ -45,15 +45,15 @@
 
                 <div id="car-selected" class="selection-pill">Nenhum carro selecionado</div>
                 <div id="car-results" class="picker-results" role="listbox" aria-label="Resultados de carros"></div>
-                <small id="car-meta">Escolha um carro da lista para detectar tracao, classe e PP automaticamente.</small>
+                <small id="car-meta">Escolha um carro da lista para detectar tração, classe e PP automaticamente.</small>
               </div>
             </div>
 
             <div class="step" data-step="1">
               <div class="picker" data-picker="track">
-                <label for="track-country">Pais</label>
+                <label for="track-country">País</label>
                 <select id="track-country" name="trackCountry">
-                  <option value="">Todos os paises</option>
+                  <option value="">Todos os países</option>
                 </select>
 
                 <label for="track-search">Pista ou layout</label>
@@ -112,14 +112,14 @@
                 </select>
               </label>
               <fieldset>
-                <legend>Duracao</legend>
+                <legend>Duração</legend>
                 <div class="segmented two">
                   <label><input type="radio" name="durationType" value="laps" checked /> Voltas</label>
                   <label><input type="radio" name="durationType" value="time" /> Tempo</label>
                 </div>
               </fieldset>
               <label>
-                Numero de voltas ou minutos
+                Número de voltas ou minutos
                 <input name="durationValue" type="number" min="1" max="1440" step="1" value="10" />
               </label>
               <div class="slider-grid">
@@ -128,7 +128,7 @@
                   <input name="tireWear" type="range" min="0" max="50" step="1" value="5" />
                 </label>
                 <label>
-                  <span>Consumo de combustivel <strong id="fuelValue">2x</strong></span>
+                  <span>Consumo de combustível <strong id="fuelValue">2x</strong></span>
                   <input name="fuel" type="range" min="0" max="50" step="1" value="2" />
                 </label>
               </div>
@@ -138,10 +138,10 @@
               <label>
                 Principal problema hoje
                 <select name="problem">
-                  <option value="rear-exit">Sai de traseira na saida de curva</option>
+                  <option value="rear-exit">Sai de traseira na saída de curva</option>
                   <option value="understeer-entry">Sai de frente na entrada</option>
                   <option value="understeer-mid">Sai de frente no meio da curva</option>
-                  <option value="brake-instability">Instavel freando</option>
+                  <option value="brake-instability">Instável freando</option>
                   <option value="tire-wear">Come pneu demais</option>
                   <option value="top-speed">Falta velocidade de reta</option>
                   <option value="safe">Quero um carro facil e consistente</option>
@@ -158,7 +158,7 @@
 
             <div class="actions">
               <button type="button" id="back" class="ghost">Voltar</button>
-              <button type="button" id="next">Proximo</button>
+              <button type="button" id="next">Próximo</button>
               <button type="submit" id="generate" class="primary hidden">Gerar setup</button>
             </div>
           </form>
@@ -170,10 +170,13 @@
               <p class="eyebrow">Setup gerado</p>
               <h2 id="result-title">Aguardando respostas</h2>
             </div>
-            <button id="copy" class="ghost" type="button">Copiar</button>
+            <div class="result-actions">
+              <button id="restart" class="ghost hidden" type="button">Outro carro</button>
+              <button id="copy" class="ghost" type="button">Copiar</button>
+            </div>
           </div>
           <div id="result" class="result-empty">
-            Complete as etapas para receber pneus, suspensao, diferencial, aero, ECU, ballast, cambio e plano de teste.
+            Complete as etapas para receber pneus, suspensão, diferencial, aero, ECU, ballast e câmbio.
           </div>
         </section>
       </section>

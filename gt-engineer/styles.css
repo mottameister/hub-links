@@ -398,6 +398,13 @@ button.primary:disabled {
   align-items: start;
 }
 
+.result-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 #result {
   overflow: auto;
   border: 1px solid var(--line);
@@ -484,5 +491,13 @@ button.primary:disabled {
   .result-header {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .result-actions {
+    justify-content: stretch;
+  }
+
+  .result-actions button {
+    flex: 1 1 140px;
   }
 }

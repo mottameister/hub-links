@@ -9,6 +9,7 @@ const stepTitle = document.querySelector("#step-title");
 const result = document.querySelector("#result");
 const resultTitle = document.querySelector("#result-title");
 const copy = document.querySelector("#copy");
+const restart = document.querySelector("#restart");
 const carBrand = document.querySelector("#car-brand");
 const carSearch = document.querySelector("#car-search");
 const carValue = document.querySelector("#car-value");
@@ -41,6 +42,8 @@ const tracks = dataSource.tracks || [];
 let currentStep = 0;
 let lastPlainText = "";
 
+const initialResultText = "Complete as etapas para receber pneus, suspensão, diferencial, aero, ECU, ballast e câmbio.";
+
 const multiWordMakes = [
   "Alfa Romeo",
   "Aston Martin",
@@ -68,6 +71,24 @@ const multiWordMakes = [
   "Toyota",
   "Volkswagen",
 ].sort((a, b) => b.length - a.length);
+
+const countryLabels = {
+  Australia: "Austrália",
+  Austria: "Áustria",
+  Belgium: "Bélgica",
+  Brazil: "Brasil",
+  Canada: "Canadá",
+  Croatia: "Croácia",
+  France: "França",
+  Germany: "Alemanha",
+  Italy: "Itália",
+  Japan: "Japão",
+  Spain: "Espanha",
+  Switzerland: "Suíça",
+  "U.S.": "Estados Unidos",
+  UAE: "Emirados Árabes Unidos",
+  "United Kingdom": "Reino Unido",
+};
 
 function normalize(value) {
   return String(value || "")
@@ -118,6 +139,10 @@ function optionLabel(count, noun) {
   return `${count} ${count === 1 ? noun : `${noun}s`}`;
 }
 
+function countryLabel(country) {
+  return countryLabels[country] || country || "Outros";
+}
+
 function fillFilters() {
   const makes = [...new Set(carsWithMake.map((car) => car.make))].sort((a, b) => a.localeCompare(b));
   carBrand.innerHTML = `<option value="">Todas as marcas</option>${makes
@@ -127,8 +152,8 @@ function fillFilters() {
   const countries = [...new Set(tracksWithCountry.map((track) => track.country || "Outros"))].sort((a, b) =>
     a.localeCompare(b)
   );
-  trackCountry.innerHTML = `<option value="">Todos os paises</option>${countries
-    .map((country) => `<option value="${escapeAttr(country)}">${escapeHtml(country)}</option>`)
+  trackCountry.innerHTML = `<option value="">Todos os países</option>${countries
+    .map((country) => `<option value="${escapeAttr(country)}">${escapeHtml(countryLabel(country))}</option>`)
     .join("")}`;
 }
 
@@ -205,13 +230,13 @@ function renderTrackResults() {
             <button type="button" class="picker-option" data-kind="track" data-index="${index}">
               <span>
                 <strong>${escapeHtml(track.name)}</strong>
-                <small>${escapeHtml(track.country || "Outros")} | ${escapeHtml(track.type)}</small>
+                <small>${escapeHtml(countryLabel(track.country))} | ${escapeHtml(track.type)}</small>
               </span>
             </button>
           `
         )
         .join("")
-    : `<div class="picker-empty">Nenhuma pista encontrada. Limpe o pais ou busque pelo nome do circuito.</div>`;
+    : `<div class="picker-empty">Nenhuma pista encontrada. Limpe o país ou busque pelo nome do circuito.</div>`;
 
   trackResults.querySelectorAll("[data-kind='track']").forEach((button, index) => {
     button.addEventListener("click", () => selectTrack(matches[index]));
@@ -222,7 +247,7 @@ function renderTrackResults() {
   ).length;
   trackMeta.textContent = trackValue.value
     ? trackMeta.textContent
-    : `${optionLabel(total, "layout")} encontrado${total === 1 ? "" : "s"}. Filtre por pais ou digite Spa, Suzuka, Tokyo...`;
+    : `${optionLabel(total, "layout")} encontrado${total === 1 ? "" : "s"}. Filtre por país ou digite Spa, Suzuka, Tokyo...`;
 }
 
 function selectCar(car) {
@@ -288,11 +313,11 @@ function updateMeta() {
   if (input.car) {
     carMeta.textContent = car
       ? `${car.drivetrain} detectado | ${car.class} | ${car.pp}`
-      : "Carro fora da base oficial local: vou inferir a tracao pelo nome e deixar como ponto de partida.";
+      : "Carro fora da base oficial local: vou inferir a tração pelo nome e deixar como ponto de partida.";
   }
   if (input.track) {
     trackMeta.textContent = track
-      ? `Perfil inferido: ${track.type}${track.country ? ` | ${track.country}` : ""}`
+      ? `Perfil inferido: ${track.type}${track.country ? ` | ${countryLabel(track.country)}` : ""}`
       : "Pista fora da base local: vou inferir o perfil pelo nome.";
   }
 }
@@ -350,7 +375,6 @@ function buildSetup(input) {
   const isFast = track.type === "fast";
   const isTechnical = track.type === "technical";
   const isFlowing = track.type === "flowing";
-  const isLocked = input.bop === "on-locked";
   const isMR = car.drivetrain === "MR" || car.drivetrain === "RR";
   const is4WD = car.drivetrain === "4WD";
   const isFF = car.drivetrain === "FF";
@@ -385,7 +409,6 @@ function buildSetup(input) {
     restrictor: input.ppLimit ? 98 : 100,
     topSpeed: isFast ? 330 : isTechnical ? 280 : 300,
     brake: isMR ? "-2 traseira" : isFF ? "+1 dianteira" : "-1 traseira",
-    fuelMap: fuel >= 8 ? "Mapa 3-4 em trafego; mapa 1-2 para atacar" : fuel >= 4 ? "Mapa 2 no stint; mapa 1 para atacar" : "Mapa 1",
   };
 
   if (wetTire) {
@@ -439,13 +462,9 @@ function buildSetup(input) {
     tune.downR = clamp(tune.downR + 15, 50, 800);
   }
 
-  const lockedNotice = isLocked
-    ? "BoP com tuning proibido: se a sala bloquear suspensao/aero/cambio, ajuste apenas pneus permitidos, brake balance, fuel map e estrategia."
-    : "Tuning permitido: aplique como base e ajuste em passos pequenos depois de 3 voltas.";
+  const torqueSplit = is4WD ? ["Torque split", "35:65 para tração; 30:70 se precisar rotacionar mais"] : null;
 
-  const torqueSplit = is4WD ? ["Torque split", "35:65 para tracao; 30:70 se precisar rotacionar mais"] : null;
-
-  return { car, track, tune, lockedNotice, torqueSplit };
+  return { car, track, tune, torqueSplit };
 }
 
 function rows(items) {
@@ -453,7 +472,7 @@ function rows(items) {
 }
 
 function renderSetup(input) {
-  const { car, track, tune, lockedNotice, torqueSplit } = buildSetup(input);
+  const { car, track, tune, torqueSplit } = buildSetup(input);
   const pp = input.ppLimit ? `, limite ${input.ppLimit} PP` : "";
   const wearLabel = input.tireWear === "0" ? "off" : `${input.tireWear}x`;
   const fuelLabel = input.fuel === "0" ? "off" : `${input.fuel}x`;
@@ -461,70 +480,83 @@ function renderSetup(input) {
   const blocks = [
     ["Resumo", rows([
       ["Carro", car.name],
-      ["Tracao detectada", car.drivetrain],
+      ["Tração detectada", car.drivetrain],
       ["Pista", `${track.name} (${track.type})`],
       ["Modo", `${input.mode}, BoP ${input.bop}${pp}`],
-      ["Duracao", raceLength(input)],
-      ["Pneus/consumo", `${input.tires}, desgaste ${wearLabel}, combustivel ${fuelLabel}`],
+      ["Duração", raceLength(input)],
+      ["Pneus/consumo", `${input.tires}, desgaste ${wearLabel}, combustível ${fuelLabel}`],
     ])],
-    ["Pneus e suspensao", rows([
+    ["Pneus e suspensão", rows([
       ["Pneus", `${tune.frontTire} / ${tune.rearTire}`],
       ["Altura", `${tune.heightF} / ${tune.heightR}`],
       ["Anti-roll bar", `${tune.arbF} / ${tune.arbR}`],
       ["Damping comp.", `${tune.compF} / ${tune.compR}`],
       ["Damping exp.", `${tune.expF} / ${tune.expR}`],
-      ["Frequencia", `${tune.freqF} / ${tune.freqR}`],
+      ["Frequência", `${tune.freqF} / ${tune.freqR}`],
       ["Cambagem", `${tune.camberF} / ${tune.camberR}`],
       ["Toe", `${tune.toeF} / ${tune.toeR}`],
     ])],
     ["Diferencial e aero", rows([
       ["LSD inicial", tune.lsdInitial],
-      ["LSD aceleracao", tune.lsdAccel],
+      ["LSD aceleração", tune.lsdAccel],
       ["LSD frenagem", tune.lsdBrake],
       ...(torqueSplit ? [torqueSplit] : []),
       ["Downforce", `${tune.downF} / ${tune.downR}`],
       ["Brake balance", tune.brake],
     ])],
-    ["Potencia e cambio", rows([
+    ["Potência e câmbio", rows([
       ["ECU", `${tune.ecu}%`],
       ["Ballast", `${tune.ballast} kg`],
       ["Ballast position", tune.ballastPos],
       ["Power restrictor", `${tune.restrictor}%`],
-      ["Cambio auto set", `${tune.topSpeed} km/h`],
+      ["Câmbio auto set", `${tune.topSpeed} km/h`],
       ["Nitro/Overtake", "None"],
     ])],
-    ["Plano de teste", `
-      <ul class="notes">
-        <li>${lockedNotice}</li>
-        <li>Volta 1: aqueca pneus e freie conservador.</li>
-        <li>Volta 2: force entrada, meio e saida para achar o maior problema.</li>
-        <li>Volta 3: valide tempo e desgaste. Se sair de traseira, reduza LSD aceleracao 2 pontos; se sair de frente, aumente aero dianteira 10 ou reduza LSD frenagem 3.</li>
-        <li>Estrategia: ${tune.fuelMap}. Com desgaste alto, reduza cambagem 0.2 por eixo e suavize saida de curva.</li>
-      </ul>
-    `],
   ];
 
   lastPlainText = [
     `GT7 Setup Engineer - ${car.name} em ${track.name}`,
-    `Tracao: ${car.drivetrain} | Modo: ${input.mode} | BoP: ${input.bop} | Pneus: ${input.tires}`,
-    `Duracao: ${raceLength(input)} | Desgaste: ${wearLabel} | Combustivel: ${fuelLabel}`,
+    `Tração: ${car.drivetrain} | Modo: ${input.mode} | BoP: ${input.bop} | Pneus: ${input.tires}`,
+    `Duração: ${raceLength(input)} | Desgaste: ${wearLabel} | Combustível: ${fuelLabel}`,
     `Altura: ${tune.heightF}/${tune.heightR}`,
     `ARB: ${tune.arbF}/${tune.arbR}`,
     `Damping comp: ${tune.compF}/${tune.compR}`,
     `Damping exp: ${tune.expF}/${tune.expR}`,
-    `Frequencia: ${tune.freqF}/${tune.freqR}`,
+    `Frequência: ${tune.freqF}/${tune.freqR}`,
     `Cambagem: ${tune.camberF}/${tune.camberR}`,
     `Toe: ${tune.toeF}/${tune.toeR}`,
     `LSD: ${tune.lsdInitial}/${tune.lsdAccel}/${tune.lsdBrake}`,
     `Downforce: ${tune.downF}/${tune.downR}`,
-    `ECU: ${tune.ecu}% | Restrictor: ${tune.restrictor}% | Cambio: ${tune.topSpeed} km/h`,
-    lockedNotice,
+    `ECU: ${tune.ecu}% | Restrictor: ${tune.restrictor}% | Câmbio: ${tune.topSpeed} km/h`,
   ].join("\n");
 
   resultTitle.textContent = `${car.name} - ${track.name}`;
   result.className = "setup-output";
   result.innerHTML = blocks.map(([title, body]) => `<div class="setup-block"><h3>${title}</h3>${body}</div>`).join("");
+  restart.classList.remove("hidden");
   result.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function resetFlow() {
+  form.reset();
+  carValue.value = "";
+  trackValue.value = "";
+  carSearch.value = "";
+  trackSearch.value = "";
+  clearCarSelection();
+  clearTrackSelection();
+  lastPlainText = "";
+  currentStep = 0;
+  resultTitle.textContent = "Aguardando respostas";
+  result.className = "result-empty";
+  result.textContent = initialResultText;
+  restart.classList.add("hidden");
+  copy.textContent = "Copiar";
+  updateSliders();
+  updateStep();
+  renderCarResults();
+  renderTrackResults();
+  document.querySelector(".tool-panel").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 next.addEventListener("click", () => {
@@ -581,7 +613,7 @@ form.addEventListener("submit", (event) => {
   generate.textContent = "Gerando...";
   resultTitle.textContent = "Gerando setup...";
   result.className = "result-empty";
-  result.textContent = "Calculando tracao, perfil da pista, desgaste, combustivel e ajustes de base.";
+  result.textContent = "Calculando tração, perfil da pista, desgaste, combustível e ajustes de base.";
 
   window.setTimeout(() => {
     renderSetup(data());
@@ -601,6 +633,8 @@ copy.addEventListener("click", async () => {
     copy.textContent = "Copiar";
   }, 1200);
 });
+
+restart.addEventListener("click", resetFlow);
 
 fillFilters();
 renderCarResults();
