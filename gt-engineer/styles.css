@@ -193,6 +193,87 @@ input[list] {
   font-weight: 800;
 }
 
+.picker {
+  display: grid;
+  gap: 10px;
+}
+
+.selection-pill {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  color: var(--muted);
+  background: rgba(15, 17, 22, 0.72);
+  font-weight: 700;
+}
+
+.selection-pill.selected {
+  color: var(--text);
+  border-color: rgba(88, 214, 141, 0.58);
+  background: rgba(88, 214, 141, 0.12);
+}
+
+.picker-results {
+  display: grid;
+  gap: 8px;
+  max-height: min(360px, 42vh);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.picker-option {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  padding: 10px 12px;
+  background: #0f1116;
+}
+
+.picker-option:hover,
+.picker-option:focus {
+  border-color: var(--accent-2);
+}
+
+.picker-option span {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.picker-option strong,
+.picker-option small {
+  overflow-wrap: anywhere;
+}
+
+.picker-option small {
+  font-size: 0.78rem;
+}
+
+.picker-option em {
+  flex: 0 0 auto;
+  color: var(--accent-2);
+  font-style: normal;
+  font-size: 0.82rem;
+}
+
+.picker-empty {
+  min-height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  padding: 12px;
+  text-align: center;
+}
+
 input[type="range"] {
   padding: 0;
   accent-color: var(--accent-2);

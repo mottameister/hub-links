@@ -33,21 +33,37 @@
 
           <form id="setup-form">
             <div class="step active" data-step="0">
-              <label>
-                Carro
-                <input name="car" list="car-list" required autocomplete="off" placeholder="Digite para buscar: 911, Supra, GT-R..." />
-                <datalist id="car-list"></datalist>
-                <small id="car-meta">A tracao sera detectada automaticamente quando o carro estiver na base.</small>
-              </label>
+              <div class="picker" data-picker="car">
+                <label for="car-brand">Marca</label>
+                <select id="car-brand" name="carBrand">
+                  <option value="">Todas as marcas</option>
+                </select>
+
+                <label for="car-search">Modelo</label>
+                <input id="car-search" autocomplete="off" placeholder="Digite 911, Supra, GT-R..." />
+                <input name="car" id="car-value" type="hidden" />
+
+                <div id="car-selected" class="selection-pill">Nenhum carro selecionado</div>
+                <div id="car-results" class="picker-results" role="listbox" aria-label="Resultados de carros"></div>
+                <small id="car-meta">Escolha um carro da lista para detectar tracao, classe e PP automaticamente.</small>
+              </div>
             </div>
 
             <div class="step" data-step="1">
-              <label>
-                Pista
-                <input name="track" list="track-list" required autocomplete="off" placeholder="Digite para buscar: Spa, Suzuka, Tokyo..." />
-                <datalist id="track-list"></datalist>
-                <small id="track-meta">O tipo de pista sera inferido pela base.</small>
-              </label>
+              <div class="picker" data-picker="track">
+                <label for="track-country">Pais</label>
+                <select id="track-country" name="trackCountry">
+                  <option value="">Todos os paises</option>
+                </select>
+
+                <label for="track-search">Pista ou layout</label>
+                <input id="track-search" autocomplete="off" placeholder="Digite Spa, Suzuka, Tokyo..." />
+                <input name="track" id="track-value" type="hidden" />
+
+                <div id="track-selected" class="selection-pill">Nenhuma pista selecionada</div>
+                <div id="track-results" class="picker-results" role="listbox" aria-label="Resultados de pistas"></div>
+                <small id="track-meta">Escolha uma pista da lista para o perfil ser inferido automaticamente.</small>
+              </div>
             </div>
 
             <div class="step" data-step="2">

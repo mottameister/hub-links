@@ -9,8 +9,16 @@ const stepTitle = document.querySelector("#step-title");
 const result = document.querySelector("#result");
 const resultTitle = document.querySelector("#result-title");
 const copy = document.querySelector("#copy");
-const carList = document.querySelector("#car-list");
-const trackList = document.querySelector("#track-list");
+const carBrand = document.querySelector("#car-brand");
+const carSearch = document.querySelector("#car-search");
+const carValue = document.querySelector("#car-value");
+const carSelected = document.querySelector("#car-selected");
+const carResults = document.querySelector("#car-results");
+const trackCountry = document.querySelector("#track-country");
+const trackSearch = document.querySelector("#track-search");
+const trackValue = document.querySelector("#track-value");
+const trackSelected = document.querySelector("#track-selected");
+const trackResults = document.querySelector("#track-results");
 const carMeta = document.querySelector("#car-meta");
 const trackMeta = document.querySelector("#track-meta");
 const tireWearInput = document.querySelector("[name='tireWear']");
@@ -33,6 +41,34 @@ const tracks = dataSource.tracks || [];
 let currentStep = 0;
 let lastPlainText = "";
 
+const multiWordMakes = [
+  "Alfa Romeo",
+  "Aston Martin",
+  "BMW",
+  "Chevrolet",
+  "Dodge",
+  "Ferrari",
+  "Ford",
+  "Genesis",
+  "Gran Turismo",
+  "Honda",
+  "Hyundai",
+  "Jaguar",
+  "Lamborghini",
+  "Lexus",
+  "Maserati",
+  "Mazda",
+  "McLaren",
+  "Mercedes-AMG",
+  "Mercedes-Benz",
+  "Nissan",
+  "Porsche",
+  "Renault",
+  "Subaru",
+  "Toyota",
+  "Volkswagen",
+].sort((a, b) => b.length - a.length);
+
 function normalize(value) {
   return String(value || "")
     .normalize("NFD")
@@ -45,15 +81,6 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
-function fillDatalists() {
-  carList.innerHTML = cars
-    .map((car) => `<option value="${escapeAttr(car.name)}">${escapeAttr(`${car.drivetrain} | ${car.class} | ${car.pp}`)}</option>`)
-    .join("");
-  trackList.innerHTML = tracks
-    .map((track) => `<option value="${escapeAttr(track.name)}">${escapeAttr(track.type)}</option>`)
-    .join("");
-}
-
 function escapeAttr(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -62,14 +89,172 @@ function escapeAttr(value) {
     .replace(/>/g, "&gt;");
 }
 
+function escapeHtml(value) {
+  return escapeAttr(value);
+}
+
+function makeFor(car) {
+  const exact = multiWordMakes.find((make) => normalize(car.name).startsWith(normalize(make)));
+  return exact || String(car.name || "").split(" ")[0] || "Outra";
+}
+
+function enrichCar(car) {
+  return { ...car, make: makeFor(car) };
+}
+
+function enrichTrack(track) {
+  return { country: "Outros", ...track };
+}
+
+const carsWithMake = cars.map(enrichCar);
+const tracksWithCountry = tracks.map(enrichTrack);
+
+function modelName(car) {
+  const escapedMake = car.make.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return car.name.replace(new RegExp(`^${escapedMake}\\s*`, "i"), "").trim() || car.name;
+}
+
+function optionLabel(count, noun) {
+  return `${count} ${count === 1 ? noun : `${noun}s`}`;
+}
+
+function fillFilters() {
+  const makes = [...new Set(carsWithMake.map((car) => car.make))].sort((a, b) => a.localeCompare(b));
+  carBrand.innerHTML = `<option value="">Todas as marcas</option>${makes
+    .map((make) => `<option value="${escapeAttr(make)}">${escapeHtml(make)}</option>`)
+    .join("")}`;
+
+  const countries = [...new Set(tracksWithCountry.map((track) => track.country || "Outros"))].sort((a, b) =>
+    a.localeCompare(b)
+  );
+  trackCountry.innerHTML = `<option value="">Todos os paises</option>${countries
+    .map((country) => `<option value="${escapeAttr(country)}">${escapeHtml(country)}</option>`)
+    .join("")}`;
+}
+
+function clearCarSelection() {
+  carValue.value = "";
+  carSelected.textContent = "Nenhum carro selecionado";
+  carSelected.classList.remove("selected");
+}
+
+function clearTrackSelection() {
+  trackValue.value = "";
+  trackSelected.textContent = "Nenhuma pista selecionada";
+  trackSelected.classList.remove("selected");
+}
+
+function carMatchesQuery(car, query) {
+  if (!query) return true;
+  const q = normalize(query);
+  return [car.name, car.short, car.make, modelName(car), car.drivetrain, car.class].some((value) =>
+    normalize(value).includes(q)
+  );
+}
+
+function trackMatchesQuery(track, query) {
+  if (!query) return true;
+  const q = normalize(query);
+  return [track.name, track.country, track.type].some((value) => normalize(value).includes(q));
+}
+
+function renderCarResults() {
+  const make = carBrand.value;
+  const query = carSearch.value;
+  const matches = carsWithMake
+    .filter((car) => (!make || car.make === make) && carMatchesQuery(car, query))
+    .slice(0, 80);
+
+  carResults.innerHTML = matches.length
+    ? matches
+        .map(
+          (car, index) => `
+            <button type="button" class="picker-option" data-kind="car" data-index="${index}">
+              <span>
+                <strong>${escapeHtml(modelName(car))}</strong>
+                <small>${escapeHtml(car.make)} | ${escapeHtml(car.drivetrain)} | ${escapeHtml(car.class)}</small>
+              </span>
+              <em>${escapeHtml(car.pp)}</em>
+            </button>
+          `
+        )
+        .join("")
+    : `<div class="picker-empty">Nenhum carro encontrado. Tente marca ou parte do modelo.</div>`;
+
+  carResults.querySelectorAll("[data-kind='car']").forEach((button, index) => {
+    button.addEventListener("click", () => selectCar(matches[index]));
+  });
+
+  const total = carsWithMake.filter((car) => (!make || car.make === make) && carMatchesQuery(car, query)).length;
+  carMeta.textContent = carValue.value
+    ? carMeta.textContent
+    : `${optionLabel(total, "carro")} encontrado${total === 1 ? "" : "s"}. Digite algo como 911, Porsche, Supra ou GT-R.`;
+}
+
+function renderTrackResults() {
+  const country = trackCountry.value;
+  const query = trackSearch.value;
+  const matches = tracksWithCountry
+    .filter((track) => (!country || track.country === country) && trackMatchesQuery(track, query))
+    .slice(0, 80);
+
+  trackResults.innerHTML = matches.length
+    ? matches
+        .map(
+          (track, index) => `
+            <button type="button" class="picker-option" data-kind="track" data-index="${index}">
+              <span>
+                <strong>${escapeHtml(track.name)}</strong>
+                <small>${escapeHtml(track.country || "Outros")} | ${escapeHtml(track.type)}</small>
+              </span>
+            </button>
+          `
+        )
+        .join("")
+    : `<div class="picker-empty">Nenhuma pista encontrada. Limpe o pais ou busque pelo nome do circuito.</div>`;
+
+  trackResults.querySelectorAll("[data-kind='track']").forEach((button, index) => {
+    button.addEventListener("click", () => selectTrack(matches[index]));
+  });
+
+  const total = tracksWithCountry.filter(
+    (track) => (!country || track.country === country) && trackMatchesQuery(track, query)
+  ).length;
+  trackMeta.textContent = trackValue.value
+    ? trackMeta.textContent
+    : `${optionLabel(total, "layout")} encontrado${total === 1 ? "" : "s"}. Filtre por pais ou digite Spa, Suzuka, Tokyo...`;
+}
+
+function selectCar(car) {
+  carValue.value = car.name;
+  carSearch.value = modelName(car);
+  carBrand.value = car.make;
+  carSearch.setCustomValidity("");
+  carSelected.textContent = `${car.make} ${modelName(car)}`;
+  carSelected.classList.add("selected");
+  updateMeta();
+  renderCarResults();
+}
+
+function selectTrack(track) {
+  trackValue.value = track.name;
+  trackSearch.value = track.name;
+  trackCountry.value = track.country || "";
+  trackSearch.setCustomValidity("");
+  trackSelected.textContent = track.name;
+  trackSelected.classList.add("selected");
+  updateMeta();
+  renderTrackResults();
+}
+
 function findCar(name) {
   const target = normalize(name);
-  return cars.find((car) => normalize(car.name) === target || normalize(car.short) === target);
+  return carsWithMake.find((car) => normalize(car.name) === target || normalize(car.short) === target);
 }
 
 function findTrack(name) {
   const target = normalize(name);
-  return tracks.find((track) => normalize(track.name) === target);
+  return tracksWithCountry.find((track) => normalize(track.name) === target);
 }
 
 function inferCar(name) {
@@ -100,12 +285,16 @@ function updateMeta() {
   const input = data();
   const car = findCar(input.car);
   const track = findTrack(input.track);
-  carMeta.textContent = car
-    ? `${car.drivetrain} detectado | ${car.class} | ${car.pp}`
-    : "Carro fora da base oficial local: vou inferir a tracao pelo nome e deixar como ponto de partida.";
-  trackMeta.textContent = track
-    ? `Perfil inferido: ${track.type}`
-    : "Pista fora da base local: vou inferir o perfil pelo nome.";
+  if (input.car) {
+    carMeta.textContent = car
+      ? `${car.drivetrain} detectado | ${car.class} | ${car.pp}`
+      : "Carro fora da base oficial local: vou inferir a tracao pelo nome e deixar como ponto de partida.";
+  }
+  if (input.track) {
+    trackMeta.textContent = track
+      ? `Perfil inferido: ${track.type}${track.country ? ` | ${track.country}` : ""}`
+      : "Pista fora da base local: vou inferir o perfil pelo nome.";
+  }
 }
 
 function updateSliders() {
@@ -121,6 +310,24 @@ function updateStep() {
   progress.style.width = `${((currentStep + 1) / steps.length) * 100}%`;
   stepKicker.textContent = `Etapa ${currentStep + 1} de ${steps.length}`;
   stepTitle.textContent = titles[currentStep];
+}
+
+function validateCurrentStep() {
+  if (currentStep === 0 && !carValue.value) {
+    carSearch.setCustomValidity("Escolha um carro da lista.");
+    carSearch.reportValidity();
+    return false;
+  }
+
+  if (currentStep === 1 && !trackValue.value) {
+    trackSearch.setCustomValidity("Escolha uma pista da lista.");
+    trackSearch.reportValidity();
+    return false;
+  }
+
+  const required = steps[currentStep].querySelector("[required]");
+  if (required && !required.reportValidity()) return false;
+  return true;
 }
 
 function data() {
@@ -321,8 +528,7 @@ function renderSetup(input) {
 }
 
 next.addEventListener("click", () => {
-  const required = steps[currentStep].querySelector("[required]");
-  if (required && !required.reportValidity()) return;
+  if (!validateCurrentStep()) return;
   currentStep = clamp(currentStep + 1, 0, steps.length - 1);
   updateStep();
   updateMeta();
@@ -338,6 +544,36 @@ form.addEventListener("input", () => {
   updateMeta();
   updateSliders();
 });
+
+carBrand.addEventListener("change", () => {
+  clearCarSelection();
+  carSearch.value = "";
+  carSearch.setCustomValidity("");
+  renderCarResults();
+});
+
+carSearch.addEventListener("input", () => {
+  clearCarSelection();
+  carSearch.setCustomValidity("");
+  renderCarResults();
+});
+
+carSearch.addEventListener("focus", renderCarResults);
+
+trackCountry.addEventListener("change", () => {
+  clearTrackSelection();
+  trackSearch.value = "";
+  trackSearch.setCustomValidity("");
+  renderTrackResults();
+});
+
+trackSearch.addEventListener("input", () => {
+  clearTrackSelection();
+  trackSearch.setCustomValidity("");
+  renderTrackResults();
+});
+
+trackSearch.addEventListener("focus", renderTrackResults);
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -366,6 +602,8 @@ copy.addEventListener("click", async () => {
   }, 1200);
 });
 
-fillDatalists();
+fillFilters();
+renderCarResults();
+renderTrackResults();
 updateSliders();
 updateStep();
