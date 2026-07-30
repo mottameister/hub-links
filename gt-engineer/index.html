@@ -186,16 +186,23 @@
         <section class="result-panel" aria-live="polite">
           <div class="result-header">
             <div>
-              <p class="eyebrow">Setup gerado</p>
-              <h2 id="result-title">Aguardando respostas</h2>
+              <p class="eyebrow" id="result-kicker">Detalhes opcionais</p>
+              <h2 id="result-title">Conte mais sobre a corrida</h2>
             </div>
             <div class="result-actions">
               <button id="restart" class="ghost hidden" type="button">Outro carro</button>
-              <button id="copy" class="ghost" type="button">Copiar</button>
+              <button id="copy" class="ghost hidden" type="button">Copiar</button>
             </div>
           </div>
+          <div id="notes-editor" class="notes-editor">
+            <label for="driver-notes">
+              Texto livre
+              <textarea id="driver-notes" name="driverNotes" placeholder="Ex: Tenho dificuldade na curva 3, o carro espalha no miolo, falta aceleração na reta oposta, ou o pneu traseiro acaba rápido."></textarea>
+            </label>
+            <small>Use esse espaço para qualquer detalhe que não entrou no formulário. Ele entra como contexto na observação final do setup.</small>
+          </div>
           <div id="result" class="result-empty">
-            Complete as etapas para receber pneus, suspensão, diferencial, aero, ECU, ballast e câmbio.
+            O setup aparece aqui depois de clicar em Gerar setup.
           </div>
         </section>
       </section>

@@ -28,7 +28,8 @@ body {
 
 button,
 select,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -297,7 +298,8 @@ legend {
 }
 
 select,
-input {
+input,
+textarea {
   width: 100%;
   min-height: 46px;
   border: 1px solid var(--line);
@@ -306,6 +308,13 @@ input {
   color: var(--text);
   padding: 0 12px;
   outline: none;
+}
+
+textarea {
+  min-height: clamp(260px, 48vh, 560px);
+  padding: 12px;
+  resize: vertical;
+  line-height: 1.45;
 }
 
 input[list] {
@@ -401,7 +410,8 @@ input[type="range"] {
 }
 
 select:focus,
-input:focus {
+input:focus,
+textarea:focus {
   border-color: var(--accent-2);
 }
 
@@ -501,12 +511,12 @@ button.primary:disabled {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .result-panel {
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   gap: 16px;
 }
 
@@ -530,6 +540,17 @@ button.primary:disabled {
   border-radius: 8px;
   background: #0f1116;
   padding: 16px;
+}
+
+.notes-editor {
+  display: grid;
+  gap: 10px;
+}
+
+.friendly-note {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 .result-empty {

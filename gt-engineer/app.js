@@ -9,9 +9,12 @@ const progress = document.querySelector("#progress-bar");
 const stepKicker = document.querySelector("#step-kicker");
 const stepTitle = document.querySelector("#step-title");
 const result = document.querySelector("#result");
+const resultKicker = document.querySelector("#result-kicker");
 const resultTitle = document.querySelector("#result-title");
 const copy = document.querySelector("#copy");
 const restart = document.querySelector("#restart");
+const notesEditor = document.querySelector("#notes-editor");
+const driverNotes = document.querySelector("#driver-notes");
 const carBrand = document.querySelector("#car-brand");
 const carSearch = document.querySelector("#car-search");
 const carValue = document.querySelector("#car-value");
@@ -44,7 +47,7 @@ const tracks = dataSource.tracks || [];
 let currentStep = 0;
 let lastPlainText = "";
 
-const initialResultText = "Complete as etapas para receber pneus, suspensão, diferencial, aero, ECU, ballast e câmbio.";
+const initialResultText = "O setup aparece aqui depois de clicar em Gerar setup.";
 
 const multiWordMakes = [
   "Alfa Romeo",
@@ -358,7 +361,10 @@ function validateCurrentStep() {
 }
 
 function data() {
-  return Object.fromEntries(new FormData(form).entries());
+  return {
+    ...Object.fromEntries(new FormData(form).entries()),
+    driverNotes: driverNotes.value,
+  };
 }
 
 function raceLength(input) {
@@ -473,6 +479,35 @@ function rows(items) {
   return `<div class="setup-grid">${items.map(([k, v]) => `<span>${k}</span><strong>${v}</strong>`).join("")}</div>`;
 }
 
+function noteObservation(notes) {
+  const text = String(notes || "").trim();
+  if (!text) return "";
+
+  const n = normalize(text);
+  const suggestions = [];
+  if (/\b(curva|miolo|espalha|frente|understeer|subester)/.test(n)) {
+    suggestions.push("priorizei frente mais obediente no meio/entrada de curva sem deixar a traseira solta demais");
+  }
+  if (/\b(traseira|sai de traseira|sobrester|oversteer|escapa)/.test(n)) {
+    suggestions.push("dei mais margem para a traseira na saída, com toe traseiro e LSD menos agressivos");
+  }
+  if (/\b(reta|aceleracao|acelerar|velocidade|final|arrancada)/.test(n)) {
+    suggestions.push("mantive o câmbio e a aero pensando em recuperar aceleração sem matar a velocidade final");
+  }
+  if (/\b(frei|freada|freando|brake|instavel)/.test(n)) {
+    suggestions.push("deixei a frenagem mais estável para o carro aceitar trail braking com menos correção");
+  }
+  if (/\b(pneu|desgaste|stint|borracha)/.test(n)) {
+    suggestions.push("segurei cambagem e diferencial para preservar pneu ao longo do stint");
+  }
+
+  const detail = suggestions.length
+    ? suggestions.join("; ")
+    : "mantive uma base neutra e fácil de ajustar depois das primeiras voltas";
+
+  return `Li seu contexto: "${escapeHtml(text)}". Com isso, ${detail}. Use o setup como base e, se esse ponto específico continuar aparecendo, mexa primeiro no ajuste relacionado dentro do bloco acima.`;
+}
+
 function renderSetup(input) {
   const { car, track, tune, torqueSplit } = buildSetup(input);
   const pp = input.ppLimit ? `, limite ${input.ppLimit} PP` : "";
@@ -515,6 +550,10 @@ function renderSetup(input) {
       ["Nitro/Overtake", "None"],
     ])],
   ];
+  const observation = noteObservation(input.driverNotes);
+  if (observation) {
+    blocks.push(["Observação", `<p class="friendly-note">${observation}</p>`]);
+  }
 
   lastPlainText = [
     `GT7 Setup Engineer - ${car.name} em ${track.name}`,
@@ -530,9 +569,13 @@ function renderSetup(input) {
     `LSD: ${tune.lsdInitial}/${tune.lsdAccel}/${tune.lsdBrake}`,
     `Downforce: ${tune.downF}/${tune.downR}`,
     `ECU: ${tune.ecu}% | Restrictor: ${tune.restrictor}% | Câmbio: ${tune.topSpeed} km/h`,
-  ].join("\n");
+    observation ? `Observação: ${observation.replace(/<[^>]*>/g, "")}` : "",
+  ].filter(Boolean).join("\n");
 
+  resultKicker.textContent = "Setup gerado";
   resultTitle.textContent = `${car.name} - ${track.name}`;
+  notesEditor.classList.add("hidden");
+  copy.classList.remove("hidden");
   result.className = "setup-output";
   result.innerHTML = blocks.map(([title, body]) => `<div class="setup-block"><h3>${title}</h3>${body}</div>`).join("");
   restart.classList.remove("hidden");
@@ -549,10 +592,14 @@ function resetFlow() {
   clearTrackSelection();
   lastPlainText = "";
   currentStep = 0;
-  resultTitle.textContent = "Aguardando respostas";
+  resultKicker.textContent = "Detalhes opcionais";
+  resultTitle.textContent = "Conte mais sobre a corrida";
+  notesEditor.classList.remove("hidden");
+  driverNotes.value = "";
   result.className = "result-empty";
   result.textContent = initialResultText;
   restart.classList.add("hidden");
+  copy.classList.add("hidden");
   copy.textContent = "Copiar";
   updateSliders();
   updateStep();
@@ -613,7 +660,9 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   generate.disabled = true;
   generate.textContent = "Gerando...";
+  resultKicker.textContent = "Setup gerado";
   resultTitle.textContent = "Gerando setup...";
+  notesEditor.classList.add("hidden");
   result.className = "result-empty";
   result.textContent = "Calculando tração, perfil da pista, desgaste, combustível e ajustes de base.";
 
