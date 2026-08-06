@@ -2,212 +2,792 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Baixe a planilha MottaFit Habit Tracker em Excel.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7fb">
+  <meta name="description" content="MottaFit e um app simples para acompanhar habitos, metas e progresso.">
   <meta property="og:title" content="MottaFit | Habit Tracker">
-  <meta property="og:description" content="Planilha editavel para acompanhar habitos, tarefas e progresso.">
+  <meta property="og:description" content="App simples para marcar habitos, editar metas e acompanhar progresso.">
   <meta property="og:type" content="website">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png">
   <title>MottaFit | Habit Tracker</title>
   <style>
     :root {
-      --bg: #070a16;
-      --panel: #10162a;
-      --text: #f8fafc;
-      --muted: #b8c0d8;
-      --purple: #6d5dfb;
-      --cyan: #22d3ee;
-      --line: rgba(255, 255, 255, 0.12);
+      --bg: #f6f7fb;
+      --surface: #ffffff;
+      --surface-soft: #eef1f8;
+      --ink: #121622;
+      --muted: #667085;
+      --line: #d9deea;
+      --brand: #2f6df6;
+      --brand-dark: #174dcc;
+      --green: #18a058;
+      --amber: #e59b19;
+      --danger: #d92d20;
+      --shadow: 0 16px 44px rgba(18, 22, 34, 0.1);
+      --radius: 18px;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 15% 10%, rgba(109, 93, 251, 0.36), transparent 34%),
-        radial-gradient(circle at 86% 18%, rgba(34, 211, 238, 0.2), transparent 32%),
-        linear-gradient(180deg, #050814 0%, var(--bg) 100%);
+    html {
+      background: var(--bg);
+      color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
-    main {
-      width: min(920px, calc(100% - 32px));
+    body {
+      margin: 0;
       min-height: 100vh;
-      margin: 0 auto;
-      display: grid;
-      align-items: center;
-      padding: 48px 0;
+      background:
+        linear-gradient(180deg, rgba(47, 109, 246, 0.1), transparent 260px),
+        var(--bg);
     }
 
-    .shell {
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      touch-action: manipulation;
+    }
+
+    .app {
+      width: min(1160px, 100%);
+      margin: 0 auto;
+      padding: max(18px, env(safe-area-inset-top)) 16px 88px;
+    }
+
+    .hero {
       display: grid;
-      gap: 28px;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      padding: 12px 0 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand-mark {
+      display: grid;
+      gap: 2px;
     }
 
     .eyebrow {
-      width: fit-content;
-      padding: 8px 12px;
-      border: 1px solid rgba(109, 93, 251, 0.45);
-      border-radius: 999px;
-      color: #ddd8ff;
-      background: rgba(109, 93, 251, 0.13);
-      font-size: 0.88rem;
-      font-weight: 800;
+      color: var(--brand);
+      font-size: 0.78rem;
+      font-weight: 900;
+      text-transform: uppercase;
       letter-spacing: 0;
     }
 
     h1 {
-      max-width: 720px;
       margin: 0;
-      font-size: clamp(2.5rem, 8vw, 5.6rem);
-      line-height: 0.94;
+      font-size: clamp(2.1rem, 8vw, 4.8rem);
+      line-height: 0.96;
       letter-spacing: 0;
     }
 
-    p {
-      max-width: 640px;
+    .subtitle {
       margin: 0;
+      max-width: 640px;
       color: var(--muted);
-      font-size: 1.12rem;
-      line-height: 1.75;
+      font-size: 1rem;
+      line-height: 1.55;
     }
 
-    .actions {
+    .toolbar {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
       align-items: center;
     }
 
-    .button {
-      display: inline-flex;
-      min-height: 56px;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      padding: 0 22px;
-      color: white;
-      background: var(--purple);
-      box-shadow: 0 18px 50px rgba(109, 93, 251, 0.35);
-      font-weight: 900;
-      text-decoration: none;
-    }
-
-    .button:hover {
-      background: #7c6cff;
-    }
-
-    .preview {
-      overflow: hidden;
+    .field,
+    .button,
+    .ghost-button,
+    .danger-button {
+      min-height: 46px;
+      border-radius: 12px;
       border: 1px solid var(--line);
-      border-radius: 8px;
-      background: rgba(16, 22, 42, 0.72);
-      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.32);
+      padding: 0 14px;
     }
 
-    .preview-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      color: #dbe3ff;
-      font-size: 0.92rem;
+    .field {
+      color: var(--ink);
+      background: var(--surface);
       font-weight: 800;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1.5fr repeat(7, 1fr);
-      gap: 1px;
-      padding: 1px;
-      background: rgba(109, 93, 251, 0.38);
+    .button {
+      border-color: var(--brand);
+      color: white;
+      background: var(--brand);
+      font-weight: 900;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
     }
 
-    .cell {
-      min-height: 34px;
-      padding: 8px;
-      background: #0b1024;
-      color: #c7d2fe;
-      font-size: 0.78rem;
+    .button:active {
+      background: var(--brand-dark);
+    }
+
+    .ghost-button,
+    .danger-button {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 850;
+      cursor: pointer;
+    }
+
+    .danger-button {
+      color: var(--danger);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      min-height: 92px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 800;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 22px 0 10px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 1.08rem;
+      letter-spacing: 0;
+    }
+
+    .today-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+    }
+
+    .today-card,
+    .habit-card,
+    .premium-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .today-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .today-check,
+    .day-button {
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .today-check {
+      width: 52px;
+      height: 52px;
+      flex: 0 0 52px;
+      border-radius: 16px;
+      font-size: 1.25rem;
+      font-weight: 950;
+    }
+
+    .today-check.done,
+    .day-button.done {
+      border-color: rgba(24, 160, 88, 0.24);
+      background: #dff7ea;
+      color: var(--green);
+    }
+
+    .today-name {
+      min-width: 0;
+      font-weight: 900;
+    }
+
+    .today-meta {
+      color: var(--muted);
+      font-size: 0.85rem;
       font-weight: 700;
     }
 
-    .cell.done {
-      color: #070a16;
-      background: var(--purple);
+    .habit-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .habit-card {
+      padding: 14px;
+    }
+
+    .habit-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 118px 44px;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .habit-input,
+    .target-input {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--ink);
+      padding: 0 12px;
+      font-weight: 850;
+    }
+
+    .target-input {
       text-align: center;
     }
 
-    .cell.blank {
-      color: transparent;
-      background: #080b18;
+    .remove-button {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #ffd0cb;
+      border-radius: 12px;
+      background: #fff2f0;
+      color: var(--danger);
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .progress-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin: 12px 0;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .bar {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--surface-soft);
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--brand), var(--green));
+      transition: width 0.2s ease;
+    }
+
+    .days {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(38px, 1fr));
+      gap: 8px;
+    }
+
+    .day-button {
+      min-height: 44px;
+      border-radius: 12px;
+      font-weight: 950;
+    }
+
+    .day-button.today {
+      outline: 3px solid rgba(47, 109, 246, 0.2);
+      border-color: var(--brand);
+    }
+
+    .day-label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.68rem;
+      font-weight: 850;
+    }
+
+    .premium-card {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+      padding: 16px;
+      background:
+        linear-gradient(135deg, rgba(47, 109, 246, 0.12), rgba(24, 160, 88, 0.1)),
+        var(--surface);
+    }
+
+    .premium-card h2,
+    .premium-card p {
+      margin: 0;
+    }
+
+    .premium-card p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 10;
+      transform: translateY(90px);
+      border-radius: 12px;
+      background: #121622;
+      color: white;
+      padding: 12px 14px;
+      font-weight: 850;
+      opacity: 0;
+      transition: 0.2s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (min-width: 800px) {
+      .hero {
+        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+        align-items: end;
+      }
+
+      .summary {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+        align-self: end;
+      }
     }
 
     @media (max-width: 640px) {
-      main {
-        width: min(100% - 24px, 920px);
+      .app {
+        padding-inline: 12px;
       }
 
-      .button {
+      .brand {
+        align-items: flex-start;
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .field,
+      .button,
+      .ghost-button,
+      .danger-button {
         width: 100%;
       }
 
-      .preview {
-        display: none;
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .habit-top {
+        grid-template-columns: 1fr 88px 44px;
+      }
+
+      .days {
+        gap: 7px;
       }
     }
   </style>
 </head>
 <body>
-  <main>
-    <section class="shell" aria-labelledby="title">
-      <span class="eyebrow">MottaFit</span>
-      <h1 id="title">Habit Tracker em Excel</h1>
-      <p>
-        Planilha editavel para marcar habitos, tarefas e progresso diario. No iPhone, toque no botao e abra no Numbers, Excel ou salve em Arquivos.
+  <div class="app">
+    <header class="hero">
+      <div class="brand">
+        <div class="brand-mark">
+          <span class="eyebrow">MottaFit V1</span>
+          <h1>Tracker de habitos</h1>
+        </div>
+      </div>
+      <div class="summary" aria-label="Resumo do mes">
+        <article class="metric">
+          <span>Hoje</span>
+          <strong id="todayScore">0%</strong>
+        </article>
+        <article class="metric">
+          <span>Mes</span>
+          <strong id="monthScore">0%</strong>
+        </article>
+        <article class="metric">
+          <span>Marcados</span>
+          <strong id="doneCount">0</strong>
+        </article>
+      </div>
+      <p class="subtitle">
+        Toque nos dias para marcar, edite o nome das metas direto no campo e ajuste quantos dias do mes voce quer cumprir.
       </p>
-      <div class="actions">
-        <a class="button" href="./mottafit-habit-tracker.xlsx" download>Baixar planilha .xlsx</a>
+      <div class="toolbar" aria-label="Controles principais">
+        <input class="field" id="monthPicker" type="month" aria-label="Mes do tracker">
+        <button class="button" id="addHabit" type="button">+ Nova meta</button>
+        <button class="ghost-button" id="installButton" type="button" hidden>Instalar app</button>
       </div>
-      <div class="preview" aria-hidden="true">
-        <div class="preview-header">
-          <span>April - Habit Tracker</span>
-          <span>Monthly Completion 71%</span>
-        </div>
-        <div class="grid">
-          <div class="cell">Habits</div>
-          <div class="cell">We</div>
-          <div class="cell">Th</div>
-          <div class="cell">Fr</div>
-          <div class="cell">Sa</div>
-          <div class="cell">Su</div>
-          <div class="cell">Mo</div>
-          <div class="cell">Tu</div>
-          <div class="cell">Gym</div>
-          <div class="cell done">x</div>
-          <div class="cell blank">.</div>
-          <div class="cell done">x</div>
-          <div class="cell done">x</div>
-          <div class="cell done">x</div>
-          <div class="cell blank">.</div>
-          <div class="cell blank">.</div>
-          <div class="cell">Budget Tracking</div>
-          <div class="cell blank">.</div>
-          <div class="cell done">x</div>
-          <div class="cell blank">.</div>
-          <div class="cell done">x</div>
-          <div class="cell done">x</div>
-          <div class="cell done">x</div>
-          <div class="cell blank">.</div>
-        </div>
+    </header>
+
+    <section aria-labelledby="todayTitle">
+      <div class="section-title">
+        <h2 id="todayTitle">Hoje</h2>
+        <span class="today-meta" id="todayDate"></span>
       </div>
+      <div class="today-list" id="todayList"></div>
     </section>
-  </main>
+
+    <section aria-labelledby="habitsTitle">
+      <div class="section-title">
+        <h2 id="habitsTitle">Metas do mes</h2>
+        <button class="ghost-button" id="fillToday" type="button">Marcar hoje</button>
+      </div>
+      <div class="habit-list" id="habitList"></div>
+    </section>
+
+    <section class="premium-card" aria-labelledby="premiumTitle">
+      <h2 id="premiumTitle">Premium em breve</h2>
+      <p>
+        Ideias para a versao paga: historico ilimitado, templates prontos, graficos avancados, backup na nuvem e exportacao PDF.
+      </p>
+    </section>
+
+    <div class="footer-actions">
+      <a class="ghost-button" href="./mottafit-habit-tracker.xlsx" download>Baixar Excel original</a>
+      <button class="danger-button" id="resetDemo" type="button">Resetar dados</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const storageKey = "mottafit.v1";
+    const weekday = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+    const defaultHabits = [
+      "Treino",
+      "Agua",
+      "Sono 7h+",
+      "Planejamento",
+      "Sem alcool",
+      "Leitura",
+      "Side hustle"
+    ];
+
+    const today = new Date();
+    const currentMonth = today.toISOString().slice(0, 7);
+    let deferredInstallPrompt = null;
+    let state = loadState();
+
+    const habitList = document.querySelector("#habitList");
+    const todayList = document.querySelector("#todayList");
+    const monthPicker = document.querySelector("#monthPicker");
+    const todayScore = document.querySelector("#todayScore");
+    const monthScore = document.querySelector("#monthScore");
+    const doneCount = document.querySelector("#doneCount");
+    const todayDate = document.querySelector("#todayDate");
+    const toast = document.querySelector("#toast");
+    const installButton = document.querySelector("#installButton");
+
+    monthPicker.value = state.month;
+    todayDate.textContent = new Intl.DateTimeFormat("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "short"
+    }).format(today);
+
+    function loadState() {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (error) {
+          localStorage.removeItem(storageKey);
+        }
+      }
+
+      return {
+        month: currentMonth,
+        habits: defaultHabits.map((name, index) => ({
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + index),
+          name,
+          target: index < 2 ? 24 : 18,
+          done: {}
+        }))
+      };
+    }
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function getMonthParts(month) {
+      const [year, rawMonth] = month.split("-").map(Number);
+      const date = new Date(year, rawMonth, 0);
+      return { year, monthIndex: rawMonth - 1, days: date.getDate() };
+    }
+
+    function keyForDay(day) {
+      return `${state.month}-${String(day).padStart(2, "0")}`;
+    }
+
+    function getDoneForDay(day) {
+      const key = keyForDay(day);
+      return state.habits.filter((habit) => habit.done[key]).length;
+    }
+
+    function getTotalDone() {
+      const { days } = getMonthParts(state.month);
+      return state.habits.reduce((sum, habit) => {
+        let count = 0;
+        for (let day = 1; day <= days; day += 1) {
+          if (habit.done[keyForDay(day)]) count += 1;
+        }
+        return sum + count;
+      }, 0);
+    }
+
+    function habitDoneCount(habit) {
+      const { days } = getMonthParts(state.month);
+      let count = 0;
+      for (let day = 1; day <= days; day += 1) {
+        if (habit.done[keyForDay(day)]) count += 1;
+      }
+      return count;
+    }
+
+    function render() {
+      const { year, monthIndex, days } = getMonthParts(state.month);
+      const isCurrentMonth = state.month === currentMonth;
+      const todayDay = today.getDate();
+      const totalPossible = state.habits.length * days;
+      const done = getTotalDone();
+      const todayDone = isCurrentMonth ? getDoneForDay(todayDay) : 0;
+      const todayPossible = state.habits.length || 1;
+
+      todayScore.textContent = `${Math.round((todayDone / todayPossible) * 100)}%`;
+      monthScore.textContent = `${totalPossible ? Math.round((done / totalPossible) * 100) : 0}%`;
+      doneCount.textContent = String(done);
+
+      todayList.innerHTML = state.habits.map((habit) => {
+        const checked = isCurrentMonth && habit.done[keyForDay(todayDay)];
+        return `
+          <article class="today-card">
+            <button class="today-check ${checked ? "done" : ""}" type="button" data-action="toggle" data-id="${habit.id}" data-day="${todayDay}" aria-label="Marcar ${escapeHtml(habit.name)} hoje">
+              ${checked ? "✓" : ""}
+            </button>
+            <div>
+              <div class="today-name">${escapeHtml(habit.name)}</div>
+              <div class="today-meta">${habitDoneCount(habit)} de ${habit.target} dias da meta</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      habitList.innerHTML = state.habits.map((habit) => {
+        const habitDone = habitDoneCount(habit);
+        const percent = Math.min(100, Math.round((habitDone / Math.max(1, habit.target)) * 100));
+        const buttons = [];
+        for (let day = 1; day <= days; day += 1) {
+          const date = new Date(year, monthIndex, day);
+          const checked = Boolean(habit.done[keyForDay(day)]);
+          const todayClass = isCurrentMonth && day === todayDay ? "today" : "";
+          buttons.push(`
+            <button class="day-button ${checked ? "done" : ""} ${todayClass}" type="button" data-action="toggle" data-id="${habit.id}" data-day="${day}" aria-label="Alternar dia ${day} para ${escapeHtml(habit.name)}">
+              <span class="day-label">${weekday[date.getDay()]}</span>
+              ${checked ? "✓" : day}
+            </button>
+          `);
+        }
+
+        return `
+          <article class="habit-card">
+            <div class="habit-top">
+              <input class="habit-input" value="${escapeAttr(habit.name)}" data-action="rename" data-id="${habit.id}" aria-label="Nome da meta">
+              <input class="target-input" type="number" min="1" max="${days}" value="${habit.target}" data-action="target" data-id="${habit.id}" aria-label="Meta de dias no mes">
+              <button class="remove-button" type="button" data-action="remove" data-id="${habit.id}" aria-label="Remover meta">×</button>
+            </div>
+            <div class="progress-row">
+              <div class="bar" aria-hidden="true"><div class="bar-fill" style="width: ${percent}%"></div></div>
+              <span>${habitDone}/${habit.target}</span>
+            </div>
+            <div class="days">${buttons.join("")}</div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function toggleDay(id, day) {
+      const habit = state.habits.find((item) => item.id === id);
+      if (!habit) return;
+      const key = keyForDay(day);
+      habit.done[key] = !habit.done[key];
+      if (!habit.done[key]) delete habit.done[key];
+      saveState();
+      render();
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value).replace(/`/g, "&#96;");
+    }
+
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const action = button.dataset.action;
+      if (action === "toggle") {
+        toggleDay(button.dataset.id, Number(button.dataset.day));
+      }
+      if (action === "remove") {
+        state.habits = state.habits.filter((habit) => habit.id !== button.dataset.id);
+        saveState();
+        render();
+        showToast("Meta removida");
+      }
+    });
+
+    document.addEventListener("change", (event) => {
+      const input = event.target.closest("[data-action]");
+      if (!input) return;
+      const habit = state.habits.find((item) => item.id === input.dataset.id);
+      if (!habit) return;
+      if (input.dataset.action === "rename") {
+        habit.name = input.value.trim() || "Nova meta";
+      }
+      if (input.dataset.action === "target") {
+        const { days } = getMonthParts(state.month);
+        habit.target = Math.max(1, Math.min(days, Number(input.value) || 1));
+      }
+      saveState();
+      render();
+    });
+
+    monthPicker.addEventListener("change", () => {
+      state.month = monthPicker.value || currentMonth;
+      saveState();
+      render();
+    });
+
+    document.querySelector("#addHabit").addEventListener("click", () => {
+      state.habits.push({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        name: "Nova meta",
+        target: 18,
+        done: {}
+      });
+      saveState();
+      render();
+      showToast("Meta adicionada");
+    });
+
+    document.querySelector("#fillToday").addEventListener("click", () => {
+      if (state.month !== currentMonth) {
+        state.month = currentMonth;
+        monthPicker.value = currentMonth;
+      }
+      for (const habit of state.habits) {
+        habit.done[keyForDay(today.getDate())] = true;
+      }
+      saveState();
+      render();
+      showToast("Hoje marcado");
+    });
+
+    document.querySelector("#resetDemo").addEventListener("click", () => {
+      if (!confirm("Resetar os dados do MottaFit neste aparelho?")) return;
+      localStorage.removeItem(storageKey);
+      state = loadState();
+      monthPicker.value = state.month;
+      render();
+      showToast("Dados resetados");
+    });
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installButton.hidden = false;
+    });
+
+    installButton.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      installButton.hidden = true;
+    });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    render();
+  </script>
 </body>
 </html>
