@@ -1,4 +1,4 @@
-const cacheName = "mottafit-v1";
+const cacheName = "mottafit-v2";
 const assets = [
   "/mottafit/",
   "/mottafit/index.html",

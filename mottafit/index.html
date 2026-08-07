@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f6f7fb">
+  <meta name="theme-color" content="#f7f8fb">
   <meta name="description" content="MottaFit e um app simples para acompanhar habitos, metas e progresso.">
   <meta property="og:title" content="MottaFit | Habit Tracker">
   <meta property="og:description" content="App simples para marcar habitos, editar metas e acompanhar progresso.">
@@ -13,18 +13,21 @@
   <title>MottaFit | Habit Tracker</title>
   <style>
     :root {
-      --bg: #f6f7fb;
+      --bg: #f7f8fb;
       --surface: #ffffff;
-      --surface-soft: #eef1f8;
-      --ink: #121622;
+      --surface-soft: #eff3f9;
+      --ink: #101828;
       --muted: #667085;
-      --line: #d9deea;
-      --brand: #2f6df6;
-      --brand-dark: #174dcc;
-      --green: #18a058;
-      --amber: #e59b19;
-      --danger: #d92d20;
-      --shadow: 0 16px 44px rgba(18, 22, 34, 0.1);
+      --line: #d9e0ec;
+      --brand: #2563eb;
+      --brand-soft: #dbeafe;
+      --green: #16a34a;
+      --green-soft: #dcfce7;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --danger: #dc2626;
+      --danger-soft: #fee2e2;
+      --shadow: 0 16px 42px rgba(16, 24, 40, 0.09);
       --radius: 18px;
     }
 
@@ -43,7 +46,7 @@
       margin: 0;
       min-height: 100vh;
       background:
-        linear-gradient(180deg, rgba(47, 109, 246, 0.1), transparent 260px),
+        linear-gradient(180deg, rgba(37, 99, 235, 0.1), transparent 270px),
         var(--bg);
     }
 
@@ -58,117 +61,155 @@
     }
 
     .app {
-      width: min(1160px, 100%);
+      width: min(1120px, 100%);
       margin: 0 auto;
-      padding: max(18px, env(safe-area-inset-top)) 16px 88px;
+      padding: max(18px, env(safe-area-inset-top)) 14px 92px;
     }
 
-    .hero {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 18px;
-      padding: 12px 0 18px;
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 18px;
     }
 
     .brand {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .brand-mark {
       display: grid;
-      gap: 2px;
+      gap: 4px;
     }
 
     .eyebrow {
       color: var(--brand);
-      font-size: 0.78rem;
-      font-weight: 900;
-      text-transform: uppercase;
+      font-size: 0.76rem;
+      font-weight: 950;
       letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(2.1rem, 8vw, 4.8rem);
-      line-height: 0.96;
+      font-size: clamp(2.35rem, 8vw, 4.8rem);
+      line-height: 0.94;
       letter-spacing: 0;
     }
 
     .subtitle {
-      margin: 0;
-      max-width: 640px;
+      max-width: 650px;
+      margin-top: 12px;
       color: var(--muted);
       font-size: 1rem;
       line-height: 1.55;
     }
 
-    .toolbar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
+    .auth-panel {
+      min-width: min(100%, 300px);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: var(--shadow);
+      padding: 12px;
     }
 
-    .field,
+    .auth-title {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 8px;
+    }
+
+    .auth-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .auth-button,
     .button,
     .ghost-button,
     .danger-button {
-      min-height: 46px;
+      min-height: 44px;
       border-radius: 12px;
       border: 1px solid var(--line);
-      padding: 0 14px;
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .auth-button {
+      display: grid;
+      place-items: center;
+      font-size: 0.82rem;
+    }
+
+    .auth-button[disabled] {
+      opacity: 0.72;
+      cursor: not-allowed;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: center;
+      margin: 18px 0 12px;
     }
 
     .field {
-      color: var(--ink);
+      min-height: 46px;
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
       background: var(--surface);
-      font-weight: 800;
+      color: var(--ink);
+      padding: 0 12px;
+      font-weight: 900;
     }
 
     .button {
       border-color: var(--brand);
-      color: white;
       background: var(--brand);
-      font-weight: 900;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
+      color: white;
+      padding: 0 14px;
     }
 
-    .button:active {
-      background: var(--brand-dark);
-    }
-
-    .ghost-button,
-    .danger-button {
-      background: var(--surface);
-      color: var(--ink);
-      font-weight: 850;
-      cursor: pointer;
+    .ghost-button {
+      padding: 0 14px;
     }
 
     .danger-button {
       color: var(--danger);
+      background: var(--danger-soft);
+      border-color: #fecaca;
+      padding: 0 14px;
     }
 
     .summary {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
+      margin: 12px 0 16px;
     }
 
-    .metric {
-      min-height: 92px;
+    .metric,
+    .calendar-card,
+    .editor-card,
+    .day-panel,
+    .premium-card {
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--surface);
       box-shadow: var(--shadow);
+    }
+
+    .metric {
+      min-height: 92px;
       padding: 14px;
     }
 
@@ -176,7 +217,7 @@
       display: block;
       color: var(--muted);
       font-size: 0.8rem;
-      font-weight: 800;
+      font-weight: 850;
     }
 
     .metric strong {
@@ -187,104 +228,209 @@
       letter-spacing: 0;
     }
 
-    .section-title {
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .calendar-card {
+      overflow: hidden;
+    }
+
+    .calendar-head {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .weekday {
+      min-height: 40px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--line);
+      padding: 1px;
+    }
+
+    .day-cell {
+      min-height: 104px;
+      display: grid;
+      align-content: space-between;
+      gap: 8px;
+      border: 0;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .day-cell.outside {
+      color: #98a2b3;
+      background: #f3f5f9;
+      cursor: default;
+    }
+
+    .day-cell.today {
+      outline: 3px solid rgba(37, 99, 235, 0.22);
+      outline-offset: -4px;
+    }
+
+    .day-cell.selected {
+      background: #eef4ff;
+    }
+
+    .day-number {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 1rem;
+      font-weight: 950;
+    }
+
+    .day-total {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    .day-bar {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--surface-soft);
+    }
+
+    .day-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: var(--brand);
+    }
+
+    .day-preview {
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 750;
+      line-height: 1.25;
+    }
+
+    .day-cell.complete .day-fill {
+      background: var(--green);
+    }
+
+    .day-cell.complete {
+      background: #f0fdf4;
+    }
+
+    .side {
+      display: grid;
+      gap: 14px;
+    }
+
+    .day-panel,
+    .editor-card,
+    .premium-card {
+      padding: 14px;
+    }
+
+    .section-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      margin: 22px 0 10px;
+      margin-bottom: 12px;
     }
 
-    .section-title h2 {
-      margin: 0;
+    .section-top h2 {
       font-size: 1.08rem;
       letter-spacing: 0;
     }
 
-    .today-list {
+    .small-muted {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+
+    .check-list,
+    .habit-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 8px;
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
       gap: 10px;
-    }
-
-    .today-card,
-    .habit-card,
-    .premium-card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow);
-    }
-
-    .today-card {
-      display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px;
+      min-height: 58px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-soft);
+      padding: 8px;
     }
 
-    .today-check,
-    .day-button {
+    .check-button {
+      width: 44px;
+      height: 44px;
       display: grid;
       place-items: center;
       border: 1px solid var(--line);
-      background: var(--surface-soft);
+      border-radius: 14px;
+      background: var(--surface);
       color: var(--muted);
+      font-size: 1.2rem;
+      font-weight: 950;
       cursor: pointer;
     }
 
-    .today-check {
-      width: 52px;
-      height: 52px;
-      flex: 0 0 52px;
-      border-radius: 16px;
-      font-size: 1.25rem;
-      font-weight: 950;
-    }
-
-    .today-check.done,
-    .day-button.done {
-      border-color: rgba(24, 160, 88, 0.24);
-      background: #dff7ea;
+    .check-button.done {
+      border-color: rgba(22, 163, 74, 0.28);
+      background: var(--green-soft);
       color: var(--green);
     }
 
-    .today-name {
+    .check-name {
       min-width: 0;
       font-weight: 900;
     }
 
-    .today-meta {
+    .check-meta {
       color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 700;
+      font-size: 0.78rem;
+      font-weight: 750;
     }
 
-    .habit-list {
+    .habit-row {
       display: grid;
-      gap: 12px;
-    }
-
-    .habit-card {
-      padding: 14px;
-    }
-
-    .habit-top {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 118px 44px;
-      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) 82px 42px;
+      gap: 8px;
       align-items: center;
     }
 
     .habit-input,
     .target-input {
       width: 100%;
-      min-height: 46px;
+      min-height: 44px;
       border: 1px solid var(--line);
       border-radius: 12px;
       background: var(--surface-soft);
       color: var(--ink);
-      padding: 0 12px;
+      padding: 0 11px;
       font-weight: 850;
     }
 
@@ -293,101 +439,59 @@
     }
 
     .remove-button {
-      width: 44px;
-      height: 44px;
-      border: 1px solid #ffd0cb;
+      width: 42px;
+      height: 42px;
+      border: 1px solid #fecaca;
       border-radius: 12px;
-      background: #fff2f0;
+      background: var(--danger-soft);
       color: var(--danger);
       font-weight: 950;
       cursor: pointer;
     }
 
-    .progress-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: center;
-      margin: 12px 0;
-      color: var(--muted);
-      font-size: 0.85rem;
-      font-weight: 800;
-    }
-
-    .bar {
-      height: 10px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: var(--surface-soft);
-    }
-
-    .bar-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--brand), var(--green));
-      transition: width 0.2s ease;
-    }
-
-    .days {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(38px, 1fr));
-      gap: 8px;
-    }
-
-    .day-button {
-      min-height: 44px;
-      border-radius: 12px;
-      font-weight: 950;
-    }
-
-    .day-button.today {
-      outline: 3px solid rgba(47, 109, 246, 0.2);
-      border-color: var(--brand);
-    }
-
-    .day-label {
-      display: block;
-      color: var(--muted);
-      font-size: 0.68rem;
-      font-weight: 850;
-    }
-
     .premium-card {
       display: grid;
-      gap: 10px;
-      margin-top: 18px;
-      padding: 16px;
+      gap: 8px;
       background:
-        linear-gradient(135deg, rgba(47, 109, 246, 0.12), rgba(24, 160, 88, 0.1)),
+        linear-gradient(135deg, rgba(37, 99, 235, 0.11), rgba(22, 163, 74, 0.1)),
         var(--surface);
     }
 
-    .premium-card h2,
-    .premium-card p {
-      margin: 0;
-    }
-
     .premium-card p {
       color: var(--muted);
-      line-height: 1.55;
+      line-height: 1.5;
+      font-size: 0.94rem;
     }
 
     .footer-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 18px;
+      margin-top: 14px;
+    }
+
+    .footer-actions a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--ink);
+      padding: 0 14px;
+      font-weight: 900;
+      text-decoration: none;
     }
 
     .toast {
       position: fixed;
-      right: 16px;
-      bottom: 16px;
-      z-index: 10;
+      right: 14px;
+      bottom: 14px;
+      z-index: 20;
       transform: translateY(90px);
       border-radius: 12px;
-      background: #121622;
+      background: var(--ink);
       color: white;
       padding: 12px 14px;
       font-weight: 850;
@@ -400,112 +504,163 @@
       opacity: 1;
     }
 
-    @media (min-width: 800px) {
-      .hero {
-        grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
-        align-items: end;
-      }
-
-      .summary {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-        align-self: end;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .app {
-        padding-inline: 12px;
-      }
-
-      .brand {
-        align-items: flex-start;
-      }
-
-      .toolbar {
-        display: grid;
+    @media (max-width: 840px) {
+      .topbar,
+      .layout {
         grid-template-columns: 1fr;
+        display: grid;
       }
 
-      .field,
-      .button,
-      .ghost-button,
-      .danger-button {
+      .auth-panel {
         width: 100%;
       }
 
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
       .summary {
         grid-template-columns: 1fr;
       }
 
-      .habit-top {
-        grid-template-columns: 1fr 88px 44px;
+      .day-cell {
+        min-height: 86px;
+        padding: 8px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        padding-inline: 10px;
       }
 
-      .days {
-        gap: 7px;
+      .calendar-card {
+        border-radius: 14px;
+      }
+
+      .weekday {
+        min-height: 34px;
+        font-size: 0.7rem;
+      }
+
+      .day-cell {
+        min-height: 70px;
+        padding: 7px;
+      }
+
+      .day-preview {
+        display: none;
+      }
+
+      .day-total {
+        font-size: 0.68rem;
+      }
+
+      .habit-row {
+        grid-template-columns: 1fr 72px 42px;
+      }
+
+      .auth-buttons {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <header class="hero">
+    <header class="topbar">
       <div class="brand">
-        <div class="brand-mark">
-          <span class="eyebrow">MottaFit V1</span>
-          <h1>Tracker de habitos</h1>
+        <span class="eyebrow">MottaFit</span>
+        <h1>Calendario de habitos</h1>
+        <p class="subtitle">
+          Um calendario para tudo: toque no dia, marque as metas e acompanhe o progresso do mes.
+        </p>
+      </div>
+
+      <aside class="auth-panel" aria-label="Area de conta">
+        <div class="auth-title">Conta e historico</div>
+        <div class="auth-buttons">
+          <button class="auth-button" type="button" disabled>Apple</button>
+          <button class="auth-button" type="button" disabled>Google</button>
+          <button class="auth-button" type="button" disabled>Facebook</button>
         </div>
-      </div>
-      <div class="summary" aria-label="Resumo do mes">
-        <article class="metric">
-          <span>Hoje</span>
-          <strong id="todayScore">0%</strong>
-        </article>
-        <article class="metric">
-          <span>Mes</span>
-          <strong id="monthScore">0%</strong>
-        </article>
-        <article class="metric">
-          <span>Marcados</span>
-          <strong id="doneCount">0</strong>
-        </article>
-      </div>
-      <p class="subtitle">
-        Toque nos dias para marcar, edite o nome das metas direto no campo e ajuste quantos dias do mes voce quer cumprir.
-      </p>
-      <div class="toolbar" aria-label="Controles principais">
-        <input class="field" id="monthPicker" type="month" aria-label="Mes do tracker">
-        <button class="button" id="addHabit" type="button">+ Nova meta</button>
-        <button class="ghost-button" id="installButton" type="button" hidden>Instalar app</button>
-      </div>
+        <p class="small-muted" style="margin-top: 9px;">Hoje salva neste aparelho. Login e sync entram na proxima etapa.</p>
+      </aside>
     </header>
 
-    <section aria-labelledby="todayTitle">
-      <div class="section-title">
-        <h2 id="todayTitle">Hoje</h2>
-        <span class="today-meta" id="todayDate"></span>
-      </div>
-      <div class="today-list" id="todayList"></div>
+    <div class="toolbar" aria-label="Controles principais">
+      <input class="field" id="monthPicker" type="month" aria-label="Mes do tracker">
+      <button class="button" id="addHabit" type="button">+ Meta</button>
+      <button class="ghost-button" id="installButton" type="button" hidden>Instalar</button>
+    </div>
+
+    <section class="summary" aria-label="Resumo do mes">
+      <article class="metric">
+        <span>Dia selecionado</span>
+        <strong id="selectedScore">0%</strong>
+      </article>
+      <article class="metric">
+        <span>Mes</span>
+        <strong id="monthScore">0%</strong>
+      </article>
+      <article class="metric">
+        <span>Marcados</span>
+        <strong id="doneCount">0</strong>
+      </article>
     </section>
 
-    <section aria-labelledby="habitsTitle">
-      <div class="section-title">
-        <h2 id="habitsTitle">Metas do mes</h2>
-        <button class="ghost-button" id="fillToday" type="button">Marcar hoje</button>
-      </div>
-      <div class="habit-list" id="habitList"></div>
-    </section>
+    <main class="layout">
+      <section class="calendar-card" aria-labelledby="calendarTitle">
+        <div class="section-top" style="padding: 14px 14px 0;">
+          <div>
+            <h2 id="calendarTitle">Calendario</h2>
+            <div class="small-muted" id="monthLabel"></div>
+          </div>
+          <button class="ghost-button" id="selectToday" type="button">Hoje</button>
+        </div>
+        <div class="calendar-head" aria-hidden="true">
+          <div class="weekday">Dom</div>
+          <div class="weekday">Seg</div>
+          <div class="weekday">Ter</div>
+          <div class="weekday">Qua</div>
+          <div class="weekday">Qui</div>
+          <div class="weekday">Sex</div>
+          <div class="weekday">Sab</div>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
 
-    <section class="premium-card" aria-labelledby="premiumTitle">
-      <h2 id="premiumTitle">Premium em breve</h2>
-      <p>
-        Ideias para a versao paga: historico ilimitado, templates prontos, graficos avancados, backup na nuvem e exportacao PDF.
-      </p>
-    </section>
+      <aside class="side">
+        <section class="day-panel" aria-labelledby="dayTitle">
+          <div class="section-top">
+            <div>
+              <h2 id="dayTitle">Dia</h2>
+              <div class="small-muted" id="daySubtitle"></div>
+            </div>
+            <button class="ghost-button" id="markSelected" type="button">Marcar tudo</button>
+          </div>
+          <div class="check-list" id="checkList"></div>
+        </section>
+
+        <section class="editor-card" aria-labelledby="editTitle">
+          <div class="section-top">
+            <div>
+              <h2 id="editTitle">Editar metas</h2>
+              <div class="small-muted">Nome e meta mensal</div>
+            </div>
+          </div>
+          <div class="habit-list" id="habitList"></div>
+        </section>
+
+        <section class="premium-card" aria-labelledby="premiumTitle">
+          <h2 id="premiumTitle">Premium em breve</h2>
+          <p>Historico ilimitado, backup na nuvem, templates, graficos avancados e exportacao PDF.</p>
+        </section>
+      </aside>
+    </main>
 
     <div class="footer-actions">
-      <a class="ghost-button" href="./mottafit-habit-tracker.xlsx" download>Baixar Excel original</a>
+      <a href="./mottafit-habit-tracker.xlsx" download>Baixar Excel original</a>
       <button class="danger-button" id="resetDemo" type="button">Resetar dados</button>
     </div>
   </div>
@@ -513,8 +668,8 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    const storageKey = "mottafit.v1";
-    const weekday = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"];
+    const storageKey = "mottafit.v2";
+    const weekdayLong = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
     const defaultHabits = [
       "Treino",
       "Agua",
@@ -526,26 +681,28 @@
     ];
 
     const today = new Date();
-    const currentMonth = today.toISOString().slice(0, 7);
+    const currentMonth = toMonthValue(today);
     let deferredInstallPrompt = null;
     let state = loadState();
 
+    const calendarGrid = document.querySelector("#calendarGrid");
+    const checkList = document.querySelector("#checkList");
     const habitList = document.querySelector("#habitList");
-    const todayList = document.querySelector("#todayList");
     const monthPicker = document.querySelector("#monthPicker");
-    const todayScore = document.querySelector("#todayScore");
+    const selectedScore = document.querySelector("#selectedScore");
     const monthScore = document.querySelector("#monthScore");
     const doneCount = document.querySelector("#doneCount");
-    const todayDate = document.querySelector("#todayDate");
+    const monthLabel = document.querySelector("#monthLabel");
+    const dayTitle = document.querySelector("#dayTitle");
+    const daySubtitle = document.querySelector("#daySubtitle");
     const toast = document.querySelector("#toast");
     const installButton = document.querySelector("#installButton");
 
     monthPicker.value = state.month;
-    todayDate.textContent = new Intl.DateTimeFormat("pt-BR", {
-      weekday: "long",
-      day: "2-digit",
-      month: "short"
-    }).format(today);
+
+    function toMonthValue(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
 
     function loadState() {
       const saved = localStorage.getItem(storageKey);
@@ -557,15 +714,34 @@
         }
       }
 
+      const old = localStorage.getItem("mottafit.v1");
+      if (old) {
+        try {
+          const parsed = JSON.parse(old);
+          return {
+            month: parsed.month || currentMonth,
+            selectedDay: today.getDate(),
+            habits: Array.isArray(parsed.habits) ? parsed.habits : createDefaultHabits()
+          };
+        } catch (error) {
+          localStorage.removeItem("mottafit.v1");
+        }
+      }
+
       return {
         month: currentMonth,
-        habits: defaultHabits.map((name, index) => ({
-          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + index),
-          name,
-          target: index < 2 ? 24 : 18,
-          done: {}
-        }))
+        selectedDay: today.getDate(),
+        habits: createDefaultHabits()
       };
+    }
+
+    function createDefaultHabits() {
+      return defaultHabits.map((name, index) => ({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + index),
+        name,
+        target: index < 2 ? 24 : 18,
+        done: {}
+      }));
     }
 
     function saveState() {
@@ -574,28 +750,18 @@
 
     function getMonthParts(month) {
       const [year, rawMonth] = month.split("-").map(Number);
-      const date = new Date(year, rawMonth, 0);
-      return { year, monthIndex: rawMonth - 1, days: date.getDate() };
+      const first = new Date(year, rawMonth - 1, 1);
+      const last = new Date(year, rawMonth, 0);
+      return {
+        year,
+        monthIndex: rawMonth - 1,
+        firstWeekday: first.getDay(),
+        days: last.getDate()
+      };
     }
 
     function keyForDay(day) {
       return `${state.month}-${String(day).padStart(2, "0")}`;
-    }
-
-    function getDoneForDay(day) {
-      const key = keyForDay(day);
-      return state.habits.filter((habit) => habit.done[key]).length;
-    }
-
-    function getTotalDone() {
-      const { days } = getMonthParts(state.month);
-      return state.habits.reduce((sum, habit) => {
-        let count = 0;
-        for (let day = 1; day <= days; day += 1) {
-          if (habit.done[keyForDay(day)]) count += 1;
-        }
-        return sum + count;
-      }, 0);
     }
 
     function habitDoneCount(habit) {
@@ -607,74 +773,121 @@
       return count;
     }
 
+    function dayDoneItems(day) {
+      const key = keyForDay(day);
+      return state.habits.filter((habit) => habit.done[key]);
+    }
+
+    function getTotalDone() {
+      return state.habits.reduce((sum, habit) => sum + habitDoneCount(habit), 0);
+    }
+
+    function getMonthTargetTotal() {
+      return state.habits.reduce((sum, habit) => sum + Number(habit.target || 0), 0);
+    }
+
+    function clampSelectedDay() {
+      const { days } = getMonthParts(state.month);
+      state.selectedDay = Math.max(1, Math.min(days, Number(state.selectedDay) || 1));
+    }
+
     function render() {
-      const { year, monthIndex, days } = getMonthParts(state.month);
-      const isCurrentMonth = state.month === currentMonth;
-      const todayDay = today.getDate();
-      const totalPossible = state.habits.length * days;
-      const done = getTotalDone();
-      const todayDone = isCurrentMonth ? getDoneForDay(todayDay) : 0;
-      const todayPossible = state.habits.length || 1;
+      clampSelectedDay();
+      renderSummary();
+      renderCalendar();
+      renderDayPanel();
+      renderEditor();
+      saveState();
+    }
 
-      todayScore.textContent = `${Math.round((todayDone / todayPossible) * 100)}%`;
-      monthScore.textContent = `${totalPossible ? Math.round((done / totalPossible) * 100) : 0}%`;
-      doneCount.textContent = String(done);
+    function renderSummary() {
+      const selectedDone = dayDoneItems(state.selectedDay).length;
+      const selectedPossible = state.habits.length || 1;
+      const monthDone = getTotalDone();
+      const monthTarget = getMonthTargetTotal();
+      selectedScore.textContent = `${Math.round((selectedDone / selectedPossible) * 100)}%`;
+      monthScore.textContent = `${monthTarget ? Math.round((monthDone / monthTarget) * 100) : 0}%`;
+      doneCount.textContent = String(monthDone);
+    }
 
-      todayList.innerHTML = state.habits.map((habit) => {
-        const checked = isCurrentMonth && habit.done[keyForDay(todayDay)];
-        return `
-          <article class="today-card">
-            <button class="today-check ${checked ? "done" : ""}" type="button" data-action="toggle" data-id="${habit.id}" data-day="${todayDay}" aria-label="Marcar ${escapeHtml(habit.name)} hoje">
-              ${checked ? "✓" : ""}
-            </button>
-            <div>
-              <div class="today-name">${escapeHtml(habit.name)}</div>
-              <div class="today-meta">${habitDoneCount(habit)} de ${habit.target} dias da meta</div>
-            </div>
-          </article>
-        `;
-      }).join("");
+    function renderCalendar() {
+      const { year, monthIndex, firstWeekday, days } = getMonthParts(state.month);
+      const monthDate = new Date(year, monthIndex, 1);
+      monthLabel.textContent = new Intl.DateTimeFormat("pt-BR", {
+        month: "long",
+        year: "numeric"
+      }).format(monthDate);
 
-      habitList.innerHTML = state.habits.map((habit) => {
-        const habitDone = habitDoneCount(habit);
-        const percent = Math.min(100, Math.round((habitDone / Math.max(1, habit.target)) * 100));
-        const buttons = [];
-        for (let day = 1; day <= days; day += 1) {
-          const date = new Date(year, monthIndex, day);
-          const checked = Boolean(habit.done[keyForDay(day)]);
-          const todayClass = isCurrentMonth && day === todayDay ? "today" : "";
-          buttons.push(`
-            <button class="day-button ${checked ? "done" : ""} ${todayClass}" type="button" data-action="toggle" data-id="${habit.id}" data-day="${day}" aria-label="Alternar dia ${day} para ${escapeHtml(habit.name)}">
-              <span class="day-label">${weekday[date.getDay()]}</span>
-              ${checked ? "✓" : day}
-            </button>
-          `);
+      const cells = [];
+      const totalCells = Math.ceil((firstWeekday + days) / 7) * 7;
+      for (let slot = 0; slot < totalCells; slot += 1) {
+        const day = slot - firstWeekday + 1;
+        if (day < 1 || day > days) {
+          cells.push('<button class="day-cell outside" type="button" tabindex="-1" aria-hidden="true"></button>');
+          continue;
         }
 
+        const doneItems = dayDoneItems(day);
+        const total = state.habits.length;
+        const percent = total ? Math.round((doneItems.length / total) * 100) : 0;
+        const isToday = state.month === currentMonth && day === today.getDate();
+        const isSelected = day === state.selectedDay;
+        const complete = total > 0 && doneItems.length === total;
+        const preview = doneItems.slice(0, 2).map((habit) => habit.name).join(", ");
+        const more = doneItems.length > 2 ? ` +${doneItems.length - 2}` : "";
+
+        cells.push(`
+          <button class="day-cell ${isToday ? "today" : ""} ${isSelected ? "selected" : ""} ${complete ? "complete" : ""}" type="button" data-day="${day}" aria-label="Abrir dia ${day}">
+            <span class="day-number">${day}<span class="day-total">${doneItems.length}/${total}</span></span>
+            <span class="day-bar" aria-hidden="true"><span class="day-fill" style="width:${percent}%"></span></span>
+            <span class="day-preview">${preview ? `${escapeHtml(preview)}${more}` : "Toque para marcar"}</span>
+          </button>
+        `);
+      }
+      calendarGrid.innerHTML = cells.join("");
+    }
+
+    function renderDayPanel() {
+      const { year, monthIndex } = getMonthParts(state.month);
+      const date = new Date(year, monthIndex, state.selectedDay);
+      const doneItems = dayDoneItems(state.selectedDay);
+      dayTitle.textContent = `${state.selectedDay} ${new Intl.DateTimeFormat("pt-BR", { month: "short" }).format(date)}`;
+      daySubtitle.textContent = `${weekdayLong[date.getDay()]} - ${doneItems.length} de ${state.habits.length} metas`;
+      const key = keyForDay(state.selectedDay);
+
+      checkList.innerHTML = state.habits.map((habit) => {
+        const done = Boolean(habit.done[key]);
         return `
-          <article class="habit-card">
-            <div class="habit-top">
-              <input class="habit-input" value="${escapeAttr(habit.name)}" data-action="rename" data-id="${habit.id}" aria-label="Nome da meta">
-              <input class="target-input" type="number" min="1" max="${days}" value="${habit.target}" data-action="target" data-id="${habit.id}" aria-label="Meta de dias no mes">
-              <button class="remove-button" type="button" data-action="remove" data-id="${habit.id}" aria-label="Remover meta">×</button>
+          <article class="check-row">
+            <button class="check-button ${done ? "done" : ""}" type="button" data-action="toggle" data-id="${habit.id}" aria-label="Alternar ${escapeHtml(habit.name)}">
+              ${done ? "✓" : ""}
+            </button>
+            <div>
+              <div class="check-name">${escapeHtml(habit.name)}</div>
+              <div class="check-meta">${habitDoneCount(habit)} de ${habit.target} dias neste mes</div>
             </div>
-            <div class="progress-row">
-              <div class="bar" aria-hidden="true"><div class="bar-fill" style="width: ${percent}%"></div></div>
-              <span>${habitDone}/${habit.target}</span>
-            </div>
-            <div class="days">${buttons.join("")}</div>
           </article>
         `;
       }).join("");
     }
 
-    function toggleDay(id, day) {
+    function renderEditor() {
+      const { days } = getMonthParts(state.month);
+      habitList.innerHTML = state.habits.map((habit) => `
+        <div class="habit-row">
+          <input class="habit-input" value="${escapeAttr(habit.name)}" data-action="rename" data-id="${habit.id}" aria-label="Nome da meta">
+          <input class="target-input" type="number" min="1" max="${days}" value="${habit.target}" data-action="target" data-id="${habit.id}" aria-label="Meta mensal">
+          <button class="remove-button" type="button" data-action="remove" data-id="${habit.id}" aria-label="Remover meta">x</button>
+        </div>
+      `).join("");
+    }
+
+    function toggleHabit(id) {
       const habit = state.habits.find((item) => item.id === id);
       if (!habit) return;
-      const key = keyForDay(day);
+      const key = keyForDay(state.selectedDay);
       habit.done[key] = !habit.done[key];
       if (!habit.done[key]) delete habit.done[key];
-      saveState();
       render();
     }
 
@@ -698,16 +911,22 @@
       return escapeHtml(value).replace(/`/g, "&#96;");
     }
 
+    calendarGrid.addEventListener("click", (event) => {
+      const dayButton = event.target.closest("[data-day]");
+      if (!dayButton) return;
+      state.selectedDay = Number(dayButton.dataset.day);
+      render();
+    });
+
     document.addEventListener("click", (event) => {
       const button = event.target.closest("[data-action]");
       if (!button) return;
       const action = button.dataset.action;
       if (action === "toggle") {
-        toggleDay(button.dataset.id, Number(button.dataset.day));
+        toggleHabit(button.dataset.id);
       }
       if (action === "remove") {
         state.habits = state.habits.filter((habit) => habit.id !== button.dataset.id);
-        saveState();
         render();
         showToast("Meta removida");
       }
@@ -725,13 +944,11 @@
         const { days } = getMonthParts(state.month);
         habit.target = Math.max(1, Math.min(days, Number(input.value) || 1));
       }
-      saveState();
       render();
     });
 
     monthPicker.addEventListener("change", () => {
       state.month = monthPicker.value || currentMonth;
-      saveState();
       render();
     });
 
@@ -742,22 +959,29 @@
         target: 18,
         done: {}
       });
-      saveState();
       render();
       showToast("Meta adicionada");
     });
 
-    document.querySelector("#fillToday").addEventListener("click", () => {
-      if (state.month !== currentMonth) {
-        state.month = currentMonth;
-        monthPicker.value = currentMonth;
-      }
-      for (const habit of state.habits) {
-        habit.done[keyForDay(today.getDate())] = true;
-      }
-      saveState();
+    document.querySelector("#selectToday").addEventListener("click", () => {
+      state.month = currentMonth;
+      state.selectedDay = today.getDate();
+      monthPicker.value = currentMonth;
       render();
-      showToast("Hoje marcado");
+    });
+
+    document.querySelector("#markSelected").addEventListener("click", () => {
+      const key = keyForDay(state.selectedDay);
+      const allDone = state.habits.length > 0 && state.habits.every((habit) => habit.done[key]);
+      for (const habit of state.habits) {
+        if (allDone) {
+          delete habit.done[key];
+        } else {
+          habit.done[key] = true;
+        }
+      }
+      render();
+      showToast(allDone ? "Dia limpo" : "Dia marcado");
     });
 
     document.querySelector("#resetDemo").addEventListener("click", () => {
