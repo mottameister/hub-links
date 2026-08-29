@@ -136,8 +136,7 @@ const modalContent = {
     title: 'Server Toca da Coruja',
     subtitle: 'Tudo que está acontecendo no mundo agora.',
     links: [
-      ['Status do Servidor', 'Veja se a Toca está online e quem está jogando.', '/status/'],
-      ['Mapa 3D', 'Explore a Toca em tempo real.', 'https://map.mottameister.xyz/']
+      ['Status do Servidor', 'Veja se a Toca está online e quem está jogando.', '/status/']
     ]
   }
 };
