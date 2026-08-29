@@ -81,9 +81,9 @@ const tocaLinks = [
   {
     title: 'Download do Mundo',
     description: 'Mapa oficial para jogar em single player.',
-    meta: 'PATREON',
+    meta: 'CORUJA SHOP',
     icon: '⌖',
-    href: 'https://www.patreon.com/posts/mundo-cobblemon-155150113',
+    href: '/coruja-shop/#mundo-toca',
     tone: 'gold'
   },
   {
