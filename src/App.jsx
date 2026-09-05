@@ -67,8 +67,8 @@ const tocaLinks = [
     description: 'Instale a Toca da Coruja pelo Modrinth.',
     meta: 'MODRINTH',
     icon: '⬡',
-    href: 'https://modrinth.com/modpack/toca-da-coruja',
-    tone: 'green'
+    tone: 'green',
+    action: 'modpack'
   },
   {
     title: 'Campanha',
@@ -137,6 +137,14 @@ const modalContent = {
     subtitle: 'Tudo que está acontecendo no mundo agora.',
     links: [
       ['Status do Servidor', 'Veja se a Toca está online e quem está jogando.', '/status/']
+    ]
+  },
+  modpack: {
+    title: 'Baixar o Modpack',
+    subtitle: 'Escolha a versão da Toca da Coruja no Modrinth.',
+    links: [
+      ['Full', 'Experiência completa da Toca da Coruja.', 'https://modrinth.com/modpack/toca-da-coruja'],
+      ['Lite', 'Versão mais leve para baixar e jogar.', 'https://modrinth.com/modpack/toca-da-coruja-lite']
     ]
   }
 };
