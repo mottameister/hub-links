@@ -12,20 +12,13 @@ const featured = [
     action: 'shop'
   },
   {
-    title: 'Lives',
-    description: 'Twitch, Kick ou YouTube — você escolhe.',
-    eyebrow: 'AGORA OU DEPOIS',
-    icon: '▶',
-    tone: 'pink',
-    action: 'live'
-  },
-  {
-    title: 'Parcerias',
-    description: 'Projetos, collabs, mídia e propostas.',
-    eyebrow: 'VAMOS CRIAR',
+    title: 'Anuncie no Corujão',
+    description: 'Sua marca em vídeos que passam de 1 milhão de views.',
+    eyebrow: 'PARA MARCAS',
     icon: '✦',
-    tone: 'cyan',
-    action: 'partners'
+    tone: 'gold',
+    featured: true,
+    href: 'mailto:contato@mottameister.xyz?subject=An%C3%BAncio%20no%20Coruj%C3%A3o'
   }
 ];
 
@@ -121,15 +114,6 @@ const modalContent = {
       ['Twitch', 'Acompanhe as transmissões ao vivo.', 'https://www.twitch.tv/mottameister'],
       ['Kick', 'Outro ponto para encontrar as lives.', 'https://kick.com/mottameister'],
       ['YouTube', 'Lives, vídeos e reprises no canal.', 'https://www.youtube.com/@mottameister']
-    ]
-  },
-  partners: {
-    title: 'Vamos criar alguma coisa?',
-    subtitle: 'Projetos, mídia, collabs e boas ideias.',
-    links: [
-      ['Enviar email', 'contato@mottameister.xyz', 'mailto:contato@mottameister.xyz'],
-      ['Abrir propostas', 'Área reservada para propostas comerciais.', '/propostas/'],
-      ['Media kit', 'Números, formatos e possibilidades.', 'https://www.mottameister.xyz/media-kit/']
     ]
   },
   server: {
@@ -269,7 +253,7 @@ export default function App() {
         <section className="featured-section" aria-label="Principais links">
           <div className="section-intro">
             <span className="eyebrow">COMECE POR AQUI</span>
-            <p>Três portas. Um universo meio caótico, mas bem organizado.</p>
+            <p>Dois atalhos. Um universo meio caótico, mas bem organizado.</p>
           </div>
           <div className="featured-grid">
             {featured.map((item) => <LinkCard key={item.title} item={item} onOpen={setModal} />)}
