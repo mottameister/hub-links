@@ -18,7 +18,17 @@ const featured = [
     meta: 'CURADORIA MOTTA',
     icon: '⌁',
     tone: 'violet',
+    wide: true,
     action: 'shop'
+  },
+  {
+    title: 'Anuncie no Corujão',
+    description: 'Sua marca em vídeos para uma comunidade que joga junto.',
+    meta: 'MÍDIA NA COMUNIDADE',
+    icon: '◉',
+    tone: 'cyan',
+    featured: true,
+    href: 'mailto:contato@mottameister.xyz?subject=An%C3%BAncio%20no%20Coruj%C3%A3o'
   }
 ];
 
@@ -146,7 +156,7 @@ function formatStat(value, fallback) {
 
 function LinkCard({ item, compact = false, onOpen }) {
   const shared = {
-    className: `link-card tone-${item.tone} ${compact ? 'is-compact' : ''} ${item.featured ? 'is-featured' : ''}`,
+    className: `link-card tone-${item.tone} ${compact ? 'is-compact' : ''} ${item.featured ? 'is-featured' : ''} ${item.wide ? 'is-wide' : ''}`,
     colors: item.tone === 'gold'
       ? ['#ffbf38', '#ff8a3d', '#ff4fd8']
       : item.tone === 'green'
