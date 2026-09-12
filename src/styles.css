@@ -174,12 +174,49 @@ main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
   color: #d1cad9;
   background: rgba(255,255,255,.045);
 }
+.text-cta {
+  min-height: 50px;
+  padding: 0 4px;
+  border: 0;
+  color: #aaa3b4;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.text-cta:hover { color: white; }
 .live-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: #ff5178;
   box-shadow: 0 0 13px #ff5178;
+}
+
+.proof-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 31px;
+}
+.proof-stats > div { display: grid; gap: 4px; }
+.proof-stats strong {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  letter-spacing: -.04em;
+}
+.proof-stats span {
+  color: #958e9e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.stats-disclaimer {
+  display: block;
+  margin-top: 13px;
+  color: #766e81;
+  font-size: 10px;
 }
 
 .portrait-wrap {
@@ -273,7 +310,7 @@ main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
   font-size: 13px;
   text-align: right;
 }
-.featured-grid { display: grid; grid-template-columns: 1.28fr 1fr 1fr; gap: 14px; }
+.featured-grid { display: grid; grid-template-columns: 1.28fr 1fr; gap: 14px; }
 
 .border-glow-card {
   --edge-proximity: 0;
@@ -533,6 +570,7 @@ footer p { margin: 0; font-weight: 500; letter-spacing: 0; }
   .hero-copy { text-align: center; }
   .hero-copy > p { margin-inline: auto; }
   .hero-actions { justify-content: center; }
+  .proof-stats { justify-content: center; }
   .portrait-wrap { justify-self: center; width: min(380px, 78vw); order: -1; }
   .featured-grid { grid-template-columns: 1fr; }
   .link-card { min-height: 190px; }
@@ -548,6 +586,10 @@ footer p { margin: 0; font-weight: 500; letter-spacing: 0; }
   .hero h1 { font-size: clamp(46px, 14vw, 66px); }
   .hero-copy > p { font-size: 15px; }
   .hero-actions { flex-direction: column; align-items: stretch; }
+  .text-cta { min-height: 36px; }
+  .proof-stats { justify-content: space-between; gap: 13px; text-align: left; }
+  .proof-stats strong { font-size: 18px; }
+  .proof-stats span { max-width: 96px; font-size: 8px; line-height: 1.35; }
   .portrait-wrap { width: min(300px, 78vw); }
   .portrait-tag { right: -5%; font-size: 7px; }
   .featured-section, .toca-section, .projects-section { padding: 54px 0; }

@@ -4,21 +4,21 @@ import SoftAurora from './components/SoftAurora';
 
 const featured = [
   {
-    title: 'Produtos que eu uso',
-    description: 'Setup, jogos, casa e recomendações reais.',
-    eyebrow: 'CURADORIA MOTTA',
-    icon: '⌁',
-    tone: 'violet',
-    action: 'shop'
-  },
-  {
-    title: 'Anuncie no Corujão',
-    description: 'Sua marca em vídeos que passam de 1 milhão de views.',
-    eyebrow: 'PARA MARCAS',
+    title: 'Trabalhe comigo',
+    description: 'Parcerias para games, tecnologia, setup e lifestyle.',
+    meta: 'PARA MARCAS',
     icon: '✦',
     tone: 'gold',
     featured: true,
-    href: 'mailto:contato@mottameister.xyz?subject=An%C3%BAncio%20no%20Coruj%C3%A3o'
+    href: '/media-kit/'
+  },
+  {
+    title: 'Produtos que eu uso',
+    description: 'Setup, jogos, casa e recomendações reais.',
+    meta: 'CURADORIA MOTTA',
+    icon: '⌁',
+    tone: 'violet',
+    action: 'shop'
   }
 ];
 
@@ -93,8 +93,7 @@ const specialLinks = [
   { title: 'GT Engineer', description: 'Ferramenta para acertar carros, pistas e eventos no Gran Turismo 7.', icon: 'GT', href: '/gt-engineer/', tone: 'gold', featured: true },
   { title: 'Prompt Lab', description: 'Prompts para criar, editar e brincar com IA.', icon: '✧', href: '/prompts/', tone: 'violet' },
   { title: 'GitHub', description: 'Projetos, código e coisas em construção.', icon: '{ }', href: 'https://github.com/mottameister', tone: 'neutral' },
-  { title: 'Wallpapers favoritos', description: 'Minha curadoria do Wallpaper Engine.', icon: '▧', href: 'https://steamcommunity.com/id/mottameister/myworkshopfiles?appid=431960&browsefilter=mysubscriptions', tone: 'cyan' },
-  { title: 'Honey’s Adventure', description: 'Fotos extras da aventura escolar do Dom.', icon: '◇', href: '/honey', tone: 'pink' }
+  { title: 'Wallpapers favoritos', description: 'Minha curadoria do Wallpaper Engine.', icon: '▧', href: 'https://steamcommunity.com/id/mottameister/myworkshopfiles?appid=431960&browsefilter=mysubscriptions', tone: 'cyan' }
 ];
 
 const modalContent = {
@@ -135,6 +134,14 @@ const modalContent = {
 
 function Arrow() {
   return <span className="arrow" aria-hidden="true">↗</span>;
+}
+
+function formatStat(value, fallback) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) return fallback;
+  if (number >= 1_000_000) return `${(number / 1_000_000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}M`;
+  if (number >= 1_000) return `${(number / 1_000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })}K`;
+  return String(number);
 }
 
 function LinkCard({ item, compact = false, onOpen }) {
@@ -212,6 +219,20 @@ function Modal({ type, onClose }) {
 export default function App() {
   const [modal, setModal] = useState(null);
   const [specialOpen, setSpecialOpen] = useState(true);
+  const [communityStats, setCommunityStats] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/community-stats')
+      .then((response) => response.ok ? response.json() : null)
+      .then((payload) => active && payload?.ok && setCommunityStats(payload))
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
+  const instagramFollowers = formatStat(communityStats?.instagram?.followers, '89,7K');
+  const discordMembers = formatStat(communityStats?.discord?.members, '1,2K');
+  const discordOnline = formatStat(communityStats?.discord?.online, null);
 
   return (
     <div className="app-shell">
@@ -221,10 +242,11 @@ export default function App() {
       <div className="ambient-noise" aria-hidden="true" />
 
       <header className="site-header">
-        <a href="#top" className="wordmark">MOTTA<span>MEISTER</span></a>
-        <nav aria-label="Navegação principal">
-          <a href="#toca">A Toca</a>
-          <a href="#projetos">Projetos</a>
+          <a href="#top" className="wordmark">MOTTA<span>MEISTER</span></a>
+          <nav aria-label="Navegação principal">
+            <a href="#toca">A Toca</a>
+            <a href="#parcerias">Parcerias</a>
+            <a href="#projetos">Projetos</a>
           <a className="nav-pill" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Entrar no Discord <Arrow /></a>
         </nav>
       </header>
@@ -233,12 +255,19 @@ export default function App() {
         <section className="hero">
           <div className="hero-copy">
             <span className="eyebrow"><i /> VIDA REAL · COMUNIDADE · JOGOS</span>
-            <h1>Um canto da internet<br />feito para <em>jogar junto.</em></h1>
-            <p>A casa da Toca da Coruja, dos Corujões e das ideias que a gente tira do papel — uma aventura de cada vez.</p>
+            <h1>Uma comunidade que<br /><em>vira conteúdo, projeto e história.</em></h1>
+            <p>Corujões, setup, Cobblemon e ideias fora da caixa para uma audiência que acompanha, comenta e volta.</p>
             <div className="hero-actions">
-              <a className="primary-cta" href="#toca">Explorar a Toca <span>↓</span></a>
-              <button className="ghost-cta" type="button" onClick={() => setModal('live')}><span className="live-dot" /> Onde estou ao vivo</button>
+              <a className="primary-cta" href="#parcerias">Trabalhe comigo <Arrow /></a>
+              <a className="ghost-cta" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer"><span className="live-dot" /> Conheça a Toca</a>
+              <button className="text-cta" type="button" onClick={() => setModal('live')}>Onde estou ao vivo</button>
             </div>
+            <div className="proof-stats" aria-label="Indicadores da comunidade">
+              <div><strong>{instagramFollowers}</strong><span>seguidores no Instagram</span></div>
+              <div><strong>{discordMembers}</strong><span>membros na Toca{discordOnline ? ` · ${discordOnline} online` : ''}</span></div>
+              <div><strong>5M+</strong><span>views em um vídeo</span></div>
+            </div>
+            <small className="stats-disclaimer">Números de comunidade atualizados a cada 60 minutos.</small>
           </div>
 
           <div className="portrait-wrap">
@@ -250,10 +279,10 @@ export default function App() {
           </div>
         </section>
 
-        <section className="featured-section" aria-label="Principais links">
+        <section className="featured-section" id="parcerias" aria-label="Parcerias e recomendações">
           <div className="section-intro">
-            <span className="eyebrow">COMECE POR AQUI</span>
-            <p>Dois atalhos. Um universo meio caótico, mas bem organizado.</p>
+            <span className="eyebrow">PARCERIAS E RECOMENDAÇÕES</span>
+            <p>Para marcas: formatos que integram com a comunidade. Para quem acompanha: os produtos que realmente aparecem nos vídeos.</p>
           </div>
           <div className="featured-grid">
             {featured.map((item) => <LinkCard key={item.title} item={item} onOpen={setModal} />)}
