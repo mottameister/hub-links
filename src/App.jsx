@@ -231,10 +231,11 @@ export default function App() {
   }, []);
 
   const instagramFollowers = formatStat(communityStats?.instagram?.followers, '89,7K');
+  const instagramViews = formatStat(communityStats?.instagramViews?.totalViews, '15M+');
   const discordMembers = formatStat(communityStats?.discord?.members, '1,2K');
   const discordOnline = formatStat(communityStats?.discord?.online, null);
-  const statsDisclaimer = communityStats?.instagram?.followers
-    ? 'Números de comunidade atualizados a cada 60 minutos.'
+  const statsDisclaimer = communityStats?.instagram?.followers && communityStats?.instagramViews?.totalViews
+    ? 'Discord atualizado a cada 60 minutos · Instagram atualizado diariamente.'
     : 'Discord atualizado a cada 60 minutos · Instagram e views verificados manualmente.';
 
   return (
@@ -268,7 +269,7 @@ export default function App() {
             <div className="proof-stats" aria-label="Indicadores da comunidade">
               <div><strong>{instagramFollowers}</strong><span>seguidores no Instagram</span></div>
               <div><strong>{discordMembers}</strong><span>membros na Toca{discordOnline ? ` · ${discordOnline} online` : ''}</span></div>
-              <div><strong>5M+</strong><span>views em um vídeo</span></div>
+              <div><strong>{instagramViews}</strong><span>views em Reels e vídeos</span></div>
             </div>
             <small className="stats-disclaimer">{statsDisclaimer}</small>
           </div>

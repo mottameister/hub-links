@@ -1,10 +1,5 @@
 const DISCORD_INVITE = "TcSFAXGr6a";
-const INSTAGRAM_API_VERSION = "v24.0";
-
-function asNumber(value) {
-  const number = Number(value);
-  return Number.isFinite(number) ? number : null;
-}
+const { asNumber, getInstagramStats } = require("../lib/instagram");
 
 async function getDiscordStats() {
   const response = await fetch(
@@ -21,63 +16,12 @@ async function getDiscordStats() {
   };
 }
 
-async function getInstagramStats() {
-  const accountId = process.env.INSTAGRAM_ACCOUNT_ID;
-  const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
-
-  if (!accountId || !accessToken) return null;
-
-  const params = new URLSearchParams({
-    fields: "followers_count",
-    access_token: accessToken,
-  });
-  const response = await fetch(
-    `https://graph.facebook.com/${INSTAGRAM_API_VERSION}/${accountId}?${params}`
-  );
-
-  if (!response.ok) throw new Error(`Instagram returned ${response.status}`);
+async function getInstagramViews(req) {
+  const date = new Date().toISOString().slice(0, 10);
+  const response = await fetch(`https://www.mottameister.xyz/api/instagram-views?date=${date}`);
+  if (!response.ok) return null;
   const payload = await response.json();
-
-  return { followers: asNumber(payload.followers_count) };
-}
-
-async function getInstagramViewsProbe() {
-  const accountId = process.env.INSTAGRAM_ACCOUNT_ID;
-  const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
-
-  if (!accountId || !accessToken) return null;
-
-  const params = new URLSearchParams({
-    fields: "id,media_type,media_product_type",
-    limit: "10",
-    access_token: accessToken,
-  });
-  const response = await fetch(
-    `https://graph.facebook.com/${INSTAGRAM_API_VERSION}/${accountId}/media?${params}`
-  );
-
-  if (!response.ok) throw new Error(`Instagram media returned ${response.status}`);
-  const payload = await response.json();
-  const items = Array.isArray(payload.data) ? payload.data : [];
-  const video = items.find((item) =>
-    item.media_type === "VIDEO" || item.media_product_type === "REELS"
-  );
-
-  if (!video) return { media: items.length, sampleViews: null };
-
-  const insightParams = new URLSearchParams({
-    metric: "views",
-    access_token: accessToken,
-  });
-  const insightResponse = await fetch(
-    `https://graph.facebook.com/${INSTAGRAM_API_VERSION}/${video.id}/insights?${insightParams}`
-  );
-
-  if (!insightResponse.ok) return { media: items.length, sampleViews: null };
-  const insightPayload = await insightResponse.json();
-  const sampleViews = asNumber(insightPayload.data?.[0]?.values?.[0]?.value);
-
-  return { media: items.length, sampleViews };
+  return payload?.ok ? payload : null;
 }
 
 module.exports = async function handler(req, res) {
@@ -88,12 +32,12 @@ module.exports = async function handler(req, res) {
   }
 
   const checkedAt = new Date().toISOString();
-  const [discord, instagram, instagramViewsProbe] = await Promise.all([
+  const [discord, instagram, instagramViews] = await Promise.all([
     getDiscordStats().catch(() => null),
     getInstagramStats().catch(() => null),
-    getInstagramViewsProbe().catch(() => null),
+    getInstagramViews(req).catch(() => null),
   ]);
 
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=86400");
-  res.status(200).json({ ok: true, checkedAt, discord, instagram, instagramViewsProbe });
+  res.status(200).json({ ok: true, checkedAt, discord, instagram, instagramViews });
 };
