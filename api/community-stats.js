@@ -48,7 +48,7 @@ async function getInstagramViewsProbe() {
   if (!accountId || !accessToken) return null;
 
   const params = new URLSearchParams({
-    fields: "id,media_type,media_product_type,video_views",
+    fields: "id,media_type,media_product_type",
     limit: "10",
     access_token: accessToken,
   });
@@ -59,11 +59,25 @@ async function getInstagramViewsProbe() {
   if (!response.ok) throw new Error(`Instagram media returned ${response.status}`);
   const payload = await response.json();
   const items = Array.isArray(payload.data) ? payload.data : [];
+  const video = items.find((item) =>
+    item.media_type === "VIDEO" || item.media_product_type === "REELS"
+  );
 
-  return {
-    media: items.length,
-    videoViews: items.reduce((total, item) => total + (asNumber(item.video_views) || 0), 0),
-  };
+  if (!video) return { media: items.length, sampleViews: null };
+
+  const insightParams = new URLSearchParams({
+    metric: "views",
+    access_token: accessToken,
+  });
+  const insightResponse = await fetch(
+    `https://graph.facebook.com/${INSTAGRAM_API_VERSION}/${video.id}/insights?${insightParams}`
+  );
+
+  if (!insightResponse.ok) return { media: items.length, sampleViews: null };
+  const insightPayload = await insightResponse.json();
+  const sampleViews = asNumber(insightPayload.data?.[0]?.values?.[0]?.value);
+
+  return { media: items.length, sampleViews };
 }
 
 module.exports = async function handler(req, res) {
