@@ -233,7 +233,8 @@ export default function App() {
 
   useEffect(() => {
     let active = true;
-    fetch('/api/community-stats')
+    const cacheHour = new Date().toISOString().slice(0, 13);
+    fetch(`/api/community-stats?hour=${cacheHour}`)
       .then((response) => response.ok ? response.json() : null)
       .then((payload) => active && payload?.ok && setCommunityStats(payload))
       .catch(() => {});

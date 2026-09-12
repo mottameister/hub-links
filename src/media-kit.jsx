@@ -9,7 +9,9 @@ function formatStat(value) {
   return String(number);
 }
 
-fetch('/api/community-stats')
+const cacheHour = new Date().toISOString().slice(0, 13);
+
+fetch(`/api/community-stats?hour=${cacheHour}`)
   .then((response) => response.ok ? response.json() : null)
   .then((stats) => {
     if (!stats?.ok) return;
