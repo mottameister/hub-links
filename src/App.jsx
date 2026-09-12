@@ -233,6 +233,9 @@ export default function App() {
   const instagramFollowers = formatStat(communityStats?.instagram?.followers, '89,7K');
   const discordMembers = formatStat(communityStats?.discord?.members, '1,2K');
   const discordOnline = formatStat(communityStats?.discord?.online, null);
+  const statsDisclaimer = communityStats?.instagram?.followers
+    ? 'Números de comunidade atualizados a cada 60 minutos.'
+    : 'Discord atualizado a cada 60 minutos · Instagram e views verificados manualmente.';
 
   return (
     <div className="app-shell">
@@ -267,7 +270,7 @@ export default function App() {
               <div><strong>{discordMembers}</strong><span>membros na Toca{discordOnline ? ` · ${discordOnline} online` : ''}</span></div>
               <div><strong>5M+</strong><span>views em um vídeo</span></div>
             </div>
-            <small className="stats-disclaimer">Números de comunidade atualizados a cada 60 minutos.</small>
+            <small className="stats-disclaimer">{statsDisclaimer}</small>
           </div>
 
           <div className="portrait-wrap">
