@@ -258,8 +258,8 @@ export default function App() {
         <section className="hero">
           <div className="hero-copy">
             <span className="eyebrow"><i /> VIDA REAL · COMUNIDADE · JOGOS</span>
-            <h1>Uma comunidade que<br /><em>vira conteúdo, projeto e história.</em></h1>
-            <p>Corujões, setup, Cobblemon e ideias fora da caixa para uma audiência que acompanha, comenta e volta.</p>
+            <h1>Uma comunidade<br /><em>que vira conteúdo, projeto e história.</em></h1>
+            <p>Corujões, setup e Cobblemon para uma audiência que acompanha, comenta e volta.</p>
             <div className="hero-actions">
               <a className="primary-cta" href="#parcerias">Trabalhe comigo <Arrow /></a>
               <a className="ghost-cta" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer"><span className="live-dot" /> Conheça a Toca</a>

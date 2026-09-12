@@ -98,12 +98,12 @@ nav > a:hover { color: white; }
 main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
 
 .hero {
-  min-height: 700px;
+  min-height: 630px;
   display: grid;
-  grid-template-columns: 1.05fr .95fr;
+  grid-template-columns: 1.15fr .85fr;
   align-items: center;
-  gap: 60px;
-  padding: 80px 0 90px;
+  gap: 40px;
+  padding: 62px 0 68px;
 }
 
 .eyebrow {
@@ -127,7 +127,7 @@ main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
   max-width: 720px;
   margin: 23px 0 22px;
   font-family: 'Space Grotesk', sans-serif;
-  font-size: clamp(54px, 6.2vw, 92px);
+  font-size: clamp(50px, 5.5vw, 80px);
   line-height: .94;
   letter-spacing: -.065em;
 }
@@ -222,7 +222,7 @@ main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
 .portrait-wrap {
   position: relative;
   justify-self: end;
-  width: min(420px, 37vw);
+  width: min(340px, 30vw);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
