@@ -41,6 +41,31 @@ async function getInstagramStats() {
   return { followers: asNumber(payload.followers_count) };
 }
 
+async function getInstagramViewsProbe() {
+  const accountId = process.env.INSTAGRAM_ACCOUNT_ID;
+  const accessToken = process.env.INSTAGRAM_ACCESS_TOKEN;
+
+  if (!accountId || !accessToken) return null;
+
+  const params = new URLSearchParams({
+    fields: "id,media_type,media_product_type,video_views",
+    limit: "10",
+    access_token: accessToken,
+  });
+  const response = await fetch(
+    `https://graph.facebook.com/${INSTAGRAM_API_VERSION}/${accountId}/media?${params}`
+  );
+
+  if (!response.ok) throw new Error(`Instagram media returned ${response.status}`);
+  const payload = await response.json();
+  const items = Array.isArray(payload.data) ? payload.data : [];
+
+  return {
+    media: items.length,
+    videoViews: items.reduce((total, item) => total + (asNumber(item.video_views) || 0), 0),
+  };
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== "GET" && req.method !== "HEAD") {
     res.setHeader("Allow", "GET, HEAD");
@@ -49,11 +74,12 @@ module.exports = async function handler(req, res) {
   }
 
   const checkedAt = new Date().toISOString();
-  const [discord, instagram] = await Promise.all([
+  const [discord, instagram, instagramViewsProbe] = await Promise.all([
     getDiscordStats().catch(() => null),
     getInstagramStats().catch(() => null),
+    getInstagramViewsProbe().catch(() => null),
   ]);
 
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=86400");
-  res.status(200).json({ ok: true, checkedAt, discord, instagram });
+  res.status(200).json({ ok: true, checkedAt, discord, instagram, instagramViewsProbe });
 };
