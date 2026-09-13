@@ -241,14 +241,10 @@ export default function App() {
     return () => { active = false; };
   }, []);
 
-  const instagramFollowers = formatStat(communityStats?.instagram?.followers, '89,7K');
-  const instagramViews = formatStat(communityStats?.instagramViews?.totalViews, '15M+');
+  const instagramFollowers = formatStat(communityStats?.instagram?.followers, '89,9K');
+  const instagramViews = formatStat(communityStats?.instagramViews?.totalViews, '28,9M');
   const discordMembers = formatStat(communityStats?.discord?.members, '1,2K');
   const discordOnline = formatStat(communityStats?.discord?.online, null);
-  const statsDisclaimer = communityStats?.instagram?.followers && communityStats?.instagramViews?.totalViews
-    ? 'Discord atualizado a cada 60 minutos · Instagram atualizado diariamente.'
-    : 'Discord atualizado a cada 60 minutos · Instagram e views verificados manualmente.';
-
   return (
     <div className="app-shell">
       <div className="aurora-layer">
@@ -282,7 +278,6 @@ export default function App() {
               <div><strong>{discordMembers}</strong><span>membros na Toca{discordOnline ? ` · ${discordOnline} online` : ''}</span></div>
               <div><strong>{instagramViews}</strong><span>views em Reels e vídeos</span></div>
             </div>
-            <small className="stats-disclaimer">{statsDisclaimer}</small>
           </div>
 
           <div className="portrait-wrap">
