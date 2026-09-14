@@ -32,12 +32,28 @@ module.exports = async function handler(req, res) {
   }
 
   const checkedAt = new Date().toISOString();
-  const [discord, instagram, instagramViews] = await Promise.all([
+  const [discord, instagramResult, instagramViews] = await Promise.all([
     getDiscordStats().catch(() => null),
-    getInstagramStats().catch(() => null),
+    getInstagramStats()
+      .then((instagram) => ({ instagram, error: null }))
+      .catch((error) => ({
+        instagram: null,
+        error: {
+          status: Number.isInteger(error.status) ? error.status : null,
+          code: Number.isInteger(error.code) ? error.code : null,
+          subcode: Number.isInteger(error.subcode) ? error.subcode : null,
+        },
+      })),
     getInstagramViews(req).catch(() => null),
   ]);
 
   res.setHeader("Cache-Control", "s-maxage=3600, stale-while-revalidate=86400");
-  res.status(200).json({ ok: true, checkedAt, discord, instagram, instagramViews });
+  res.status(200).json({
+    ok: true,
+    checkedAt,
+    discord,
+    instagram: instagramResult.instagram,
+    instagramError: instagramResult.error,
+    instagramViews,
+  });
 };
