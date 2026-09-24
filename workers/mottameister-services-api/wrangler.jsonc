@@ -9,7 +9,8 @@
   "vars": {
     "SITE_URL": "https://mottameister.xyz",
     "API_URL": "https://mottameister-services-api.mottameister.xyz",
-    "SHOP_ENV": "test"
+    "SHOP_ENV": "test",
+    "SHOP_KITS_ENABLED": "true"
   },
   "d1_databases": [
     {
