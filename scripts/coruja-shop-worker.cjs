@@ -183,6 +183,9 @@ const ensureDeliveryOutputSucceeded = (output, context) => {
   if (retryableOutputPatterns.some((pattern) => pattern.test(text))) {
     throw new RetryableDeliveryError(`${context}: jogador offline ou nao encontrado. Output: ${text.slice(0, 220) || "(empty)"}`);
   }
+  if (/incorrect argument|unknown command|invalid option|invalid value|not allowed|unknown or incomplete|error|failed/i.test(text)) {
+    throw new Error(`${context}: comando recusado pelo servidor. Output: ${text.slice(0, 220) || "(empty)"}`);
+  }
 };
 
 const parseOpacClaimBonusCommand = (command) => {
@@ -225,16 +228,22 @@ const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks, mod
     throw new Error(`Invalid claim chunk amount for ${delivery.orderId}: ${claimChunks}`);
   }
 
-  const targetClaims = claimChunks;
-  const setCommand = `execute as ${minecraftNick} run openpac player-config set ${opacBonusClaimsKey} ${targetClaims}`;
+  const getCommand = `execute as ${minecraftNick} run opac player-config get ${opacBonusClaimsKey}`;
+  const currentClaims = mode === "add" && !config.dryRun
+    ? parseOpacBonusClaims(await runDeliveryCommand(getCommand, getCommand))
+    : 0;
+  const targetClaims = mode === "set" ? claimChunks : currentClaims + claimChunks;
+  const setCommand = `execute as ${minecraftNick} run opac player-config set ${opacBonusClaimsKey} ${targetClaims}`;
   if (config.dryRun) {
-    return `dry-run: ${setCommand}`;
+    return mode === "add"
+      ? `dry-run: ${getCommand}\ndry-run: ${setCommand}`
+      : `dry-run: ${setCommand}`;
   }
 
   const setOutput = await rconCommand(setCommand);
   ensureDeliveryOutputSucceeded(setOutput, setCommand);
   return [
-    `OPAC bonus claims ${mode}: ${targetClaims}`,
+    `OPAC bonus claims ${mode}: ${mode === "add" ? `${currentClaims} + ${claimChunks} = ` : ""}${targetClaims}`,
     `set: ${setOutput || "Command executed."}`,
   ].join("\n");
 };

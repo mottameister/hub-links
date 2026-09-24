@@ -102,11 +102,11 @@ Os pacotes estao gerando comandos no backend assim:
 
 O worker traduz `opac-claims add` para Open Parties and Claims via RCON.
 Para novas entregas, a API calcula o total de claims pagos daquele UUID e gera `opac-claims set`.
-O worker aplica esse total com `execute as {nick} run openpac player-config set`, porque `openpac player-config for {nick}` nao roda corretamente via console/RCON nesse servidor.
+O worker aplica esse total com `execute as {nick} run opac player-config set`, porque `opac player-config for {nick}` nao roda corretamente via console/RCON nesse servidor.
 Isso exige que o jogador esteja online; se nao encontrar o player, o pedido volta para retry.
 
 1. API soma os claims pagos do UUID em `shop_orders` / `shop_deliveries`.
-2. Worker executa `execute as {nick} run openpac player-config set claims.bonusChunkClaims {total_claims_pagos}`.
+2. Worker executa `execute as {nick} run opac player-config set claims.bonusChunkClaims {total_claims_pagos}`.
 3. Se o jogador estiver offline, a entrega fica pendente para retry em vez de virar falha final.
 
 Se o plugin de economia usa outro comando, altere o mapa `products` em `workers/mottameister-services-api/src/index.js` antes do teste real.
