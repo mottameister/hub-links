@@ -22,9 +22,9 @@ Esta cópia foi preparada na branch `codex/shop-revamp-preview`.
 
 A meta toma como referência a [lista do PCPartPicker](https://pcpartpicker.com/list/FV3vdq), que mostrava US$ 755,05 em 23/09/2026. Com câmbio de aproximadamente R$ 5,17, a conversão simples é R$ 3.903,61. O alvo de R$ 5.500 deixa aproximadamente R$ 1.596 de margem para imposto local, taxas de pagamento/conversão e variação de preços. É uma estimativa, não uma cotação fechada. O valor da meta não aparece na página pública. A lista sinaliza possível atualização de BIOS e adaptadores USB; conferir antes da compra.
 
-## Ativação após revisão
+## Início da meta
 
-O endpoint `GET /api/shop/server-goal` permanece inativo até uma chamada autenticada a `POST /api/shop/server-goal/activate`. Essa chamada grava o horário de início uma única vez. Deve ser feita quando a nova página e o Worker já estiverem publicados para que nenhuma compra antiga entre na campanha.
+O endpoint `GET /api/shop/server-goal` usa o horário fixo `2026-09-24T02:37:25.738Z`, marcado pelo primeiro deploy READY da loja renovada na Vercel. A API soma as compras aprovadas a partir desse instante. O alvo e o horário são internos ao Worker, e o navegador recebe apenas percentuais.
 
 Antes de publicar os kits, conferir em um servidor de teste Minecraft 1.21.1: sintaxe do comando gerado, conteúdo da shulker, encantamentos, jogador com inventário cheio, retorno positivo do RCON e recuperação de um timeout sem duplicar o kit. A verificação estática e os testes Node não provam a entrega dentro do jogo.
 

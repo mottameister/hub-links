@@ -22,7 +22,7 @@ test("each kit is a single RCON give with full armor and five tools", () => {
 });
 
 const mockDb = () => {
-  const state = { goal: null, approvedBrl: 0 };
+  const state = { approvedBrl: 0, monthBrl: 0 };
   return {
     state,
     prepare(sql) {
@@ -30,47 +30,30 @@ const mockDb = () => {
         bind(...params) {
           return {
             async first() {
-              if (sql.includes("FROM shop_funding_goals")) return state.goal;
               if (sql.includes("COALESCE(SUM(amount)")) {
                 assert.match(sql, /last_payment_status = 'approved'/);
                 assert.match(sql, /paid_at >= \?/);
                 assert.match(sql, /mercado_pago_payment_id NOT LIKE 'coupon:%'/);
-                assert.equal(params[2], state.goal.started_at);
+                assert.equal(params[2], "2026-09-24T02:37:25.738Z");
                 return { approved_brl: state.approvedBrl, month_brl: state.monthBrl };
               }
               throw new Error("Unexpected query");
             },
-            async run() {
-              if (sql.includes("INSERT OR IGNORE INTO shop_funding_goals") && !state.goal) {
-                state.goal = { started_at: params[2], target_brl: params[3] };
-              }
-              return { success: true };
-            },
           };
         },
-        async run() { return { success: true }; },
       };
     },
   };
 };
 
-test("goal starts once, shows only a percentage, and caps at 100%", async () => {
+test("goal starts at the shop launch, shows only a percentage, and caps at 100%", async () => {
   const DB = mockDb();
-  const env = { DB, SHOP_ENV: "test", SHOP_ADMIN_TOKEN: "test-admin-token" };
+  const env = { DB, SHOP_ENV: "test" };
   const get = () => worker.fetch(new Request("https://example.com/api/shop/server-goal"), env);
-  const start = () => worker.fetch(new Request("https://example.com/api/shop/server-goal/activate", {
-    method: "POST", headers: { "x-shop-admin-token": "test-admin-token" },
-  }), env);
-
-  assert.deepEqual(await (await get()).json(), { active: false, progressPercent: 0, startedAt: null });
-  assert.equal((await worker.fetch(new Request("https://example.com/api/shop/server-goal/activate", { method: "POST" }), env)).status, 401);
-  const activated = await (await start()).json();
-  assert.equal(activated.active, true);
-  assert.equal(activated.progressPercent, 0);
-  assert.equal(DB.state.goal.target_brl, 5500);
-  const originalStart = DB.state.goal.started_at;
-  await start();
-  assert.equal(DB.state.goal.started_at, originalStart);
+  const initial = await (await get()).json();
+  assert.equal(initial.active, true);
+  assert.equal(initial.progressPercent, 0);
+  assert.equal(initial.startedAt, "2026-09-24T02:37:25.738Z");
 
   DB.state.approvedBrl = 2750;
   DB.state.monthBrl = 550;

@@ -1039,8 +1039,9 @@ const listOrders = async (env, { includeArchived = false } = {}) => {
   }));
 };
 
-const serverGoalKey = "us_server_2026";
 const serverGoalTargetBrl = 5500;
+// First READY production deployment of the refreshed shop (Vercel, 2026-09-24).
+const serverGoalStartedAt = "2026-09-24T02:37:25.738Z";
 
 const currentSaoPauloMonthStart = () => {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -1052,19 +1053,6 @@ const currentSaoPauloMonthStart = () => {
 };
 
 const getServerGoal = async (env) => {
-  let goal;
-  try {
-    goal = await env.DB.prepare("SELECT started_at, target_brl FROM shop_funding_goals WHERE environment = ? AND goal_key = ?")
-      .bind(getEnvironment(env), serverGoalKey).first();
-  } catch (error) {
-    // The public page can be previewed before the goal is activated.
-    if (/no such table: shop_funding_goals/i.test(String(error.message || error))) {
-      return { active: false, progressPercent: 0, startedAt: null };
-    }
-    throw error;
-  }
-  if (!goal) return { active: false, progressPercent: 0, startedAt: null };
-
   const result = await env.DB.prepare(`
     SELECT COALESCE(SUM(amount), 0) AS approved_brl,
       COALESCE(SUM(CASE WHEN paid_at >= ? THEN amount ELSE 0 END), 0) AS month_brl
@@ -1075,34 +1063,17 @@ const getServerGoal = async (env) => {
       AND (archived_at IS NULL OR archived_at = '')
       AND amount > 0
       AND mercado_pago_payment_id NOT LIKE 'coupon:%'
-  `).bind(currentSaoPauloMonthStart(), getEnvironment(env), goal.started_at).first();
+  `).bind(currentSaoPauloMonthStart(), getEnvironment(env), serverGoalStartedAt).first();
   const approvedBrl = Math.max(0, Number(result?.approved_brl || 0));
-  const targetBrl = Math.max(1, Number(goal.target_brl || serverGoalTargetBrl));
+  const targetBrl = serverGoalTargetBrl;
   const monthBrl = Math.max(0, Number(result?.month_brl || 0));
   return {
     active: true,
-    startedAt: goal.started_at,
+    startedAt: serverGoalStartedAt,
     progressPercent: Math.min(100, Math.floor(approvedBrl / targetBrl * 100)),
     monthContributionPercent: Math.min(100, Math.floor(monthBrl / targetBrl * 100)),
     reached: approvedBrl >= targetBrl,
   };
-};
-
-const activateServerGoal = async (env) => {
-  await env.DB.prepare(`
-    CREATE TABLE IF NOT EXISTS shop_funding_goals (
-      environment TEXT NOT NULL,
-      goal_key TEXT NOT NULL,
-      started_at TEXT NOT NULL,
-      target_brl REAL NOT NULL,
-      PRIMARY KEY (environment, goal_key)
-    )
-  `).run();
-  await env.DB.prepare(`
-    INSERT OR IGNORE INTO shop_funding_goals (environment, goal_key, started_at, target_brl)
-    VALUES (?, ?, ?, ?)
-  `).bind(getEnvironment(env), serverGoalKey, new Date().toISOString(), serverGoalTargetBrl).run();
-  return getServerGoal(env);
 };
 
 const searchPaymentsByExternalReference = async (env, externalReference) => {
@@ -1478,10 +1449,6 @@ export default {
       }
       if (url.pathname === "/api/shop/server-goal" && request.method === "GET") {
         return json(await getServerGoal(env), 200, request);
-      }
-      if (url.pathname === "/api/shop/server-goal/activate" && request.method === "POST") {
-        await requireShopAdminAuth(request, env);
-        return json(await activateServerGoal(env), 200, request);
       }
       if (url.pathname === "/api/shop/claim" && request.method === "POST") return json(await handleClaim(request, env), 200, request);
       if (url.pathname === "/api/shop/delivered" && request.method === "POST") return json(await handleDelivered(request, env), 200, request);
