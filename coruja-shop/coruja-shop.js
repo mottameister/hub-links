@@ -110,4 +110,6 @@
 
   checkoutButtons.forEach((button) => button.addEventListener("click", () => createCheckout(button.dataset.sku)));
   loadGoal();
+  window.setInterval(() => { if (!document.hidden) loadGoal(); }, 60_000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) loadGoal(); });
 })();
