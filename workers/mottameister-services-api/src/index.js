@@ -899,7 +899,9 @@ const createPreference = async ({ env, request, order }) => {
     : product.type === "membership"
       ? `${product.title}: CobbleDollars, Claims extras, ovos shiny random e cargo especial para ${order.minecraftNick}`
       : product.type === "manual_fulfillment"
-        ? `${product.title}: pedido personalizado combinado por conversa com o Motta`
+      ? `${product.title}: pedido personalizado combinado por conversa com o Motta`
+      : product.type === "explorer_kit"
+        ? `${product.title}: armadura e ferramentas para ${order.minecraftNick} na Toca da Coruja`
         : `CobbleDollars para ${order.minecraftNick} na Toca da Coruja`;
   const siteUrl = sanitizeText(env.SITE_URL, 180).replace(/\/+$/, "") || "https://mottameister.xyz";
   const apiUrl = sanitizeText(env.API_URL, 180).replace(/\/+$/, "") || new URL(request.url).origin;
