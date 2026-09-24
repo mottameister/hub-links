@@ -1,330 +1,128 @@
 <!doctype html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coruja Shop | Toca da Coruja</title>
-  <meta name="description" content="Compre CobbleDollars, Claims, assinaturas Coruja+, download do mundo e encomende seu Ace Trainer personalizado para a Toca da Coruja." />
-  <meta name="theme-color" content="#ffbf38" />
+  <meta name="description" content="Apoie a Toca da Coruja com Coruja++, CobbleDollars, Claims e kits de exploração." />
+  <meta name="theme-color" content="#101b18" />
   <meta property="og:title" content="Coruja Shop | Toca da Coruja" />
-  <meta property="og:description" content="Pacotes de CobbleDollars, Claims, assinaturas Coruja+, download do mundo e Ace Trainer personalizado para acelerar sua vida dentro da Toca da Coruja." />
+  <meta property="og:description" content="Benefícios para jogar e uma meta coletiva para melhorar o servidor da Toca." />
   <meta property="og:image" content="https://mottameister.xyz/coruja-shop/assets/spawn-shop.png" />
   <meta property="og:url" content="https://mottameister.xyz/coruja-shop/" />
-  <link rel="stylesheet" href="/coruja-shop/coruja-shop.css?v=quantity-stepper-1" />
-  <link rel="stylesheet" href="/src/coruja-shop.css" />
+  <link rel="stylesheet" href="/coruja-shop/coruja-shop.css?v=revamp-20260924" />
 </head>
-<body class="coruja-shop-page">
-  <div id="coruja-shop-dither" aria-hidden="true"></div>
-  <main class="page">
-    <nav class="topbar" aria-label="Navegação">
-      <a class="back" href="/">voltar ao hub</a>
-      <span class="pill">CobbleDollars + Claims + Coruja+ + Mundo + Ace Trainer</span>
-    </nav>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Voltar ao hub Mottameister"><img class="brand-mark" src="/coruja-shop/assets/owl.png" alt="" /> TOCA DA CORUJA</a>
+      <nav aria-label="Navegação da loja">
+        <a href="#meta">Meta do servidor</a>
+        <a href="#pacotes">Pacotes</a>
+        <a href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Discord</a>
+      </nav>
+    </header>
 
-    <section class="hero" aria-label="Coruja Shop">
-      <div class="hero-copy">
-        <span class="kicker">Toca da Coruja apresenta</span>
-        <h1>Coruja Shop</h1>
-        <p class="lead">CobbleDollars para movimentar os merchants do spawn, Claims para proteger mais chunks, assinaturas mensais com benefícios, download do mundo e Ace Trainer personalizado para deixar sua marca na campanha da Toca.</p>
-        <div class="cta-row">
-          <a class="button" href="#comprar">Comprar pacotes</a>
-          <a class="button secondary" href="#mundo-toca">Baixar mundo</a>
-          <a class="button secondary" href="#indicacoes">Indicações</a>
-          <a class="button secondary" href="#ace-trainer">Virar Ace Trainer</a>
-          <a class="button secondary" href="#leaderboard">Ver ranking</a>
-        </div>
-      </div>
-
-    </section>
-
-    <section class="shop-section" id="comprar" aria-label="Comprar pacotes do Coruja Shop">
-      <div class="shop-intro">
-        <span class="kicker">pacotes</span>
-        <h2>Escolha seu pacote</h2>
-        <p>Digite seu nick original do Minecraft antes de comprar. A entrega e a conferência usam esse nome para liberar moedas, Claims, ovos e benefícios na conta certa.</p>
-        <p class="shop-reminder">Ideal você estar online no server no momento da compra para receber automaticamente.</p>
-        <p class="shop-reminder shop-reminder-sub">Assinaturas são vinculadas ao seu nick/UUID. Coruja++ também inclui acesso ao download do mundo enquanto estiver ativo.</p>
-        <p class="shop-reminder shop-reminder-sub">Pedidos manuais, como Ace Trainer e download avulso do mundo, ficam registrados no Mercado Pago e são combinados comigo por conversa.</p>
-      </div>
-
-      <div class="price-panel">
-        <section class="referral-card" id="indicacoes" aria-label="Sistema de indicações">
-          <div class="referral-copy">
-            <span class="kicker">indicações</span>
-            <h3>Chame amigos e ganhe desconto</h3>
-            <p>Use <strong>/meucodigo</strong> ou <strong>/indicacao</strong> dentro do servidor para pegar seu código. Quando um jogador novo entrar, ele usa <strong>/indicado SEU_CODIGO</strong> nas primeiras 24h e você ganha desconto no Coruja Shop.</p>
-          </div>
-          <div class="referral-steps" aria-label="Como usar indicações">
-            <span><strong>1</strong> Pegue seu código no servidor.</span>
-            <span><strong>2</strong> Envie para um amigo novo.</span>
-            <span><strong>3</strong> Ele usa o código em até 24h.</span>
-          </div>
-        </section>
-
-        <div class="field">
-          <label for="minecraftNick">Nick do Minecraft</label>
-          <input id="minecraftNick" name="minecraftNick" autocomplete="username" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" placeholder="Seu nick original" data-shop-nick />
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-intro">
+          <span class="eyebrow">A loja da nossa comunidade</span>
+          <h1 id="page-title">Jogue mais.<br /><em>Apoie a Toca.</em></h1>
+          <p>Cada compra ajuda a manter o servidor e contribui para a meta de uma máquina própria nos EUA. Escolha o benefício que faz sentido para você.</p>
+          <a class="text-action" href="#meta">Conheça a meta do servidor <span aria-hidden="true">↗</span></a>
         </div>
 
-        <div class="field coupon-field">
-          <label for="shopCoupon">Cupom</label>
-          <input id="shopCoupon" name="shopCoupon" autocomplete="off" maxlength="80" placeholder="Opcional / teste" data-shop-coupon />
+        <div class="featured" id="comprar">
+          <div class="featured-top"><span class="tag">Em destaque</span><span>31 dias de benefícios</span></div>
+          <h2>Coruja<span>++</span></h2>
+          <p class="featured-lead">O jeito mais completo de apoiar a Toca e aproveitar a jornada no servidor.</p>
+          <ul class="benefits">
+            <li><strong>4 mi</strong> CobbleDollars</li>
+            <li><strong>5 Claims</strong> extras</li>
+            <li><strong>2 ovos</strong> shiny aleatórios</li>
+            <li>Cargo no chat e <strong>10% de desconto</strong> em avulsos</li>
+            <li>Acesso ao download do mundo durante a assinatura</li>
+          </ul>
+          <div class="checkout-fields">
+            <label for="minecraftNick">Seu nick original do Minecraft</label>
+            <input id="minecraftNick" name="minecraftNick" autocomplete="username" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" placeholder="Digite seu nick" data-shop-nick />
+            <label for="shopCoupon">Cupom <span>(opcional)</span></label>
+            <input id="shopCoupon" name="shopCoupon" autocomplete="off" maxlength="80" placeholder="Código de desconto" data-shop-coupon />
+          </div>
+          <button class="primary-button featured-button" type="button" data-shop-checkout data-sku="coruja_plus_plus" data-fixed-quantity="1"><span>Escolher Coruja++</span><strong>R$ 39,90</strong></button>
+          <p class="microcopy">Compra válida por 31 dias. Este checkout não cria cobrança recorrente automática.</p>
+          <p class="checkout-status" role="status" aria-live="polite" data-shop-status>Digite seu nick para escolher um pacote.</p>
         </div>
+      </section>
 
-        <div class="field quantity-field">
-          <label for="shopQuantity">Quantidade do pacote</label>
-          <div class="quantity-stepper" id="shopQuantity" data-shop-quantity>
-            <button class="quantity-button" type="button" data-shop-quantity-dec aria-label="Diminuir quantidade">-</button>
-            <span class="quantity-value" data-shop-quantity-value data-value="1">1x pacote</span>
-            <button class="quantity-button" type="button" data-shop-quantity-inc aria-label="Aumentar quantidade">+</button>
-          </div>
-          <span>Ex.: 2x no pacote de 10 mi ainda soma no mesmo checkout, mas o pacote de 20 mi ja tem melhor preco.</span>
+      <section class="goal-section" id="meta" aria-labelledby="goal-title">
+        <div class="goal-copy">
+          <span class="eyebrow">Uma conquista para todo mundo</span>
+          <h2 id="goal-title">Nosso próximo servidor,<br /><em>feito pela comunidade.</em></h2>
+          <p>Estamos juntando as compras aprovadas a partir do lançamento desta nova loja para comprar uma máquina própria nos EUA. A meta é coletiva: quando chegarmos lá, vamos apresentar a compra e o plano de migração.</p>
+          <p class="goal-detail">O progresso usa o valor bruto dos pedidos aprovados. Testes, pedidos cancelados e compras anteriores ao início da campanha não entram na conta.</p>
         </div>
-
-        <div class="status" role="status" aria-live="polite" data-shop-status>Digite seu nick antes de escolher o pacote.</div>
-
-        <div class="pack-group pack-group-membership">
-          <div class="pack-group-head">
-            <span class="kicker">assinatura</span>
-            <h3>Coruja+</h3>
-          </div>
-
-          <div class="packs packs-membership">
-          <button class="pack pack-membership pack-plus" type="button" data-shop-checkout data-sku="coruja_plus" data-fixed-quantity="1">
-            <span class="pack-icon membership-icon" aria-hidden="true">+</span>
-            <span><strong>Coruja+</strong><span>2 mi CobbleDollars, 5 Claims extras, 1 ovo shiny random, cargo especial no LuckPerms/Styled Chat e desconto em pacotes avulsos pelo seu nick.</span></span>
-            <span class="pack-price">R$ 29,90/mês</span>
-          </button>
-
-          <button class="pack pack-membership pack-plus-plus" type="button" data-shop-checkout data-sku="coruja_plus_plus" data-fixed-quantity="1">
-            <span class="pack-icon membership-icon" aria-hidden="true">++</span>
-            <span><strong>Coruja++</strong><span>4 mi CobbleDollars, 5 Claims extras, 2 ovos shiny random, cargo especial no LuckPerms/Styled Chat e desconto em pacotes avulsos pelo seu nick.</span></span>
-            <span class="pack-price">R$ 39,90/mês</span>
-          </button>
-          </div>
-
-          <p class="pack-footnote">Os 5 Claims da assinatura valem enquanto ela estiver ativa. O desconto em avulsos é aplicado automaticamente pelo nick original. Coruja++ também libera o download do mundo da Toca.</p>
+        <div class="goal-card" aria-live="polite">
+          <span class="goal-card-label">PROGRESSO DA META</span>
+          <div class="goal-number" data-goal-percent>0%</div>
+          <div class="goal-track" role="progressbar" aria-label="Progresso da meta do servidor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-goal-track><span data-goal-fill></span></div>
+          <p data-goal-state>A meta começa quando esta versão da loja for publicada.</p>
+          <span class="goal-foot">Atualizado com as compras aprovadas do shop</span>
         </div>
+      </section>
 
-        <div class="pack-group pack-group-referral" id="indique">
-          <div class="pack-group-head">
-            <span class="kicker">indique a toca</span>
-            <h3>Desconto por convite</h3>
-          </div>
+      <section class="catalog" id="pacotes" aria-labelledby="catalog-title">
+        <div class="section-heading"><div><span class="eyebrow">Escolha como jogar</span><h2 id="catalog-title">Pacotes da Toca</h2></div><p>Os produtos abaixo usam o nick informado acima. Para receber automaticamente, esteja online no servidor na hora da compra.</p></div>
+        <div class="quantity-row"><span>Quantidade para CobbleDollars e Claims</span><div class="quantity-stepper" aria-label="Quantidade de pacotes"><button type="button" data-shop-quantity-dec aria-label="Diminuir quantidade">−</button><output data-shop-quantity-value>1</output><button type="button" data-shop-quantity-inc aria-label="Aumentar quantidade">+</button></div><small>Assinaturas, kits e serviços manuais são sempre 1 por pedido.</small></div>
 
-          <article class="info-service">
-            <div class="info-service-icon" aria-hidden="true">%</div>
-            <div class="info-service-copy">
-              <span class="service-label">Traga players novos para o servidor</span>
-              <h4>Código de indicação dentro do server</h4>
-              <p>Quem já joga tem um código próprio. Quando um amigo novo entra na Toca e usa <strong>/indicado CODIGO</strong>, o indicador ganha 10% de desconto automático no Coruja Shop.</p>
-              <ul>
-                <li>Cada indicação válida gera +10% de desconto por 30 dias.</li>
-                <li>O desconto acumula até 30% e fica preso ao UUID de quem indicou.</li>
-                <li>O indicado também recebe um código próprio para chamar mais gente.</li>
-                <li>Vale para player novo depois da abertura do sistema; quem já estava no servidor não conta como indicado.</li>
-                <li>Autoindicação e player que já usou indicação não contam.</li>
-              </ul>
-            </div>
-            <div class="info-service-actions">
-              <a class="button secondary" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Entrar no Discord</a>
-              <span class="text-link">Use /meucodigo no servidor para ver seu código de indicação.</span>
-            </div>
-          </article>
-        </div>
-
-        <div class="pack-group">
-          <div class="pack-group-head">
-            <span class="kicker">economia</span>
-            <h3>CobbleDollars</h3>
-          </div>
-
-          <div class="packs">
-          <button class="pack pack-white" type="button" data-shop-checkout data-sku="cobbledollars_1m">
-            <span class="pack-icon" aria-hidden="true"><img src="/coruja-shop/assets/cobbledollar.png" alt="" /></span>
-            <span><strong>1 mi CobbleDollars</strong><span>Um empurrão para itens, consumíveis e primeiros testes no spawn.</span></span>
-            <span class="pack-price">R$ 9,90</span>
-          </button>
-
-          <button class="pack pack-diamond" type="button" data-shop-checkout data-sku="cobbledollars_10m">
-            <span class="pack-icon" aria-hidden="true"><img src="/coruja-shop/assets/cobbledollar.png" alt="" /></span>
-            <span><strong>10 mi CobbleDollars</strong><span>O pacote para quem quer disputar mercado, ranking e preparar várias builds.</span></span>
-            <span class="pack-price">R$ 39,90</span>
-          </button>
-
-          <button class="pack pack-gold" type="button" data-shop-checkout data-sku="cobbledollars_20m">
-            <span class="pack-icon" aria-hidden="true"><img src="/coruja-shop/assets/cobbledollar.png" alt="" /></span>
-            <span><strong>20 mi CobbleDollars</strong><span>Pacote grande para montar time, girar o mercado e investir em varias builds sem recomprar.</span></span>
-            <span class="pack-price">R$ 69,90</span>
-          </button>
+        <div class="catalog-group">
+          <div class="group-heading"><h3>Assinatura</h3><span>Benefícios por 31 dias</span></div>
+          <div class="product-grid">
+            <article class="product-card"><span class="product-type">Coruja+</span><h4>Para apoiar todo mês</h4><p>2 mi CobbleDollars, 5 Claims, 1 ovo shiny aleatório, cargo no chat e 10% de desconto em avulsos.</p><button type="button" data-shop-checkout data-sku="coruja_plus" data-fixed-quantity="1"><span>Escolher Coruja+</span><strong>R$ 29,90</strong></button></article>
           </div>
         </div>
 
-        <div class="pack-group pack-group-claims">
-          <div class="pack-group-head">
-            <span class="kicker">território</span>
-            <h3>Claims de chunks</h3>
-          </div>
-
-          <div class="packs">
-          <button class="pack pack-claim pack-claim-starter" type="button" data-shop-checkout data-sku="claims_5">
-            <span class="pack-icon claim-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-            <span><strong>5 Claims</strong><span>Mais 5 chunks protegidos para ampliar a primeira base sem perder o controle do espaço.</span></span>
-            <span class="pack-price">R$ 9,90</span>
-          </button>
-
-          <button class="pack pack-claim pack-claim-builder" type="button" data-shop-checkout data-sku="claims_12">
-            <span class="pack-icon claim-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-            <span><strong>12 Claims</strong><span>O pacote intermediário para abrir terreno de farm, depósito, breeder ou vila pequena.</span></span>
-            <span class="pack-price">R$ 19,90</span>
-          </button>
-
-          <button class="pack pack-claim pack-claim-village" type="button" data-shop-checkout data-sku="claims_30">
-            <span class="pack-icon claim-icon" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
-            <span><strong>30 Claims</strong><span>Para quem quer uma base grande, áreas temáticas e margem para continuar expandindo.</span></span>
-            <span class="pack-price">R$ 39,90</span>
-          </button>
+        <div class="catalog-group">
+          <div class="group-heading"><h3>CobbleDollars</h3><span>Para os merchants do spawn</span></div>
+          <div class="product-grid">
+            <article class="product-card"><span class="product-type">Economia</span><h4>1 mi CobbleDollars</h4><p>Para começar a movimentar o mercado da Toca.</p><button type="button" data-shop-checkout data-sku="cobbledollars_1m"><span>Escolher pacote</span><strong>R$ 9,90</strong></button></article>
+            <article class="product-card"><span class="product-type">Mais pedido</span><h4>10 mi CobbleDollars</h4><p>Para abastecer o time e fazer compras maiores no spawn.</p><button type="button" data-shop-checkout data-sku="cobbledollars_10m"><span>Escolher pacote</span><strong>R$ 39,90</strong></button></article>
+            <article class="product-card"><span class="product-type">Pacote grande</span><h4>20 mi CobbleDollars</h4><p>Mais saldo para projetos e compras ao longo da campanha.</p><button type="button" data-shop-checkout data-sku="cobbledollars_20m"><span>Escolher pacote</span><strong>R$ 69,90</strong></button></article>
           </div>
         </div>
 
-        <div class="pack-group pack-group-world" id="mundo-toca">
-          <div class="pack-group-head">
-            <span class="kicker">download</span>
-            <h3>Mundo da Toca</h3>
+        <div class="catalog-group">
+          <div class="group-heading"><h3>Claims</h3><span>Proteja seus chunks</span></div>
+          <div class="product-grid">
+            <article class="product-card"><span class="product-type">Território</span><h4>5 Claims</h4><p>Um espaço extra para sua primeira base.</p><button type="button" data-shop-checkout data-sku="claims_5"><span>Escolher pacote</span><strong>R$ 9,90</strong></button></article>
+            <article class="product-card"><span class="product-type">Território</span><h4>12 Claims</h4><p>Para ampliar a base ou começar um projeto novo.</p><button type="button" data-shop-checkout data-sku="claims_12"><span>Escolher pacote</span><strong>R$ 19,90</strong></button></article>
+            <article class="product-card"><span class="product-type">Território</span><h4>30 Claims</h4><p>Espaço para uma vila ou construção grande.</p><button type="button" data-shop-checkout data-sku="claims_30"><span>Escolher pacote</span><strong>R$ 39,90</strong></button></article>
           </div>
-
-          <article class="manual-service world-service">
-            <div class="manual-service-icon" aria-hidden="true">W</div>
-            <div class="manual-service-copy">
-              <span class="service-label">Mapa completo para jogar offline</span>
-              <h4>Download do mundo da Toca</h4>
-              <p>O download do mapa fica centralizado no Coruja Shop. Quem é Coruja++ tem acesso como benefício da assinatura; quem quiser só o mapa pode comprar avulso.</p>
-              <ul>
-                <li>Arquivo do mundo disponibilizado manualmente depois da confirmação do pagamento.</li>
-                <li>Incluído para Coruja++ enquanto a assinatura estiver ativa.</li>
-                <li>Compra avulsa para quem não quer assinatura mensal.</li>
-              </ul>
-            </div>
-            <div class="manual-service-actions">
-              <button class="button" type="button" data-shop-checkout data-sku="mundo_toca_download" data-fixed-quantity="1">Comprar por R$ 20</button>
-              <a class="button secondary" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Tirar dúvida</a>
-              <span class="text-link">Depois do pagamento, eu envio o acesso ao arquivo por conversa.</span>
-            </div>
-          </article>
         </div>
 
-        <div class="pack-group pack-group-trainer" id="ace-trainer">
-          <div class="pack-group-head">
-            <span class="kicker">personalizado</span>
-            <h3>Ace Trainer</h3>
+        <div class="catalog-group" id="kits">
+          <div class="group-heading"><h3>Kits Explorador</h3><span>Armadura completa + espada, picareta, machado, pá e enxada</span></div>
+          <div class="product-grid">
+            <article class="product-card kit-card"><span class="product-type">Tier 1</span><h4>Kit Ferro</h4><p>Conjunto completo de ferro. Encantamentos básicos em nível I, incluindo Proteção, Eficiência e Inquebrável.</p><button type="button" disabled><span>Em breve</span><strong>R$ 9,90</strong></button></article>
+            <article class="product-card kit-card"><span class="product-type">Tier 2</span><h4>Kit Diamante</h4><p>Conjunto completo de diamante. Encantamentos de combate, proteção e ferramentas em nível II.</p><button type="button" disabled><span>Em breve</span><strong>R$ 29,90</strong></button></article>
+            <article class="product-card kit-card kit-top"><span class="product-type">Tier 3</span><h4>Kit Netherita</h4><p>Conjunto completo de netherita com encantamentos máximos padrão, incluindo Reparação.</p><button type="button" disabled><span>Em breve</span><strong>R$ 89,90</strong></button></article>
           </div>
-
-          <article class="manual-service">
-            <div class="manual-service-icon" aria-hidden="true">AT</div>
-            <div class="manual-service-copy">
-              <span class="service-label">Trainer de end-game para a campanha</span>
-              <h4>Virar Ace Trainer da Toca</h4>
-              <p>Seu treinador entra como um desafio especial da Toca da Coruja. A gente conversa antes para fechar nome, visual, time, dificuldade, tema e todos os detalhes que precisam sair certinho.</p>
-              <ul>
-                <li>Trainer personalizado dentro da campanha/modpack.</li>
-                <li>Definição do conceito, nome e estilo do desafio.</li>
-                <li>Sem entrega automática: o pedido é combinado diretamente comigo.</li>
-              </ul>
-            </div>
-            <div class="manual-service-actions">
-              <button class="button" type="button" data-shop-checkout data-sku="ace_trainer_toca" data-fixed-quantity="1">Comprar por R$ 19,90</button>
-              <a class="button secondary" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Chamar no Discord</a>
-              <span class="text-link">Depois do pagamento, a gente combina os detalhes do trainer por conversa.</span>
-            </div>
-          </article>
+          <p class="group-note">Cada kit chegará em uma shulker box. As compras serão liberadas após validar a entrega dentro do servidor.</p>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="section stats" aria-label="Resumo da loja">
-      <div class="panel"><strong>spawn</strong><span>Merchants fixos para comprar Poké Balls, itens, treino e utilidades sem depender de chat.</span></div>
-      <div class="panel"><strong>claims</strong><span>Pacotes para proteger mais chunks e construir uma base maior dentro da Toca da Coruja.</span></div>
-      <div class="panel"><strong>coruja++</strong><span>Assinantes recebem cargo especial no chat, ovos shiny random, desconto nos avulsos e acesso ao download do mundo.</span></div>
-      <div class="panel"><strong>indicação</strong><span>Players chamam amigos novos com /indicado e ganham 10% de desconto no shop por indicação válida.</span></div>
-      <div class="panel"><strong>mundo</strong><span>Download do mapa vendido avulso ou liberado como benefício para quem for Coruja++.</span></div>
-      <div class="panel"><strong>trainer</strong><span>Encomenda manual para transformar sua ideia em um Ace Trainer especial da campanha.</span></div>
-      <div class="panel"><strong>pix</strong><span>Checkout seguro via Mercado Pago, com pedido registrado para entrega no servidor.</span></div>
-    </section>
-
-    <section class="gallery" id="leaderboard" aria-label="Galeria do Coruja Shop">
-      <div class="gallery-head">
-        <div>
-          <span class="kicker">placar da economia</span>
-          <h2>Ganhe dinheiro. Gaste melhor. Suba no ranking.</h2>
+      <section class="support" aria-labelledby="support-title">
+        <div><span class="eyebrow">Mais formas de participar</span><h2 id="support-title">Continue a jornada</h2></div>
+        <div class="support-list">
+          <details><summary>Indique um amigo e ganhe desconto</summary><p>No servidor, use <strong>/meucodigo</strong> ou <strong>/indicacao</strong>. Um jogador novo pode usar <strong>/indicado SEU_CODIGO</strong> nas primeiras 24 horas. Cada indicação válida rende 10% de desconto por 30 dias, até 30%.</p></details>
+          <details><summary>Download do mundo da Toca</summary><p>Incluído no Coruja++ durante a assinatura ou disponível avulso. O arquivo é enviado manualmente após a compra.</p><button type="button" data-shop-checkout data-sku="mundo_toca_download" data-fixed-quantity="1">Comprar acesso avulso · R$ 20</button></details>
+          <details><summary>Ace Trainer personalizado</summary><p>Um treinador especial na campanha, definido em conversa antes da criação. A entrega é manual.</p><button type="button" data-shop-checkout data-sku="ace_trainer_toca" data-fixed-quantity="1">Encomendar · R$ 19,90</button></details>
         </div>
-        <p>Os shops do spawn transformam CobbleDollars em progresso real. Os Claims deixam esse progresso ter espaço para virar base, vila, farm e projeto grande. O ranking da página atualiza a cada 10 minutos.</p>
-      </div>
+      </section>
+    </main>
 
-      <div class="leaderboard-live">
-        <div class="leaderboard-panel">
-          <div class="leaderboard-topline">
-            <span class="kicker">ranking</span>
-            <span class="leaderboard-state" data-leaderboard-state>prévia</span>
-          </div>
-          <ol class="leaderboard-list" data-leaderboard-list></ol>
-        </div>
-      </div>
-
-      <div class="shots">
-        <article class="shot-card wide">
-          <video src="/coruja-shop/assets/merchant-spawn-tour.mp4" poster="/coruja-shop/assets/spawn-shop.png" autoplay muted loop playsinline></video>
-          <div class="shot-copy">
-            <h3>Merchants no spawn</h3>
-            <p>Uma área feita para comprar rápido entre uma exploração, uma hunt e outra tentativa de montar o time perfeito.</p>
-          </div>
-        </article>
-
-        <article class="shot-card">
-          <img src="/coruja-shop/assets/merchant-pokebolas.png" alt="Interface do merchant de Poké Balls" />
-          <div class="shot-copy">
-            <h3>Poké Balls</h3>
-            <p>Compre bolas por tier e abasteça a mochila antes de sair para capturas e hunts longas.</p>
-          </div>
-        </article>
-
-        <article class="shot-card">
-          <img src="/coruja-shop/assets/merchant-competitivo.png" alt="Interface do merchant competitivo com Bottle Caps, TMs e EVs" />
-          <div class="shot-copy">
-            <h3>Treino competitivo</h3>
-            <p>Bottle Caps, TMs, Gimmicks e itens de EV para ajustar seu time antes dos eventos.</p>
-          </div>
-        </article>
-
-        <article class="shot-card">
-          <img src="/coruja-shop/assets/merchant-ovos-shiny.png" alt="Interface do merchant de ovos shiny" />
-          <div class="shot-copy">
-            <h3>Ovos shiny</h3>
-            <p>Ovos especiais para quem quer tentar a sorte e colocar raridade nova no time.</p>
-          </div>
-        </article>
-
-        <article class="shot-card">
-          <img src="/coruja-shop/assets/merchant-outros-itens.png" alt="Interface do merchant com itens de tamanho, montaria e evolução" />
-          <div class="shot-copy">
-            <h3>Outros itens</h3>
-            <p>Itens de tamanho, montaria e evolução para personalizar melhor cada Pokémon.</p>
-          </div>
-        </article>
-
-        <article class="shot-card">
-          <img src="/coruja-shop/assets/merchant-itens-mine.png" alt="Interface do merchant de itens úteis do Minecraft" />
-          <div class="shot-copy">
-            <h3>Itens do Mine</h3>
-            <p>Utilidades do Minecraft, teleport e recursos caros para acelerar projetos grandes.</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <p class="note">CobbleDollars, Claims, ovos, cargos, descontos de indicação, download do mundo e pedidos de Ace Trainer são recursos internos da Toca da Coruja, podem existir ou ser obtidos dentro das regras do servidor, não têm valor real fora do servidor, não podem ser sacados e não são afiliados a Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon. Benefícios de assinatura dependem da assinatura ativa.</p>
-  </main>
-
-  <script type="module" src="/src/coruja-shop.jsx"></script>
-  <script src="/coruja-shop/coruja-shop.js?v=quantity-stepper-1"></script>
+    <footer><span>Coruja Shop · Toca da Coruja</span><a href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Precisa de ajuda? Entre no Discord</a><p>Os produtos são benefícios internos do servidor, sem valor fora dele e sem afiliação com Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon.</p></footer>
+  </div>
+  <script src="/coruja-shop/coruja-shop.js?v=revamp-20260924"></script>
 </body>
 </html>

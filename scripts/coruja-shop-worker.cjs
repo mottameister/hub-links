@@ -1,4 +1,5 @@
 const net = require("node:net");
+const { buildKitCommand } = require("./shop-kit-command.cjs");
 
 const opacBonusClaimsKey = "claims.bonusChunkClaims";
 
@@ -185,16 +186,17 @@ const ensureDeliveryOutputSucceeded = (output, context) => {
 };
 
 const parseOpacClaimBonusCommand = (command) => {
-  const match = String(command || "").trim().match(/^opac-claims\s+add\s+([A-Za-z0-9_]{3,16})\s+(\d+)$/i);
+  const match = String(command || "").trim().match(/^opac-claims\s+(add|set)\s+([A-Za-z0-9_]{3,16})\s+(\d+)$/i);
   if (!match) return null;
   return {
-    minecraftNick: match[1],
-    claimChunks: Number(match[2]),
+    mode: match[1].toLowerCase(),
+    minecraftNick: match[2],
+    claimChunks: Number(match[3]),
   };
 };
 
 const parseMembershipCommand = (command) => {
-  const match = String(command || "").trim().match(/^coruja-membership\s+grant\s+([A-Za-z0-9_]{3,16})\s+(plus|plus_plus)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)$/i);
+  const match = String(command || "").trim().match(/^coruja-membership\s+grant\s+([A-Za-z0-9_]{3,16})\s+(plus|plus_plus)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?$/i);
   if (!match) return null;
   return {
     minecraftNick: match[1],
@@ -203,6 +205,7 @@ const parseMembershipCommand = (command) => {
     claimChunks: Number(match[4]),
     shinyEggs: Number(match[5]),
     days: Number(match[6]),
+    totalClaimChunks: match[7] ? Number(match[7]) : null,
   };
 };
 
@@ -217,27 +220,21 @@ const parseOpacBonusClaims = (output) => {
   throw new Error(`Could not read ${opacBonusClaimsKey} from OPAC output: ${text.slice(0, 220) || "(empty)"}`);
 };
 
-const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks }) => {
+const deliverOpacClaimBonus = async ({ delivery, minecraftNick, claimChunks, mode = "add" }) => {
   if (!Number.isInteger(claimChunks) || claimChunks <= 0) {
     throw new Error(`Invalid claim chunk amount for ${delivery.orderId}: ${claimChunks}`);
   }
 
-  const getCommand = `openpac player-config for ${minecraftNick} get ${opacBonusClaimsKey}`;
+  const targetClaims = claimChunks;
+  const setCommand = `execute as ${minecraftNick} run openpac player-config set ${opacBonusClaimsKey} ${targetClaims}`;
   if (config.dryRun) {
-    const setCommand = `openpac player-config for ${minecraftNick} set ${opacBonusClaimsKey} ${claimChunks}`;
-    return `dry-run: ${getCommand}\ndry-run: ${setCommand}`;
+    return `dry-run: ${setCommand}`;
   }
 
-  const currentOutput = await rconCommand(getCommand);
-  ensureDeliveryOutputSucceeded(currentOutput, getCommand);
-  const currentClaims = parseOpacBonusClaims(currentOutput);
-  const nextClaims = currentClaims + claimChunks;
-  const setCommand = `openpac player-config for ${minecraftNick} set ${opacBonusClaimsKey} ${nextClaims}`;
   const setOutput = await rconCommand(setCommand);
   ensureDeliveryOutputSucceeded(setOutput, setCommand);
   return [
-    `OPAC bonus claims: ${currentClaims} + ${claimChunks} = ${nextClaims}`,
-    `get: ${currentOutput || "Command executed."}`,
+    `OPAC bonus claims ${mode}: ${targetClaims}`,
     `set: ${setOutput || "Command executed."}`,
   ].join("\n");
 };
@@ -258,7 +255,7 @@ const runDeliveryCommand = async (command, context) => {
   return output || "Command executed.";
 };
 
-const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars, claimChunks, shinyEggs, days }) => {
+const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars, claimChunks, shinyEggs, days, totalClaimChunks }) => {
   const logs = [];
 
   if (cobbleDollars > 0) {
@@ -267,7 +264,13 @@ const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars,
   }
 
   if (claimChunks > 0) {
-    logs.push(`claims: ${await deliverOpacClaimBonus({ delivery, minecraftNick, claimChunks })}`);
+    const hasTotalClaims = Number.isInteger(totalClaimChunks) && totalClaimChunks > 0;
+    logs.push(`claims: ${await deliverOpacClaimBonus({
+      delivery,
+      minecraftNick,
+      claimChunks: hasTotalClaims ? totalClaimChunks : claimChunks,
+      mode: hasTotalClaims ? "set" : "add",
+    })}`);
   }
 
   for (let index = 0; index < shinyEggs; index += 1) {
@@ -286,6 +289,16 @@ const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars,
 };
 
 const executeDeliveryCommand = async (delivery, command) => {
+  const kit = String(command || "").trim().match(/^coruja-kit\s+grant\s+([A-Za-z0-9_]{3,16})\s+(iron|diamond|netherite)$/i);
+  if (kit) {
+    const giveCommand = buildKitCommand(kit[1], kit[2].toLowerCase());
+    const output = await runDeliveryCommand(giveCommand, giveCommand);
+    if (!config.dryRun && !/\b(gave|given|deu)\b/i.test(output)) {
+      throw new Error(`Kit delivery has no positive RCON confirmation: ${String(output).slice(0, 220)}`);
+    }
+    return `explorer kit ${kit[2].toLowerCase()}: ${output}`;
+  }
+
   const opacClaimBonus = parseOpacClaimBonusCommand(command);
   if (opacClaimBonus) {
     return deliverOpacClaimBonus({ delivery, ...opacClaimBonus });

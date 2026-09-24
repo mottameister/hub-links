@@ -96,19 +96,18 @@ Os pacotes estao gerando comandos no backend assim:
 - `cobbledollars give {nick} 1000000`
 - `cobbledollars give {nick} 5000000`
 - `cobbledollars give {nick} 10000000`
-- `opac-claims add {nick} 5`
-- `opac-claims add {nick} 12`
-- `opac-claims add {nick} 30`
-- `coruja-membership grant {nick} plus 2000000 5 1 31`
-- `coruja-membership grant {nick} plus_plus 4000000 5 2 31`
+- `opac-claims set {nick} {total_claims_pagos}`
+- `coruja-membership grant {nick} plus 2000000 5 1 31 {total_claims_pagos}`
+- `coruja-membership grant {nick} plus_plus 4000000 5 2 31 {total_claims_pagos}`
 
 O worker traduz `opac-claims add` para Open Parties and Claims via RCON.
-Ele usa `openpac player-config for {nick}` para ler o valor atual e gravar a soma.
-Isso exige que o jogador exista para o OpenPAC no momento da entrega; se nao encontrar o player, o pedido volta para retry.
+Para novas entregas, a API calcula o total de claims pagos daquele UUID e gera `opac-claims set`.
+O worker aplica esse total com `execute as {nick} run openpac player-config set`, porque `openpac player-config for {nick}` nao roda corretamente via console/RCON nesse servidor.
+Isso exige que o jogador esteja online; se nao encontrar o player, o pedido volta para retry.
 
-1. `openpac player-config for {nick} get claims.bonusChunkClaims`
-2. soma o pacote comprado ao valor atual
-3. `openpac player-config for {nick} set claims.bonusChunkClaims {novo_total}`
+1. API soma os claims pagos do UUID em `shop_orders` / `shop_deliveries`.
+2. Worker executa `execute as {nick} run openpac player-config set claims.bonusChunkClaims {total_claims_pagos}`.
+3. Se o jogador estiver offline, a entrega fica pendente para retry em vez de virar falha final.
 
 Se o plugin de economia usa outro comando, altere o mapa `products` em `workers/mottameister-services-api/src/index.js` antes do teste real.
 
@@ -124,7 +123,7 @@ O desconto nao usa cupom: quando um pagamento de assinatura e aprovado, a API re
 O worker entrega assinatura como um bundle:
 
 1. `cobbledollars give {nick} ...`
-2. `opac-claims add {nick} 5`
+2. `opac-claims set {nick} {total_claims_pagos}`
 3. `givepokemonegg {nick} random shiny=yes`, usando `SHOP_SHINY_EGG_POOL=random`
 4. `lp user {nick} parent addtemp {group} 31d`
 

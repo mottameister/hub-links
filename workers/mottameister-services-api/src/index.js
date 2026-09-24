@@ -112,6 +112,36 @@ const products = {
     currency: "BRL",
     cobbleDollars: 0,
   },
+  kit_ferro: {
+    sku: "kit_ferro",
+    title: "Kit Explorador Ferro",
+    type: "explorer_kit",
+    amount: 9.9,
+    currency: "BRL",
+    cobbleDollars: 0,
+    kitTier: "iron",
+    command: "coruja-kit grant {nick} iron",
+  },
+  kit_diamante: {
+    sku: "kit_diamante",
+    title: "Kit Explorador Diamante",
+    type: "explorer_kit",
+    amount: 29.9,
+    currency: "BRL",
+    cobbleDollars: 0,
+    kitTier: "diamond",
+    command: "coruja-kit grant {nick} diamond",
+  },
+  kit_netherita: {
+    sku: "kit_netherita",
+    title: "Kit Explorador Netherita",
+    type: "explorer_kit",
+    amount: 89.9,
+    currency: "BRL",
+    cobbleDollars: 0,
+    kitTier: "netherite",
+    command: "coruja-kit grant {nick} netherite",
+  },
 };
 
 const fallbackLeaderboard = [
@@ -177,7 +207,7 @@ const parseCheckoutQuantity = (value, product = null) => {
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > maxCheckoutQuantity) {
     throw Object.assign(new Error(`Quantidade deve ser entre 1 e ${maxCheckoutQuantity}.`), { statusCode: 400 });
   }
-  if (["membership", "manual_fulfillment"].includes(product?.type) && quantity !== 1) {
+  if (["membership", "manual_fulfillment", "explorer_kit"].includes(product?.type) && quantity !== 1) {
     throw Object.assign(new Error("Esse produto deve ser comprado uma unidade por vez."), { statusCode: 400 });
   }
   return quantity;
@@ -201,23 +231,54 @@ const getOrderClaimChunks = (order, product) => {
   return Number(product?.claimChunks || 0) * getOrderQuantity(order, product);
 };
 
-const getOrderDeliveryCommand = (order, product) => {
+const paidDeliveryStatuses = new Set([
+  "paid_pending_delivery",
+  "delivering",
+  "delivery_failed",
+  "delivered",
+]);
+
+const getPaidClaimBonusTotal = async (env, order) => {
+  const rows = await env.DB.prepare(`
+    SELECT o.id, o.sku, o.payment_validation, d.status AS delivery_status
+    FROM shop_orders o
+    LEFT JOIN shop_deliveries d ON d.environment = o.environment AND d.order_id = o.id
+    WHERE o.environment = ?
+      AND o.minecraft_uuid = ?
+      AND o.paid_at != ''
+      AND (o.archived_at IS NULL OR o.archived_at = '')
+  `).bind(getEnvironment(env), order.minecraftUuid || "").all();
+
+  return (rows.results || []).reduce((total, row) => {
+    const product = getProduct(row.sku);
+    if (!product || !["opac_claim_bonus", "membership"].includes(product.type)) return total;
+    if (row.id !== order.id && !paidDeliveryStatuses.has(row.delivery_status || "")) return total;
+    return total + getOrderClaimChunks({ paymentValidation: jsonParse(row.payment_validation, null), amount: 0 }, product);
+  }, 0);
+};
+
+const getOrderDeliveryCommand = async (env, order, product) => {
   if (product.type === "cobbledollars") {
     const totalCobbleDollars = Number(order.cobbleDollars || product.cobbleDollars || 0);
     return `cobbledollars give ${order.minecraftNick} ${totalCobbleDollars}`;
   }
 
   if (product.type === "opac_claim_bonus") {
-    return `opac-claims add ${order.minecraftNick} ${getOrderClaimChunks(order, product)}`;
+    return `opac-claims set ${order.minecraftNick} ${await getPaidClaimBonusTotal(env, order)}`;
   }
 
   if (product.type === "membership") {
     const quantity = getOrderQuantity(order, product);
     const totalCobbleDollars = Number(order.cobbleDollars || product.cobbleDollars || 0);
     const totalClaimChunks = getOrderClaimChunks(order, product);
+    const paidClaimBonusTotal = await getPaidClaimBonusTotal(env, order);
     const shinyEggs = Number(product.shinyEggs || 0) * quantity;
     const membershipDays = Number(product.membershipDays || 31);
-    return `coruja-membership grant ${order.minecraftNick} ${product.membershipTier} ${totalCobbleDollars} ${totalClaimChunks} ${shinyEggs} ${membershipDays}`;
+    return `coruja-membership grant ${order.minecraftNick} ${product.membershipTier} ${totalCobbleDollars} ${totalClaimChunks} ${shinyEggs} ${membershipDays} ${paidClaimBonusTotal}`;
+  }
+
+  if (product.type === "explorer_kit") {
+    return `coruja-kit grant ${order.minecraftNick} ${product.kitTier}`;
   }
 
   return product.command.replace("{nick}", order.minecraftNick);
@@ -750,6 +811,9 @@ const deliveryFromRow = (row) => row && ({
 const createOrder = async ({ env, request, payload }) => {
   const product = getProduct(payload.sku);
   if (!product) throw Object.assign(new Error("Produto invalido."), { statusCode: 400 });
+  if (product.type === "explorer_kit" && env.SHOP_KITS_ENABLED !== "true") {
+    throw Object.assign(new Error("Kits Explorador ainda nao estao disponiveis para compra."), { statusCode: 409 });
+  }
   const quantity = parseCheckoutQuantity(payload.quantity, product);
   const cleanNick = sanitizeMinecraftNick(payload.minecraftNick);
   if (!cleanNick) throw Object.assign(new Error("Nick do Minecraft invalido."), { statusCode: 400 });
@@ -898,7 +962,7 @@ const createDeliveryIfNeeded = async ({ env, order, payment }) => {
     sku: order.sku,
     minecraftNick: order.minecraftNick,
     cobbleDollars: order.cobbleDollars || 0,
-    command: getOrderDeliveryCommand(order, product),
+    command: await getOrderDeliveryCommand(env, order, product),
     paymentId: String(payment.id || order.mercadoPagoPaymentId || ""),
     createdAt: new Date().toISOString(),
   };
@@ -973,6 +1037,72 @@ const listOrders = async (env, { includeArchived = false } = {}) => {
     deliveredAt: row.delivered_at || "",
     deliveryLog: row.delivery_log || "",
   }));
+};
+
+const serverGoalKey = "us_server_2026";
+const serverGoalTargetBrl = 5500;
+
+const currentSaoPauloMonthStart = () => {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit",
+  }).formatToParts(new Date());
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  return new Date(Date.UTC(year, month - 1, 1, 3)).toISOString();
+};
+
+const getServerGoal = async (env) => {
+  let goal;
+  try {
+    goal = await env.DB.prepare("SELECT started_at, target_brl FROM shop_funding_goals WHERE environment = ? AND goal_key = ?")
+      .bind(getEnvironment(env), serverGoalKey).first();
+  } catch (error) {
+    // The public page can be previewed before the goal is activated.
+    if (/no such table: shop_funding_goals/i.test(String(error.message || error))) {
+      return { active: false, progressPercent: 0, startedAt: null };
+    }
+    throw error;
+  }
+  if (!goal) return { active: false, progressPercent: 0, startedAt: null };
+
+  const result = await env.DB.prepare(`
+    SELECT COALESCE(SUM(amount), 0) AS approved_brl,
+      COALESCE(SUM(CASE WHEN paid_at >= ? THEN amount ELSE 0 END), 0) AS month_brl
+    FROM shop_orders
+    WHERE environment = ? AND currency = 'BRL'
+      AND last_payment_status = 'approved'
+      AND paid_at >= ? AND paid_at != ''
+      AND (archived_at IS NULL OR archived_at = '')
+      AND amount > 0
+      AND mercado_pago_payment_id NOT LIKE 'coupon:%'
+  `).bind(currentSaoPauloMonthStart(), getEnvironment(env), goal.started_at).first();
+  const approvedBrl = Math.max(0, Number(result?.approved_brl || 0));
+  const targetBrl = Math.max(1, Number(goal.target_brl || serverGoalTargetBrl));
+  const monthBrl = Math.max(0, Number(result?.month_brl || 0));
+  return {
+    active: true,
+    startedAt: goal.started_at,
+    progressPercent: Math.min(100, Math.floor(approvedBrl / targetBrl * 100)),
+    monthContributionPercent: Math.min(100, Math.floor(monthBrl / targetBrl * 100)),
+    reached: approvedBrl >= targetBrl,
+  };
+};
+
+const activateServerGoal = async (env) => {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS shop_funding_goals (
+      environment TEXT NOT NULL,
+      goal_key TEXT NOT NULL,
+      started_at TEXT NOT NULL,
+      target_brl REAL NOT NULL,
+      PRIMARY KEY (environment, goal_key)
+    )
+  `).run();
+  await env.DB.prepare(`
+    INSERT OR IGNORE INTO shop_funding_goals (environment, goal_key, started_at, target_brl)
+    VALUES (?, ?, ?, ?)
+  `).bind(getEnvironment(env), serverGoalKey, new Date().toISOString(), serverGoalTargetBrl).run();
+  return getServerGoal(env);
 };
 
 const searchPaymentsByExternalReference = async (env, externalReference) => {
@@ -1345,6 +1475,13 @@ export default {
       if (url.pathname === "/api/shop/orders" && request.method === "GET") {
         await requireShopAdminAuth(request, env);
         return json({ ok: true, orders: await listOrders(env, { includeArchived: url.searchParams.get("archived") === "1" }) }, 200, request);
+      }
+      if (url.pathname === "/api/shop/server-goal" && request.method === "GET") {
+        return json(await getServerGoal(env), 200, request);
+      }
+      if (url.pathname === "/api/shop/server-goal/activate" && request.method === "POST") {
+        await requireShopAdminAuth(request, env);
+        return json(await activateServerGoal(env), 200, request);
       }
       if (url.pathname === "/api/shop/claim" && request.method === "POST") return json(await handleClaim(request, env), 200, request);
       if (url.pathname === "/api/shop/delivered" && request.method === "POST") return json(await handleDelivered(request, env), 200, request);

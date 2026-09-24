@@ -5,6 +5,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY scripts/coruja-shop-worker.cjs ./scripts/coruja-shop-worker.cjs
+COPY scripts/shop-kit-command.cjs ./scripts/shop-kit-command.cjs
 
 USER node
 
