@@ -33,7 +33,7 @@ const mockDb = () => {
             async first() {
               if (sql.includes("COALESCE(SUM(amount)")) {
                 assert.match(sql, /last_payment_status = 'approved'/);
-                assert.match(sql, /paid_at >= \?/);
+                assert.match(sql, /strftime\('%s', paid_at\) >= strftime\('%s', \?\)/);
                 assert.match(sql, /mercado_pago_payment_id NOT LIKE 'coupon:%'/);
                 assert.equal(params[2], "2026-09-24T02:37:25.738Z");
                 return { approved_brl: state.approvedBrl, month_brl: state.monthBrl };
