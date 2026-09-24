@@ -1072,8 +1072,8 @@ const getServerGoal = async (env) => {
   return {
     active: true,
     startedAt: serverGoalStartedAt,
-    progressPercent: Math.min(100, Math.floor(approvedBrl / targetBrl * 100)),
-    monthContributionPercent: Math.min(100, Math.floor(monthBrl / targetBrl * 100)),
+    progressPercent: Math.min(100, Math.round(approvedBrl / targetBrl * 1000) / 10),
+    monthContributionPercent: Math.min(100, Math.round(monthBrl / targetBrl * 1000) / 10),
     reached: approvedBrl >= targetBrl,
   };
 };

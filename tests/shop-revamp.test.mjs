@@ -56,6 +56,12 @@ test("goal starts at the shop launch, shows only a percentage, and caps at 100%"
   assert.equal(initial.progressPercent, 0);
   assert.equal(initial.startedAt, "2026-09-24T02:37:25.738Z");
 
+  DB.state.approvedBrl = 19.8;
+  DB.state.monthBrl = 19.8;
+  const smallPurchases = await (await get()).json();
+  assert.equal(smallPurchases.progressPercent, 0.4);
+  assert.equal(smallPurchases.monthContributionPercent, 0.4);
+
   DB.state.approvedBrl = 2750;
   DB.state.monthBrl = 550;
   const halfway = await (await get()).json();

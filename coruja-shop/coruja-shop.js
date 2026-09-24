@@ -53,12 +53,12 @@
       const goal = await response.json();
       if (!goal.active) return;
       const percent = Math.max(0, Math.min(100, Number(goal.progressPercent) || 0));
-      goalPercent.textContent = `${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 }).format(percent)}%`;
+      goalPercent.textContent = `${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(percent)}%`;
       goalFill.style.width = `${percent}%`;
       goalTrack.setAttribute("aria-valuenow", String(percent));
       goalState.textContent = goal.reached
         ? "Meta alcançada! Acompanhe no Discord os próximos passos da compra e da migração."
-        : `Neste mês, as compras aprovadas somaram ${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 }).format(Math.max(0, Number(goal.monthContributionPercent) || 0))}% da meta.`;
+        : `Neste mês, as compras aprovadas somaram ${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 }).format(Math.max(0, Number(goal.monthContributionPercent) || 0))}% da meta.`;
     } catch {
       goalState.textContent = isPreview
         ? "A meta começa quando esta versão da loja for publicada."
