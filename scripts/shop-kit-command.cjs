@@ -5,8 +5,8 @@ const tiers = {
 };
 
 const enchantmentComponent = (levels) => {
-  const entries = Object.entries(levels).map(([id, level]) => `'minecraft:${id}':${level}`).join(",");
-  return `'minecraft:enchantments':{levels:{${entries}}}`;
+  const entries = Object.entries(levels).map(([id, level]) => `${id}:${level}`).join(",");
+  return `enchantments:{levels:{${entries}}}`;
 };
 
 const kitItems = (tier) => {
@@ -33,8 +33,8 @@ const kitItems = (tier) => {
 const buildKitCommand = (minecraftNick, tier) => {
   if (!/^[A-Za-z0-9_]{3,16}$/.test(minecraftNick)) throw new Error("Invalid Minecraft nickname for kit.");
   const slots = kitItems(tier).map(([id, enchants], slot) =>
-    `{slot:${slot},item:{id:'minecraft:${id}',count:1,components:{${enchantmentComponent(enchants)}}}}`);
-  return `give ${minecraftNick} minecraft:shulker_box[minecraft:container=[${slots.join(",")}]] 1`;
+    `{slot:${slot},item:{id:'${id}',count:1,components:{${enchantmentComponent(enchants)}}}}`);
+  return `give ${minecraftNick} shulker_box[container=[${slots.join(",")}]] 1`;
 };
 
 module.exports = { buildKitCommand, kitItems };

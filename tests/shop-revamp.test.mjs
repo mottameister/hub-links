@@ -11,13 +11,14 @@ test("each kit is a single RCON give with full armor and five tools", () => {
     const command = buildKitCommand("Player_123", tier);
     const items = kitItems(tier);
     assert.equal(items.length, 9);
-    assert.ok(command.startsWith("give Player_123 minecraft:shulker_box[minecraft:container=["));
+    assert.ok(command.startsWith("give Player_123 shulker_box[container=["));
     assert.equal((command.match(/\{slot:/g) || []).length, 9);
     assert.ok(command.endsWith("]] 1"));
-    for (const [id] of items) assert.ok(command.includes(`id:'minecraft:${id}'`));
+    for (const [id] of items) assert.ok(command.includes(`id:'${id}'`));
+    assert.ok(command.length < 1400, `${tier} kit should fit the live RCON command limit`);
   }
-  assert.match(buildKitCommand("Player_123", "netherite"), /'minecraft:mending':1/);
-  assert.match(buildKitCommand("Player_123", "netherite"), /'minecraft:efficiency':5/);
+  assert.match(buildKitCommand("Player_123", "netherite"), /mending:1/);
+  assert.match(buildKitCommand("Player_123", "netherite"), /efficiency:5/);
   assert.throws(() => buildKitCommand("bad nick", "iron"));
 });
 
