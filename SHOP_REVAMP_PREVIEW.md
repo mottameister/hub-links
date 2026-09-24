@@ -7,7 +7,7 @@ Esta cópia foi preparada na branch `codex/shop-revamp-preview`.
 - Coruja++ como oferta principal, com benefícios atuais e formulário de nick/cupom no topo.
 - Layout mais curto: meta, produtos, kits e serviços manuais recolhidos no fim. O fundo animado, a galeria longa e o ranking saíram da página de compra.
 - Três Kits Explorador, cada um com armadura completa, espada, picareta, machado, pá e enxada em uma shulker box entregue por um comando RCON.
-- Os kits aparecem como "Em breve" e o backend recusa compras até `SHOP_KITS_ENABLED=true`, pois o container de entrega no servidor ainda precisa ser atualizado e validado no jogo.
+- Os kits são aceitos pela API com `SHOP_KITS_ENABLED=true`. O container de entrega foi atualizado na Oracle VM, e os três comandos compactos foram aceitos pelo RCON do servidor com seletor sem jogador. Uma compra real de ponta a ponta ainda não foi executada.
 - Meta coletiva com percentual público acumulado e percentual contribuído no mês. O cálculo usa apenas pedidos BRL aprovados após a ativação, excluindo testes e pedidos arquivados. Nenhum valor de receita é retornado ao navegador.
 - Preview fora do domínio oficial bloqueia o checkout.
 
