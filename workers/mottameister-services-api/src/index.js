@@ -1452,6 +1452,19 @@ export default {
       if (url.pathname === "/api/shop/server-goal" && request.method === "GET") {
         return json(await getServerGoal(env), 200, request);
       }
+      if (url.pathname === "/api/shop/server-goal/diagnostics" && request.method === "GET") {
+        await requireDeliveryAuth(request, env);
+        const rows = await env.DB.prepare(`
+          SELECT environment, status, last_payment_status, currency,
+            CASE WHEN archived_at IS NULL OR archived_at = '' THEN 0 ELSE 1 END AS archived,
+            COUNT(*) AS orders, ROUND(SUM(amount), 2) AS total_brl,
+            MIN(paid_at) AS first_paid_at, MAX(paid_at) AS last_paid_at,
+            SUM(CASE WHEN mercado_pago_payment_id IS NULL OR mercado_pago_payment_id = '' THEN 0 ELSE 1 END) AS payment_ids
+          FROM shop_orders WHERE created_at >= ?
+          GROUP BY environment, status, last_payment_status, currency, archived
+        `).bind(serverGoalStartedAt).all();
+        return json({ rows: rows.results || [] }, 200, request);
+      }
       if (url.pathname === "/api/shop/claim" && request.method === "POST") return json(await handleClaim(request, env), 200, request);
       if (url.pathname === "/api/shop/delivered" && request.method === "POST") return json(await handleDelivered(request, env), 200, request);
       if (url.pathname === "/api/shop/failed" && request.method === "POST") return json(await handleFailed(request, env), 200, request);
