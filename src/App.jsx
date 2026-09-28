@@ -285,7 +285,7 @@ export default function App() {
             <span className="section-toggle-copy"><small>NOSSO MUNDO</small><strong>Toca da Coruja</strong><span>Servidor, comunidade e tudo para jogar junto.</span></span>
             <span className="section-toggle-end"><small>{tocaLinks.length} links</small><span className={tocaOpen ? 'toggle-icon is-open' : 'toggle-icon'} aria-hidden="true">⌄</span></span>
           </button>
-          <div className="submenu" id="toca-links" hidden={!tocaOpen}>
+          <div className="submenu glass-surface" id="toca-links" hidden={!tocaOpen}>
             {tocaLinks.map((item) => <LinkCard key={item.title} item={item} compact onOpen={setModal} />)}
           </div>
         </section>
@@ -296,7 +296,7 @@ export default function App() {
             <span className="section-toggle-copy"><small>FORA DA TOCA</small><strong>Projetos especiais</strong><span>Ideias, ferramentas e coisas em construção.</span></span>
             <span className="section-toggle-end"><small>{specialLinks.length} links</small><span className={specialOpen ? 'toggle-icon is-open' : 'toggle-icon'} aria-hidden="true">⌄</span></span>
           </button>
-          <div className="submenu" id="special-links" hidden={!specialOpen}>
+          <div className="submenu glass-surface" id="special-links" hidden={!specialOpen}>
             {specialLinks.map((item) => <LinkCard key={item.title} item={item} compact onOpen={setModal} />)}
           </div>
         </section>
