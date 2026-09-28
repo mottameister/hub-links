@@ -19,7 +19,7 @@ const staticEntries = [
   'gt-engineer',
   'mottafit',
   'profile.jpeg',
-  'preview.png',
+  'social-card.jpg',
   'site-controls.js',
   'site-controls.css',
   'site.webmanifest',
