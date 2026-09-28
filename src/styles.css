@@ -69,8 +69,7 @@ nav > a:hover { color: var(--ink); }
 .section-toggle-copy > span { color: #69738a; font-size: 12px; }
 .section-toggle-end { position: relative; display: flex; align-items: center; gap: 16px; margin-left: auto; white-space: nowrap; }
 .section-toggle-end > small { color: #7b859b; font-size: 11px; }
-.toggle-icon { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid rgba(255,255,255,.8); border-radius: 50%; background: rgba(255,255,255,.6); color: #61719e; font-size: 24px; line-height: 1; transition: transform .2s ease; }
-.toggle-icon.is-open { transform: rotate(180deg); }
+.toggle-icon { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid rgba(255,255,255,.8); border-radius: 50%; background: rgba(255,255,255,.6); color: #61719e; font-size: 16px; line-height: 1; }
 .submenu { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; margin: 10px 8px 14px; animation: reveal .22s ease both; }
 .submenu[hidden] { display: none; }
 .link-card.is-compact { min-height: 83px; align-items: center; padding: 13px 16px; border-radius: 18px; }
@@ -245,12 +244,12 @@ nav > a:hover, .text-cta:hover { color: #2e668e; }
   cursor: pointer;
   transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
 }
-.theme-toggle svg { width: 19px; height: 19px; }
+.theme-emoji { font-size: 18px; line-height: 1; }
 .theme-toggle:hover { transform: translateY(-2px); background: rgba(255, 255, 255, .76); box-shadow: 0 10px 24px rgba(72, 114, 147, .17), inset 0 2px 1px #fff; }
 .theme-toggle:active { transform: scale(.96); }
 @media (max-width: 620px) {
   .theme-toggle { flex-basis: 36px; width: 36px; height: 36px; margin-left: 8px; }
-  .theme-toggle svg { width: 17px; height: 17px; }
+  .theme-emoji { font-size: 16px; }
 }
 
 :root[data-theme='dark'] { color-scheme: dark; color: #e9f2f8; background: #172635; --ink: #e9f2f8; --muted: #b1c5d2; }
@@ -310,3 +309,14 @@ nav > a:hover, .text-cta:hover { color: #2e668e; }
 @media (prefers-reduced-transparency: reduce) {
   [data-theme='dark'] .glass-surface, [data-theme='dark'] .nav-pill, [data-theme='dark'] .primary-cta, [data-theme='dark'] .ghost-cta, [data-theme='dark'] .portrait-tag, [data-theme='dark'] .theme-toggle { background: rgba(39, 65, 84, .96); }
 }
+
+/* Native emoji fonts keep icon cards legible on Android and iPhone. */
+.card-icon, .section-symbol, .toggle-icon, .arrow, .theme-emoji, .modal-close {
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+.card-icon { font-size: 20px; }
+.is-compact .card-icon { font-size: 18px; }
+.arrow { font-size: 15px; }
+.modal-close { font-size: 16px; }

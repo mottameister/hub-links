@@ -5,7 +5,7 @@ const featured = [
     title: 'Trabalhe comigo',
     description: 'Parcerias para games, tecnologia, setup e lifestyle.',
     meta: 'PARA MARCAS',
-    icon: '✦',
+    icon: '🤝',
     tone: 'gold',
     featured: true,
     href: '/media-kit/'
@@ -14,7 +14,7 @@ const featured = [
     title: 'Produtos que eu uso',
     description: 'Setup, jogos, casa e recomendações reais.',
     meta: 'CURADORIA MOTTA',
-    icon: '⌁',
+    icon: '🛍️',
     tone: 'violet',
     wide: true,
     action: 'shop'
@@ -23,7 +23,7 @@ const featured = [
     title: 'Anuncie no Corujão',
     description: 'Sua marca em vídeos para uma comunidade que joga junto.',
     meta: 'MÍDIA NA COMUNIDADE',
-    icon: '◉',
+    icon: '📣',
     tone: 'cyan',
     featured: true,
     href: 'mailto:contato@mottameister.xyz?subject=An%C3%BAncio%20no%20Coruj%C3%A3o'
@@ -35,7 +35,7 @@ const tocaLinks = [
     title: 'Entrar no Discord',
     description: 'Comunidade, avisos, eventos e suporte.',
     meta: 'COMUNIDADE',
-    icon: '◉',
+    icon: '💬',
     href: 'https://discord.com/invite/TcSFAXGr6a',
     tone: 'discord'
   },
@@ -43,7 +43,7 @@ const tocaLinks = [
     title: 'Coruja Shop',
     description: 'CobbleDollars, shops do spawn e ranking.',
     meta: 'ECONOMIA',
-    icon: '◈',
+    icon: '🪙',
     href: '/coruja-shop/',
     tone: 'gold'
   },
@@ -51,7 +51,7 @@ const tocaLinks = [
     title: 'Coruja Cup',
     description: 'Inscrições abertas para a próxima edição.',
     meta: 'VAGAS LIMITADAS',
-    icon: '♕',
+    icon: '🏆',
     href: '/coruja-cup/',
     tone: 'violet'
   },
@@ -59,7 +59,7 @@ const tocaLinks = [
     title: 'Server Toca da Coruja',
     description: 'Consulte o status do servidor em um só lugar.',
     meta: 'AO VIVO',
-    icon: '⌾',
+    icon: '📡',
     tone: 'green',
     action: 'server'
   },
@@ -67,7 +67,7 @@ const tocaLinks = [
     title: 'Baixar o Modpack',
     description: 'Instale a Toca da Coruja pelo Modrinth.',
     meta: 'MODRINTH',
-    icon: '⬡',
+    icon: '📦',
     tone: 'green',
     action: 'modpack'
   },
@@ -75,7 +75,7 @@ const tocaLinks = [
     title: 'Campanha',
     description: 'Trainers, progressão e desafios.',
     meta: 'RCT',
-    icon: '⚔',
+    icon: '⚔️',
     href: 'https://modrinth.com/mod/toca-da-coruja-campanha',
     tone: 'cyan'
   },
@@ -83,7 +83,7 @@ const tocaLinks = [
     title: 'Download do Mundo',
     description: 'Mapa oficial para jogar em single player.',
     meta: 'CORUJA SHOP',
-    icon: '⌖',
+    icon: '🌍',
     href: '/coruja-shop/#mundo-toca',
     tone: 'gold'
   },
@@ -91,17 +91,17 @@ const tocaLinks = [
     title: 'Virar Ace Trainer',
     description: 'Trainer personalizado combinado por conversa.',
     meta: 'CORUJA SHOP',
-    icon: '△',
+    icon: '🎓',
     href: '/coruja-shop/#ace-trainer',
     tone: 'pink'
   }
 ];
 
 const specialLinks = [
-  { title: 'GT Engineer', description: 'Ferramenta para acertar carros, pistas e eventos no Gran Turismo 7.', icon: 'GT', href: '/gt-engineer/', tone: 'gold', featured: true },
-  { title: 'Prompt Lab', description: 'Prompts para criar, editar e brincar com IA.', icon: '✧', href: '/prompts/', tone: 'violet' },
-  { title: 'GitHub', description: 'Projetos, código e coisas em construção.', icon: '{ }', href: 'https://github.com/mottameister', tone: 'neutral' },
-  { title: 'Wallpapers favoritos', description: 'Minha curadoria do Wallpaper Engine.', icon: '▧', href: 'https://steamcommunity.com/id/mottameister/myworkshopfiles?appid=431960&browsefilter=mysubscriptions', tone: 'cyan' }
+  { title: 'GT Engineer', description: 'Ferramenta para acertar carros, pistas e eventos no Gran Turismo 7.', icon: '🏎️', href: '/gt-engineer/', tone: 'gold', featured: true },
+  { title: 'Prompt Lab', description: 'Prompts para criar, editar e brincar com IA.', icon: '✨', href: '/prompts/', tone: 'violet' },
+  { title: 'GitHub', description: 'Projetos, código e coisas em construção.', icon: '💻', href: 'https://github.com/mottameister', tone: 'neutral' },
+  { title: 'Wallpapers favoritos', description: 'Minha curadoria do Wallpaper Engine.', icon: '🖼️', href: 'https://steamcommunity.com/id/mottameister/myworkshopfiles?appid=431960&browsefilter=mysubscriptions', tone: 'cyan' }
 ];
 
 const modalContent = {
@@ -141,7 +141,7 @@ const modalContent = {
 };
 
 function Arrow() {
-  return <span className="arrow" aria-hidden="true">↗</span>;
+  return <span className="arrow" aria-hidden="true">➡️</span>;
 }
 
 function formatStat(value, fallback) {
@@ -198,7 +198,7 @@ function Modal({ type, onClose }) {
             <h2 id="modal-title">{content.title}</h2>
             <p>{content.subtitle}</p>
           </div>
-          <button className="modal-close" type="button" onClick={onClose} aria-label="Fechar">×</button>
+          <button className="modal-close" type="button" onClick={onClose} aria-label="Fechar">✖️</button>
         </div>
         <div className="modal-links">
           {content.links.map(([title, description, href]) => (
@@ -258,11 +258,7 @@ export default function App() {
           aria-pressed={theme === 'dark'}
           title={theme === 'light' ? 'Modo escuro' : 'Modo claro'}
         >
-          {theme === 'light' ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z" /></svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" /></svg>
-          )}
+          <span className="theme-emoji" aria-hidden="true">{theme === 'light' ? '🌙' : '☀️'}</span>
         </button>
       </header>
 
@@ -286,7 +282,7 @@ export default function App() {
 
           <div className="portrait-wrap">
             <img src="/profile.jpeg" alt="@mottameister" />
-            <span className="portrait-tag">ASHBURN, VA · BRASIL NO CORAÇÃO</span>
+            <span className="portrait-tag">VIRGINIA, USA · BRASIL NO CORAÇÃO</span>
           </div>
         </section>
 
@@ -302,9 +298,9 @@ export default function App() {
 
         <section className="toca-section" id="toca">
           <button className="section-toggle glass-surface" type="button" onClick={() => setTocaOpen((current) => !current)} aria-expanded={tocaOpen} aria-controls="toca-links">
-            <span className="section-symbol" aria-hidden="true">✦</span>
+            <span className="section-symbol" aria-hidden="true">🦉</span>
             <span className="section-toggle-copy"><small>NOSSO MUNDO</small><strong>Toca da Coruja</strong><span>Servidor, comunidade e tudo para jogar junto.</span></span>
-            <span className="section-toggle-end"><small>{tocaLinks.length} links</small><span className={tocaOpen ? 'toggle-icon is-open' : 'toggle-icon'} aria-hidden="true">⌄</span></span>
+            <span className="section-toggle-end"><small>{tocaLinks.length} links</small><span className="toggle-icon" aria-hidden="true">{tocaOpen ? '🔼' : '🔽'}</span></span>
           </button>
           <div className="submenu glass-surface" id="toca-links" hidden={!tocaOpen}>
             {tocaLinks.map((item) => <LinkCard key={item.title} item={item} compact onOpen={setModal} />)}
@@ -313,9 +309,9 @@ export default function App() {
 
         <section className="projects-section" id="projetos">
           <button className="section-toggle glass-surface" type="button" onClick={() => setSpecialOpen((current) => !current)} aria-expanded={specialOpen} aria-controls="special-links">
-            <span className="section-symbol" aria-hidden="true">◈</span>
+            <span className="section-symbol" aria-hidden="true">🛠️</span>
             <span className="section-toggle-copy"><small>FORA DA TOCA</small><strong>Projetos especiais</strong><span>Ideias, ferramentas e coisas em construção.</span></span>
-            <span className="section-toggle-end"><small>{specialLinks.length} links</small><span className={specialOpen ? 'toggle-icon is-open' : 'toggle-icon'} aria-hidden="true">⌄</span></span>
+            <span className="section-toggle-end"><small>{specialLinks.length} links</small><span className="toggle-icon" aria-hidden="true">{specialOpen ? '🔼' : '🔽'}</span></span>
           </button>
           <div className="submenu glass-surface" id="special-links" hidden={!specialOpen}>
             {specialLinks.map((item) => <LinkCard key={item.title} item={item} compact onOpen={setModal} />)}
