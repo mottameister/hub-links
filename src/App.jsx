@@ -218,7 +218,7 @@ export default function App() {
   const [tocaOpen, setTocaOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
   const [communityStats, setCommunityStats] = useState(null);
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

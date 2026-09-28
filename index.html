@@ -3,9 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#e8eef4" />
+    <meta name="theme-color" content="#172635" />
     <script>
-      try { if (localStorage.getItem('mottameister-theme') === 'dark') document.documentElement.dataset.theme = 'dark'; } catch {}
+      (() => {
+        let savedTheme;
+        try { savedTheme = localStorage.getItem('mottameister-theme'); } catch {}
+        const theme = savedTheme === 'light' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#172635' : '#e8eef4';
+      })();
     </script>
     <meta name="description" content="@mottameister — Toca da Coruja, comunidade, jogos e projetos." />
     <meta property="og:title" content="@mottameister — Toca da Coruja" />
