@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import BorderGlow from './components/BorderGlow';
-import SoftAurora from './components/SoftAurora';
 
 const featured = [
   {
@@ -59,7 +57,7 @@ const tocaLinks = [
   },
   {
     title: 'Server Toca da Coruja',
-    description: 'Status online e mapa 3D em um só lugar.',
+    description: 'Consulte o status do servidor em um só lugar.',
     meta: 'AO VIVO',
     icon: '⌾',
     tone: 'green',
@@ -155,38 +153,27 @@ function formatStat(value, fallback) {
 }
 
 function LinkCard({ item, compact = false, onOpen }) {
-  const shared = {
-    className: `link-card tone-${item.tone} ${compact ? 'is-compact' : ''} ${item.featured ? 'is-featured' : ''} ${item.wide ? 'is-wide' : ''}`,
-    colors: item.tone === 'gold'
-      ? ['#ffbf38', '#ff8a3d', '#ff4fd8']
-      : item.tone === 'green'
-        ? ['#66f28b', '#43d9ff', '#b517ff']
-        : ['#b517ff', '#ff4fd8', '#43d9ff'],
-    glowColor: item.tone === 'gold' ? '40 95 65' : item.tone === 'green' ? '145 88 68' : '280 92 72'
-  };
-
+  const className = `link-card glass-surface tone-${item.tone} ${compact ? 'is-compact' : ''}`;
   const content = (
     <>
-      <div className="card-heading">
-        <span className="card-icon">{item.icon}</span>
-        <Arrow />
-      </div>
+      <span className="card-icon" aria-hidden="true">{item.icon}</span>
       <div className="card-copy">
         {item.meta && <span className="card-meta">{item.meta}</span>}
         <h3>{item.title}</h3>
         <p>{item.description}</p>
       </div>
+      <Arrow />
     </>
   );
 
   if (item.action) {
-    return <BorderGlow as="button" type="button" onClick={() => onOpen(item.action)} {...shared}>{content}</BorderGlow>;
+    return <button className={className} type="button" onClick={() => onOpen(item.action)}>{content}</button>;
   }
 
   return (
-    <BorderGlow as="a" href={item.href} target={item.href?.startsWith('http') ? '_blank' : undefined} rel="noreferrer" {...shared}>
+    <a className={className} href={item.href} target={item.href?.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
       {content}
-    </BorderGlow>
+    </a>
   );
 }
 
@@ -203,12 +190,12 @@ function Modal({ type, onClose }) {
   if (!content) return null;
 
   return (
-    <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <BorderGlow className="modal-card" borderRadius={30} glowRadius={50} backgroundColor="rgba(10, 8, 17, .96)">
+    <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()} role="presentation">
+      <div className="modal-card glass-surface" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div className="modal-head">
           <div>
             <span className="eyebrow">ATALHO RÁPIDO</span>
-            <h2>{content.title}</h2>
+            <h2 id="modal-title">{content.title}</h2>
             <p>{content.subtitle}</p>
           </div>
           <button className="modal-close" type="button" onClick={onClose} aria-label="Fechar">×</button>
@@ -221,14 +208,15 @@ function Modal({ type, onClose }) {
             </a>
           ))}
         </div>
-      </BorderGlow>
+      </div>
     </div>
   );
 }
 
 export default function App() {
   const [modal, setModal] = useState(null);
-  const [specialOpen, setSpecialOpen] = useState(true);
+  const [tocaOpen, setTocaOpen] = useState(false);
+  const [specialOpen, setSpecialOpen] = useState(false);
   const [communityStats, setCommunityStats] = useState(null);
 
   useEffect(() => {
@@ -247,11 +235,6 @@ export default function App() {
   const discordOnline = formatStat(communityStats?.discord?.online, null);
   return (
     <div className="app-shell">
-      <div className="aurora-layer">
-        <SoftAurora />
-      </div>
-      <div className="ambient-noise" aria-hidden="true" />
-
       <header className="site-header">
           <a href="#top" className="wordmark">MOTTA<span>MEISTER</span></a>
           <nav aria-label="Navegação principal">
@@ -281,9 +264,6 @@ export default function App() {
           </div>
 
           <div className="portrait-wrap">
-            <div className="orbit orbit-one" />
-            <div className="orbit orbit-two" />
-            <div className="portrait-halo" />
             <img src="/profile.jpeg" alt="@mottameister" />
             <span className="portrait-tag">ASHBURN, VA · BRASIL NO CORAÇÃO</span>
           </div>
@@ -300,29 +280,25 @@ export default function App() {
         </section>
 
         <section className="toca-section" id="toca">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow"><i /> NOSSO MUNDO</span>
-              <h2>Toca da Coruja</h2>
-              <p>Servidor Cobblemon, campanha própria e uma comunidade que já virou família.</p>
-            </div>
-          </div>
-
-          <div className="toca-grid">
+          <button className="section-toggle glass-surface" type="button" onClick={() => setTocaOpen((current) => !current)} aria-expanded={tocaOpen} aria-controls="toca-links">
+            <span className="section-symbol" aria-hidden="true">✦</span>
+            <span className="section-toggle-copy"><small>NOSSO MUNDO</small><strong>Toca da Coruja</strong><span>Servidor, comunidade e tudo para jogar junto.</span></span>
+            <span className="section-toggle-end"><small>{tocaLinks.length} links</small><span className={tocaOpen ? 'toggle-icon is-open' : 'toggle-icon'} aria-hidden="true">⌄</span></span>
+          </button>
+          <div className="submenu" id="toca-links" hidden={!tocaOpen}>
             {tocaLinks.map((item) => <LinkCard key={item.title} item={item} compact onOpen={setModal} />)}
           </div>
         </section>
 
         <section className="projects-section" id="projetos">
-          <button className="projects-toggle" type="button" onClick={() => setSpecialOpen((current) => !current)} aria-expanded={specialOpen}>
-            <span><small>FORA DA TOCA</small>Projetos especiais</span>
-            <span className={specialOpen ? 'toggle-icon is-open' : 'toggle-icon'}>＋</span>
+          <button className="section-toggle glass-surface" type="button" onClick={() => setSpecialOpen((current) => !current)} aria-expanded={specialOpen} aria-controls="special-links">
+            <span className="section-symbol" aria-hidden="true">◈</span>
+            <span className="section-toggle-copy"><small>FORA DA TOCA</small><strong>Projetos especiais</strong><span>Ideias, ferramentas e coisas em construção.</span></span>
+            <span className="section-toggle-end"><small>{specialLinks.length} links</small><span className={specialOpen ? 'toggle-icon is-open' : 'toggle-icon'} aria-hidden="true">⌄</span></span>
           </button>
-          {specialOpen && (
-            <div className="special-grid">
-              {specialLinks.map((item) => <LinkCard key={item.title} item={item} compact onOpen={setModal} />)}
-            </div>
-          )}
+          <div className="submenu" id="special-links" hidden={!specialOpen}>
+            {specialLinks.map((item) => <LinkCard key={item.title} item={item} compact onOpen={setModal} />)}
+          </div>
         </section>
       </main>
 
