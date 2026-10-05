@@ -152,6 +152,41 @@ function formatStat(value, fallback) {
   return String(number);
 }
 
+function FollowerCounter({ value }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setCount(value);
+      return;
+    }
+    let frame;
+    const start = performance.now();
+    const tick = (now) => {
+      const progress = Math.min((now - start) / 1800, 1);
+      setCount(Math.round(value * (1 - Math.pow(1 - progress, 3))));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    setCount(0);
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+
+  const display = formatStat(count, '0');
+  return (
+    <strong className="follower-counter" aria-label={formatStat(value, '0')}>
+      <span className="follower-counter-visual" aria-hidden="true">
+        {[...display].map((character, index) => /\d/.test(character) ? (
+          <span className="follower-digit" key={index}>
+            <span className="follower-reel" style={{ transform: `translateY(-${Number(character) * 10}%)` }}>
+              {'0123456789'.split('').map((digit) => <span key={digit}>{digit}</span>)}
+            </span>
+          </span>
+        ) : <span className="follower-symbol" key={index}>{character}</span>)}
+      </span>
+    </strong>
+  );
+}
+
 function LinkCard({ item, compact = false, onOpen }) {
   const className = `link-card glass-surface tone-${item.tone} ${compact ? 'is-compact' : ''}`;
   const content = (
@@ -218,6 +253,13 @@ export default function App() {
   const [tocaOpen, setTocaOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
   const [communityStats, setCommunityStats] = useState(null);
+  const [followers, setFollowers] = useState(() => {
+    try {
+      const cached = Number(localStorage.getItem('mottameister-followers-v1'));
+      if (Number.isFinite(cached) && cached > 0) return cached;
+    } catch { /* Storage may be unavailable. */ }
+    return 89900;
+  });
   const [theme, setTheme] = useState(() => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
 
   useEffect(() => {
@@ -228,15 +270,36 @@ export default function App() {
 
   useEffect(() => {
     let active = true;
-    const cacheHour = new Date().toISOString().slice(0, 13);
-    fetch(`/api/community-stats?hour=${cacheHour}`)
-      .then((response) => response.ok ? response.json() : null)
-      .then((payload) => active && payload?.ok && setCommunityStats(payload))
-      .catch(() => {});
-    return () => { active = false; };
+    let timer;
+    let controller;
+    const refresh = async () => {
+      controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      let hasFollowers = false;
+      try {
+        const cacheHour = new Date().toISOString().slice(0, 13);
+        const response = await fetch(`/api/community-stats?hour=${cacheHour}`, { signal: controller.signal });
+        const payload = response.ok ? await response.json() : null;
+        if (!active) return;
+        if (payload?.ok) {
+          setCommunityStats(payload);
+          const total = Number(payload.instagram?.followers);
+          if (Number.isFinite(total) && total > 0) {
+            hasFollowers = true;
+            setFollowers(total);
+            try { localStorage.setItem('mottameister-followers-v1', String(total)); } catch { /* Storage may be unavailable. */ }
+          }
+        }
+      } catch { /* Keep the last known total while offline. */ }
+      finally {
+        clearTimeout(timeout);
+        if (active) timer = setTimeout(refresh, hasFollowers ? 300000 : 60000);
+      }
+    };
+    refresh();
+    return () => { active = false; clearTimeout(timer); controller?.abort(); };
   }, []);
 
-  const instagramFollowers = formatStat(communityStats?.instagram?.followers, '89,9K');
   const instagramViews = formatStat(communityStats?.instagramViews?.totalViews, '28,9M');
   const discordMembers = formatStat(communityStats?.discord?.members, '1,2K');
   const discordOnline = formatStat(communityStats?.discord?.online, null);
@@ -274,7 +337,7 @@ export default function App() {
               <button className="text-cta" type="button" onClick={() => setModal('live')}>Onde estou ao vivo</button>
             </div>
             <div className="proof-stats" aria-label="Indicadores da comunidade">
-              <div><strong>{instagramFollowers}</strong><span>seguidores no Instagram</span></div>
+              <div><FollowerCounter value={followers} /><span>seguidores no Instagram</span></div>
               <div><strong>{discordMembers}</strong><span>membros na Toca{discordOnline ? ` · ${discordOnline} online` : ''}</span></div>
               <div><strong>{instagramViews}</strong><span>views em Reels e vídeos</span></div>
             </div>
