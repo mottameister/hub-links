@@ -152,7 +152,7 @@ function formatStat(value, fallback) {
   return String(number);
 }
 
-function FollowerCounter({ value }) {
+function StatCounter({ value, duration }) {
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -162,14 +162,14 @@ function FollowerCounter({ value }) {
     let frame;
     const start = performance.now();
     const tick = (now) => {
-      const progress = Math.min((now - start) / 1800, 1);
+      const progress = Math.min((now - start) / duration, 1);
       setCount(Math.round(value * (1 - Math.pow(1 - progress, 3))));
       if (progress < 1) frame = requestAnimationFrame(tick);
     };
     setCount(0);
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [value]);
+  }, [value, duration]);
 
   const display = formatStat(count, '0');
   return (
@@ -300,8 +300,13 @@ export default function App() {
     return () => { active = false; clearTimeout(timer); controller?.abort(); };
   }, []);
 
-  const instagramViews = formatStat(communityStats?.instagramViews?.totalViews, '28,9M');
-  const discordMembers = formatStat(communityStats?.discord?.members, '1,2K');
+  const positiveStat = (value, fallback) => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value) : fallback;
+  const instagramViews = positiveStat(communityStats?.instagramViews?.totalViews, 28900000);
+  const discordMembers = positiveStat(communityStats?.discord?.members, 1200);
+  const counterValues = [followers, discordMembers, instagramViews];
+  const counterOrder = [...new Set(counterValues)].sort((a, b) => a - b);
+  const counterKey = counterValues.join('-');
+  const renderCounter = (value, index) => <StatCounter key={`${counterKey}-${index}`} value={value} duration={1000 + counterOrder.indexOf(value) * 800} />;
   const discordOnline = formatStat(communityStats?.discord?.online, null);
   return (
     <div className="app-shell">
@@ -337,9 +342,9 @@ export default function App() {
               <button className="text-cta" type="button" onClick={() => setModal('live')}>Onde estou ao vivo</button>
             </div>
             <div className="proof-stats" aria-label="Indicadores da comunidade">
-              <div><FollowerCounter value={followers} /><span>seguidores no Instagram</span></div>
-              <div><strong>{discordMembers}</strong><span>membros na Toca{discordOnline ? ` · ${discordOnline} online` : ''}</span></div>
-              <div><strong>{instagramViews}</strong><span>views em Reels e vídeos</span></div>
+              <div>{renderCounter(followers, 0)}<span>seguidores no Instagram</span></div>
+              <div>{renderCounter(discordMembers, 1)}<span>membros na Toca{discordOnline ? ` · ${discordOnline} online` : ''}</span></div>
+              <div>{renderCounter(instagramViews, 2)}<span>views em Reels e vídeos</span></div>
             </div>
           </div>
 
