@@ -46,6 +46,10 @@
   };
 
   Object.assign(translations, {
+    "O palco das batalhas": "The battleground",
+    "Arena do Hoopa": "Hoopa Arena",
+    "É aqui que as batalhas do Torneio das Sombras vão acontecer. Prepare seu time para entrar na arena da Toca da Coruja.": "This is where the Tournament of Shadows battles will take place. Prepare your team to enter the Toca da Coruja arena.",
+    "24 de outubro · Torneio das Sombras": "October 24 · Tournament of Shadows",
     "Torneio das Sombras": "Tournament of Shadows",
     "O Halloween chegou à Toca. Prepare sua equipe para o Torneio das Sombras: Ghost, Dark e Poison entram em campo em 24 de outubro de 2026.": "Halloween has arrived at the Nest. Prepare your team for the Tournament of Shadows: Ghost, Dark and Poison take the field on October 24, 2026.",
     "24 de outubro": "October 24",

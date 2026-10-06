@@ -8,9 +8,10 @@
   <meta name="theme-color" content="#a855f7" />
   <meta property="og:title" content="Coruja Cup · Torneio das Sombras — 24/10" />
   <meta property="og:description" content="24 de outubro de 2026: prepare seu time e inscreva-se no Torneio das Sombras." />
-  <meta property="og:image" content="https://mottameister.xyz/preview.png" />
+  <meta property="og:image" content="https://mottameister.xyz/coruja-cup/assets/decidueye-halloween.webp" />
+  <meta property="og:image:alt" content="Decidueye na Toca da Coruja em uma noite de Halloween" />
   <link rel="stylesheet" href="/site-controls.css" />
-  <link rel="stylesheet" href="/coruja-cup/coruja-cup.css?v=20261006-1" />
+  <link rel="stylesheet" href="/coruja-cup/coruja-cup.css?v=20261006-2" />
 </head>
 <body class="coruja-cup-page">
   <div id="coruja-cup-rays" aria-hidden="true"></div>
@@ -21,7 +22,8 @@
 
     <section class="hero">
       <div class="hero-copy">
-        <div>
+        <img class="hero-art" src="/coruja-cup/assets/decidueye-halloween.webp" width="1024" height="1024" alt="Decidueye entre abóboras iluminadas, velas e árvores sob a lua de Halloween" fetchpriority="high" />
+        <div class="hero-intro">
           <span class="kicker">Toca da Coruja apresenta</span>
           <h1>Coruja Cup</h1><p class="edition-title">Torneio das Sombras</p>
           <p class="lead">O Halloween chegou à Toca. Prepare sua equipe para o Torneio das Sombras: Ghost, Dark e Poison entram em campo em 24 de outubro de 2026.</p>
@@ -80,6 +82,16 @@
       </aside>
     </section>
 
+    <section class="arena-panel" aria-labelledby="arena-title">
+      <img class="arena-art" src="/coruja-cup/assets/arena-hoopa.webp" width="1148" height="1013" alt="Arena de batalhas no Minecraft construída sob uma enorme estátua de Hoopa" loading="lazy" decoding="async" />
+      <div class="arena-copy">
+        <span class="kicker">O palco das batalhas</span>
+        <h2 id="arena-title">Arena do Hoopa</h2>
+        <p class="lead">É aqui que as batalhas do Torneio das Sombras vão acontecer. Prepare seu time para entrar na arena da Toca da Coruja.</p>
+        <span class="arena-tag">24 de outubro · Torneio das Sombras</span>
+      </div>
+    </section>
+
     <section class="content" aria-label="Informações do torneio">
       <div class="panel">
         <h2>Regras de batalha</h2>
@@ -119,7 +131,7 @@
   </div>
 
   <script type="module" src="/src/coruja-cup.jsx"></script>
-  <script src="/coruja-cup/controls.js?v=20261006-1"></script>
+  <script src="/coruja-cup/controls.js?v=20261006-2"></script>
   <script src="/coruja-cup/coruja-cup.js?v=20261006-1"></script>
 </body>
 </html>

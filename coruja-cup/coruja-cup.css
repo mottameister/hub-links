@@ -818,3 +818,49 @@ html[data-theme="light"] .coruja-cup-page .rule-list li {
 .admin-table td { overflow-wrap: anywhere; max-width: 280px; }
 .admin-table { min-width: 700px; }
 @media (max-width: 580px) { .coruja-cup-page .quick-grid { grid-template-columns: 1fr; margin-top: 30px; } .coruja-cup-page .hero-copy { min-height: 0; } }
+
+/* Arte da edição de Halloween e arena da comunidade. */
+.coruja-cup-page .hero { align-items: start; }
+.coruja-cup-page .hero-copy { min-height: 0; padding: 0; justify-content: start; }
+.coruja-cup-page .hero-copy::after { display: none; }
+.coruja-cup-page .hero-art {
+  display: block;
+  width: 100%;
+  height: 390px;
+  object-fit: cover;
+  object-position: center 35%;
+  mask-image: linear-gradient(to bottom, #000 75%, transparent 100%);
+}
+.coruja-cup-page .hero-intro { padding: 0 32px; margin-top: -16px; }
+.coruja-cup-page .hero-intro h1 { font-size: clamp(60px, 6.5vw, 90px); margin: 12px 0 20px; }
+.coruja-cup-page .hero-intro .edition-title { font-size: 26px; margin-bottom: 16px; }
+.coruja-cup-page .hero-intro .lead { font-size: 15px; }
+.coruja-cup-page .quick-grid { margin-top: 26px; padding: 0 24px 24px; }
+.coruja-cup-page .quick { padding: 14px; }
+.coruja-cup-page .quick strong { font-size: 17px; }
+.arena-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: center;
+  margin-top: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 30px;
+  background: radial-gradient(ellipse at 0% 50%, rgba(155, 53, 146, .16), transparent 75%), rgba(13, 11, 22, .9);
+}
+.arena-art { display: block; width: 100%; height: auto; }
+.arena-copy { padding: clamp(24px, 4vw, 50px); }
+.arena-copy h2 { margin: 18px 0 24px; font-size: clamp(36px, 4.5vw, 60px); font-weight: 600; letter-spacing: -.055em; line-height: 1.02; }
+.coruja-cup-page .arena-copy .lead { font-size: 16px; }
+.arena-tag { display: inline-block; margin-top: 28px; color: #ffb36b; font-size: 12px; line-height: 1.5; }
+@media (max-width: 900px) {
+  .coruja-cup-page .hero-art { height: 440px; }
+  .arena-panel { grid-template-columns: 1fr; }
+}
+@media (max-width: 580px) {
+  .coruja-cup-page .hero-art { height: auto; aspect-ratio: 1; }
+  .coruja-cup-page .hero-intro { padding: 0 22px; }
+  .coruja-cup-page .hero-intro h1 { font-size: clamp(58px, 19vw, 80px); }
+  .coruja-cup-page .quick-grid { padding: 0 22px 22px; margin-top: 24px; }
+  .arena-panel { margin-top: 24px; border-radius: 24px; }
+}
