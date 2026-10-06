@@ -6,7 +6,7 @@
   <title>Admin - Coruja Cup</title>
   <meta name="robots" content="noindex" />
   <link rel="stylesheet" href="/site-controls.css" />
-  <link rel="stylesheet" href="/coruja-cup/coruja-cup.css?v=20260613-1" />
+  <link rel="stylesheet" href="/coruja-cup/coruja-cup.css?v=20261006-1" />
 </head>
 <body>
   <main class="page">
@@ -18,7 +18,7 @@
     <section class="panel">
       <span class="kicker">Organização</span>
       <h1 style="font-size: clamp(42px, 7vw, 72px);">Inscrições</h1>
-      <p class="lead">Use o token admin para carregar interessados da próxima edição e exportar CSV.</p>
+      <p class="lead">Torneio das Sombras · 24/10/2026. Consulte os participantes e exporte a planilha para Excel ou Google Sheets. Acesso restrito à organização.</p>
 
       <div class="field" style="max-width: 520px; margin-top: 22px;">
         <label for="adminToken">Token admin</label>
@@ -31,7 +31,7 @@
       </div>
 
       <div class="message" data-message role="status" aria-live="polite"></div>
-      <div data-table></div>
+      <div class="field"><label for="participantSearch">Buscar nick ou Discord</label><input id="participantSearch" type="search" placeholder="Digite para filtrar a lista" /></div><div data-table class="table-scroll"></div>
     </section>
   </main>
 
@@ -46,15 +46,13 @@
     </div>
   </div>
 
-  <script src="/coruja-cup/controls.js?v=20260613-1"></script>
+  <script src="/coruja-cup/controls.js?v=20261006-1"></script>
   <script>
-    const eventId = "coruja-cup-next";
+    const eventId = "torneio-das-sombras-2026-10-24";
     const apiBaseUrl = "https://coruja-cup-api.mottameister.xyz";
     const tokenInput = document.querySelector("#adminToken");
     const message = document.querySelector("[data-message]");
     const tableRoot = document.querySelector("[data-table]");
-    const storageKey = "coruja-cup-admin-token";
-    tokenInput.value = sessionStorage.getItem(storageKey) || "";
 
     const showMessage = (text, type = "") => {
       message.textContent = text;
@@ -71,6 +69,7 @@
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
 
+    let currentRows = [];
     const renderRows = (rows) => {
       if (!rows.length) {
         tableRoot.innerHTML = "<p class='form-copy'>Nenhuma inscrição ainda.</p>";
@@ -92,7 +91,7 @@
           <tbody>
             ${rows.map((row) => `
               <tr>
-                <td>${row.status}</td>
+                <td>${escapeHtml(row.status === "confirmed" ? "Inscrito" : row.status === "waitlist" ? "Lista de espera" : row.status)}</td>
                 <td>${escapeHtml(row.minecraftNick)}</td>
                 <td>${escapeHtml(row.discordName)}</td>
                 <td>${escapeHtml(row.timezone || "-")}</td>
@@ -111,7 +110,7 @@
         showMessage("Digite o token admin.", "error");
         return;
       }
-      sessionStorage.setItem(storageKey, token);
+      currentRows = [];
 
       const response = await fetch(apiUrl(`/api/coruja-cup/registrations?eventId=${eventId}`), {
         headers: { Authorization: `Bearer ${token}` },
@@ -123,20 +122,32 @@
         return;
       }
 
-      renderRows(data.registrations || []);
+      currentRows = data.registrations || [];
+      applySearch();
       showMessage(`${data.registrations.length} inscrição(ões) carregada(s).`, "success");
     };
 
-    document.querySelector("[data-load]").addEventListener("click", loadRows);
-    document.querySelector("[data-export]").addEventListener("click", async () => {
+    const applySearch = () => {
+      const term = document.querySelector("#participantSearch").value.trim().toLowerCase();
+      renderRows(currentRows.filter(row => [row.minecraftNick, row.discordName].some(value => String(value).toLowerCase().includes(term))));
+    };
+    document.querySelector("#participantSearch").addEventListener("input", applySearch);
+    const safely = (action) => async () => {
+      const buttons = document.querySelectorAll(".admin-actions button");
+      buttons.forEach(button => button.disabled = true);
+      tableRoot.innerHTML = "";
+      try { await action(); } catch { showMessage("Não foi possível conectar. Tente novamente.", "error"); }
+      finally { buttons.forEach(button => button.disabled = false); }
+    };
+    document.querySelector("[data-load]").addEventListener("click", safely(loadRows));
+    document.querySelector("[data-export]").addEventListener("click", safely(async () => {
       const token = getToken();
       if (!token) {
         showMessage("Digite o token admin.", "error");
         return;
       }
-      sessionStorage.setItem(storageKey, token);
 
-      const response = await fetch(apiUrl(`/api/coruja-cup/registrations?eventId=${eventId}&format=csv`), {
+      const response = await fetch(apiUrl(`/api/coruja-cup/registrations?eventId=${eventId}`), {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -146,7 +157,17 @@
         return;
       }
 
-      const blob = await response.blob();
+      const data = await response.json();
+      const columns = ["eventId", "id", "status", "minecraftNick", "discordName", "timezone", "notes", "rulesAccepted", "scheduleConfirmed", "createdAt"];
+      const labels = ["Edição", "ID", "Status", "Minecraft", "Discord", "Fuso/país", "Observações", "Aceitou regras", "Intenção de participar", "Inscrição (UTC)"];
+      const csvEscape = value => {
+        const raw = String(value ?? "");
+        const safe = /^[\s\u0000-\u001f]*[=+@-]/.test(raw) ? `'${raw}` : raw;
+        return `"${safe.replace(/"/g, '""')}"`;
+      };
+      const csv = "\uFEFF" + [labels, ...(data.registrations || []).map(row => columns.map(key => row[key]))]
+        .map(row => row.map(csvEscape).join(",")).join("\r\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -156,7 +177,7 @@
       link.remove();
       URL.revokeObjectURL(url);
       showMessage("CSV exportado.", "success");
-    });
+    }));
   </script>
 </body>
 </html>

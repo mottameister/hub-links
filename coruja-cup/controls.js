@@ -45,6 +45,39 @@
     "Exportar CSV": "Export CSV",
   };
 
+  Object.assign(translations, {
+    "Torneio das Sombras": "Tournament of Shadows",
+    "O Halloween chegou à Toca. Prepare sua equipe para o Torneio das Sombras: Ghost, Dark e Poison entram em campo em 24 de outubro de 2026.": "Halloween has arrived at the Nest. Prepare your team for the Tournament of Shadows: Ghost, Dark and Poison take the field on October 24, 2026.",
+    "24 de outubro": "October 24",
+    "2026 · horário a confirmar no Discord.": "2026 · time to be announced on Discord.",
+    "6 Pokémon por time.": "6 Pokémon per team.",
+    "Cada Pokémon deve ter pelo menos um desses tipos.": "Each Pokémon must have at least one of these types.",
+    "sábado · 2026": "Saturday · 2026",
+    "Garanta sua inscrição no Torneio das Sombras. Informe seu nick e usuário do Discord para a organização entrar em contato.": "Register for the Tournament of Shadows. Enter your Minecraft nickname and Discord username so the organizers can contact you.",
+    "Li e aceito as regras do Torneio das Sombras descritas nesta página.": "I have read and accept the Tournament of Shadows rules on this page.",
+    "Pretendo participar em 24/10 e acompanharei o Discord para confirmar o horário e as orientações.": "I plan to participate on October 24 and will follow Discord for the time and instructions.",
+    "Seus dados ficam disponíveis apenas à organização para administrar o torneio e entrar em contato pelo Discord.": "Your information is available only to the organizers to manage the tournament and contact you on Discord.",
+    "Regras de batalha": "Battle rules",
+    "Batalhas Singles (1×1), com 6 Pokémon por time.": "Singles battles (1×1), with 6 Pokémon per team.",
+    "Cada Pokémon deve ter pelo menos uma tipagem Ghost, Dark ou Poison. Tipos duplos são permitidos: Mimikyu (Ghost/Fairy), por exemplo, pode participar.": "Each Pokémon must have at least one Ghost, Dark or Poison type. Dual types are allowed: Mimikyu (Ghost/Fairy), for example, can participate.",
+    "O torneio segue as cláusulas e regras da Smogon — SV OU.": "The tournament follows Smogon SV OU clauses and rules.",
+    "Pokémon Lendários, Paradoxo e Ultra Beasts não são permitidos.": "Legendary Pokémon, Paradox Pokémon and Ultra Beasts are not allowed.",
+    "Fora essas restrições, não há banimentos adicionais: o time deve respeitar as cláusulas e regras de SV OU.": "There are no additional bans beyond these restrictions: teams must follow SV OU clauses and rules.",
+    "Mega Evolução, Terastalização, Z-Move e Dynamax são permitidos, mas você só pode usar uma dessas mecânicas por batalha.": "Mega Evolution, Terastallization, Z-Moves and Dynamax are allowed, but you can use only one of these mechanics per battle.",
+    "Times que não estiverem de acordo com as regras serão desclassificados.": "Teams that do not comply with the rules will be disqualified.",
+    "Premiação · top 3": "Prizes · top 3",
+    "1º lugar": "1st place",
+    "2º lugar": "2nd place",
+    "3º lugar": "3rd place",
+    "Hoopa Shiny + 500k": "Shiny Hoopa + 500k",
+    "Cristal de Raid + 200k": "Raid Crystal + 200k",
+    "Fique atento": "Stay tuned",
+    "24 de outubro de 2026. O horário, a organização da chave e demais orientações serão anunciados no Discord da Toca da Coruja.": "October 24, 2026. The time, bracket and further instructions will be announced on the Toca da Coruja Discord.",
+    "Comece a preparar sua equipe. A noite das sombras está chegando.": "Start preparing your team. The night of shadows is coming.",
+    "Torneio das Sombras · 24/10/2026. Consulte os participantes e exporte a planilha para Excel ou Google Sheets. Acesso restrito à organização.": "Tournament of Shadows · October 24, 2026. View participants and export the spreadsheet for Excel or Google Sheets. Organizers only.",
+    "Buscar nick ou Discord": "Search nickname or Discord"
+  });
+
   const getStored = (key, fallback) => {
     try {
       return localStorage.getItem(key) || fallback;

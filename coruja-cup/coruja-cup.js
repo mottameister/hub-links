@@ -1,4 +1,4 @@
-const eventId = "coruja-cup-next";
+const eventId = "torneio-das-sombras-2026-10-24";
 const apiBaseUrl = "https://coruja-cup-api.mottameister.xyz";
 
 const form = document.querySelector("[data-registration-form]");
@@ -13,8 +13,8 @@ const copy = {
     sending: "Enviando...",
     submit: "Enviar inscrição",
     missingFields: "Preencha seu nick no Minecraft e seu Discord.",
-    missingChecks: "Confirme os avisos da próxima edição antes de se inscrever.",
-    confirmed: "Inscrição recebida. A organização chama no Discord quando a próxima edição tiver data e regras definidas.",
+    missingChecks: "Aceite as regras e confirme sua intenção de participar em 24/10.",
+    confirmed: "Inscrição recebida para o Torneio das Sombras de 24/10! Acompanhe o Discord para o horário e as próximas orientações.",
     fallbackError: "Não foi possível enviar sua inscrição agora.",
     storageError: "Inscrições ainda não configuradas no servidor.",
     discordSuffix: "Se persistir, chama no Discord.",
@@ -26,8 +26,8 @@ const copy = {
     sending: "Sending...",
     submit: "Submit registration",
     missingFields: "Fill in your Minecraft nickname and Discord name.",
-    missingChecks: "Confirm the next-edition notices before registering.",
-    confirmed: "Registration received. The organizers will contact you on Discord when the next edition has a date and rules.",
+    missingChecks: "Accept the rules and confirm you plan to participate on October 24.",
+    confirmed: "Registered for the Tournament of Shadows on October 24! Follow Discord for the time and further instructions.",
     fallbackError: "We could not submit your registration right now.",
     storageError: "Registrations are not fully configured on the server yet.",
     discordSuffix: "If it keeps happening, message us on Discord.",
@@ -110,6 +110,7 @@ if (form) {
         throw new Error(data.error || "Não foi possível enviar sua inscrição agora.");
       }
 
+      if (data.ok !== true) throw new Error(t("fallbackError"));
       showMessage(t("confirmed"), "success");
       form.reset();
     } catch (error) {
