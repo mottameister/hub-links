@@ -298,6 +298,31 @@ const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars,
 };
 
 const executeDeliveryCommand = async (delivery, command) => {
+  const forceload = String(command || "").trim().match(/^opac-forceload\s+grant\s+([A-Za-z0-9_]{3,16})\s+1$/i);
+  if (forceload) {
+    const nick = forceload[1];
+    const key = "claims.bonusChunkForceloads";
+    const getCommand = `opac player-config for ${nick} get ${key}`;
+    const setCommand = `opac player-config for ${nick} set ${key} 1`;
+    if (config.dryRun) return `dry-run: ${getCommand}\ndry-run: ${setCommand}\ndry-run: ${getCommand}`;
+    const readBonus = async () => {
+      const output = await runDeliveryCommand(getCommand, getCommand);
+      const value = String(output).match(/bonusChunkForceloads\s*=\s*(-?\d+)/i);
+      if (!value) throw new Error(`Could not verify OPAC forceload bonus: ${String(output).slice(0, 220)}`);
+      return Number(value[1]);
+    };
+    const offlineCommand = `opac player-config for ${nick} get claims.forceload.offlineForceload`;
+    const offlineOutput = await runDeliveryCommand(offlineCommand, offlineCommand);
+    if (!/offlineForceload\s*=\s*(?:false|OFF)\b/i.test(offlineOutput)) {
+      throw new Error("Chunk Loader requires confirmed online-only forceload configuration.");
+    }
+    const current = await readBonus();
+    if (current < 0 || current > 1) throw new Error(`Unexpected forceload bonus ${current}; manual review required.`);
+    if (current === 0) await runDeliveryCommand(setCommand, setCommand);
+    if (await readBonus() !== 1) throw new Error("OPAC forceload readback did not confirm 1 chunk.");
+    return "OPAC Chunk Loader confirmed: bonusChunkForceloads = 1; online only.";
+  }
+
   const kit = String(command || "").trim().match(/^coruja-kit\s+grant\s+([A-Za-z0-9_]{3,16})\s+(iron|diamond|netherite)$/i);
   if (kit) {
     const giveCommand = buildKitCommand(kit[1], kit[2].toLowerCase());

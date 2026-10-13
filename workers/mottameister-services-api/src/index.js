@@ -2,6 +2,15 @@ const defaultEnvironment = "test";
 const maxCheckoutQuantity = 10;
 
 const products = {
+  chunk_loader_1: {
+    sku: "chunk_loader_1",
+    title: "Chunk Loader — 1 chunk",
+    type: "opac_forceload",
+    amount: 99.9,
+    currency: "BRL",
+    cobbleDollars: 0,
+    command: "opac-forceload grant {nick} 1",
+  },
   cobbledollars_1m: {
     sku: "cobbledollars_1m",
     title: "1 mi CobbleDollars",
@@ -207,7 +216,7 @@ const parseCheckoutQuantity = (value, product = null) => {
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > maxCheckoutQuantity) {
     throw Object.assign(new Error(`Quantidade deve ser entre 1 e ${maxCheckoutQuantity}.`), { statusCode: 400 });
   }
-  if (["membership", "manual_fulfillment", "explorer_kit"].includes(product?.type) && quantity !== 1) {
+  if (["membership", "manual_fulfillment", "explorer_kit", "opac_forceload"].includes(product?.type) && quantity !== 1) {
     throw Object.assign(new Error("Esse produto deve ser comprado uma unidade por vez."), { statusCode: 400 });
   }
   return quantity;
@@ -818,6 +827,21 @@ const createOrder = async ({ env, request, payload }) => {
   const cleanNick = sanitizeMinecraftNick(payload.minecraftNick);
   if (!cleanNick) throw Object.assign(new Error("Nick do Minecraft invalido."), { statusCode: 400 });
   const profile = await validateMinecraftProfile(cleanNick);
+  if (product.type === "opac_forceload") {
+    if (!/^[a-f0-9]{32}$/.test(profile.id)) {
+      throw Object.assign(new Error("Nao foi possivel confirmar sua conta Minecraft. Tente novamente mais tarde."), { statusCode: 503 });
+    }
+    await env.DB.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS shop_one_chunk_loader_per_player
+      ON shop_orders (environment, minecraft_uuid, sku) WHERE sku = 'chunk_loader_1'`).run();
+    const existing = await env.DB.prepare("SELECT * FROM shop_orders WHERE environment = ? AND minecraft_uuid = ? AND sku = ?")
+      .bind(getEnvironment(env), profile.id, product.sku).first();
+    if (existing) {
+      if (existing.status === "checkout_created" && existing.mercado_pago_preference_id && !existing.paid_at) {
+        return { ...orderFromRow(existing), reuseCheckout: true };
+      }
+      throw Object.assign(new Error("Chunk Loader limitado a 1 por jogador. Voce ja possui uma compra ou pedido desse produto. Precisa de ajuda? Entre no Discord."), { statusCode: 409 });
+    }
+  }
   const now = new Date().toISOString();
   const activeMembership = product.type === "membership" ? null : await getActiveMembership(env, profile.id);
   const referralDiscount = await getActiveReferralDiscount(env, profile.id);
@@ -867,9 +891,16 @@ const createOrder = async ({ env, request, payload }) => {
       userAgent: sanitizeText(request.headers.get("user-agent"), 220),
     },
   };
-  await env.DB.prepare(`INSERT INTO shop_orders (id, environment, status, sku, product_title, amount, currency, cobble_dollars, minecraft_nick, minecraft_uuid, discord_name, mercado_pago_preference_id, mercado_pago_payment_id, last_payment_status, paid_at, archived_at, archive_reason, payment_validation, requester, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+  try {
+    await env.DB.prepare(`INSERT INTO shop_orders (id, environment, status, sku, product_title, amount, currency, cobble_dollars, minecraft_nick, minecraft_uuid, discord_name, mercado_pago_preference_id, mercado_pago_payment_id, last_payment_status, paid_at, archived_at, archive_reason, payment_validation, requester, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
     .bind(...toOrderRow({ env, order }))
     .run();
+  } catch (error) {
+    if (product.type === "opac_forceload" && /unique constraint/i.test(error.message)) {
+      throw Object.assign(new Error("Ja existe um pedido de Chunk Loader para sua conta. Tente novamente para retomar o pagamento."), { statusCode: 409 });
+    }
+    throw error;
+  }
   return order;
 };
 
@@ -894,7 +925,9 @@ const createPreference = async ({ env, request, order }) => {
   const product = getProduct(order.sku);
   const quantity = getOrderQuantity(order, product);
   const claimChunks = getOrderClaimChunks(order, product);
-  const productDescription = product.type === "opac_claim_bonus"
+  const productDescription = product.type === "opac_forceload"
+    ? `1 chunk de 16 x 16 blocos carregado enquanto ${order.minecraftNick} estiver online. Limite de 1 por jogador, valido na temporada atual. Ativacao em chunk proprio claimado pelo mapa.`
+    : product.type === "opac_claim_bonus"
     ? `Claims de chunks para ${order.minecraftNick} na Toca da Coruja`
     : product.type === "membership"
       ? `${product.title}: CobbleDollars, Claims extras, ovos shiny random e cargo especial para ${order.minecraftNick}`
@@ -1182,6 +1215,10 @@ const handleCheckout = async (request, env) => {
   const testCoupon = await validateTestCoupon(payload, env);
   const order = await createOrder({ env, request, payload });
   const product = getProduct(order.sku);
+  if (order.reuseCheckout) {
+    const preference = await mercadoPagoFetch(env, `/checkout/preferences/${encodeURIComponent(order.mercadoPagoPreferenceId)}`);
+    return { ok: true, orderId: order.id, checkoutUrl: preference.init_point || preference.sandbox_init_point };
+  }
   if (testCoupon) {
     const paidOrder = await updateOrder(env, order.id, {
       status: product.type === "manual_fulfillment" ? "paid_manual_fulfillment" : "paid_pending_delivery",
