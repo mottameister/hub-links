@@ -1,4 +1,15 @@
 (function () {
+  const themeToggle = document.querySelector("[data-theme-toggle]");
+  const themeIcon = document.querySelector("[data-theme-icon]");
+  const setTheme = (theme) => {
+    document.documentElement.dataset.theme = theme;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "dark" ? "#172635" : "#e8eef4");
+    themeToggle.setAttribute("aria-label", theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro");
+    themeIcon.textContent = theme === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("mottameister-theme", theme); } catch {}
+  };
+  setTheme(document.documentElement.dataset.theme === "light" ? "light" : "dark");
+  themeToggle.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
   const apiBase = "https://mottameister-services-api.mottameister.xyz";
   const nickInput = document.querySelector("[data-shop-nick]");
   const couponInput = document.querySelector("[data-shop-coupon]");

@@ -5,12 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coruja Shop | Toca da Coruja</title>
   <meta name="description" content="Apoie a Toca da Coruja com Coruja++, CobbleDollars, Claims e kits de exploração." />
-  <meta name="theme-color" content="#101b18" />
+  <meta name="theme-color" content="#172635" />
+  <script>
+    (() => {
+      let savedTheme;
+      try { savedTheme = localStorage.getItem('mottameister-theme'); } catch {}
+      const theme = savedTheme === 'light' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = theme;
+      document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#172635' : '#e8eef4';
+    })();
+  </script>
   <meta property="og:title" content="Coruja Shop | Toca da Coruja" />
   <meta property="og:description" content="Benefícios para jogar e uma meta coletiva para melhorar o servidor da Toca." />
   <meta property="og:image" content="https://mottameister.xyz/coruja-shop/assets/spawn-shop.png" />
   <meta property="og:url" content="https://mottameister.xyz/coruja-shop/" />
-  <link rel="stylesheet" href="/coruja-shop/coruja-shop.css?v=revamp-20260924" />
+  <link rel="stylesheet" href="/coruja-shop/coruja-shop.css?v=glass-20261015" />
 </head>
 <body>
   <div class="page">
@@ -21,6 +30,7 @@
         <a href="#pacotes">Pacotes</a>
         <a href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Discord</a>
       </nav>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Ativar tema claro" title="Alternar tema"><span data-theme-icon aria-hidden="true">☀️</span></button>
     </header>
 
     <main>
