@@ -1,5 +1,28 @@
-import { createRoot } from 'react-dom/client';
-import Particles from './components/Particles';
+const themeButton = document.querySelector('.theme-toggle');
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.documentElement.dataset.theme = theme;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isDark ? '#172635' : '#e8eef4');
+
+  if (themeButton) {
+    themeButton.setAttribute('aria-label', isDark ? 'Ativar modo claro' : 'Ativar modo escuro');
+    themeButton.setAttribute('aria-pressed', String(isDark));
+    themeButton.setAttribute('title', isDark ? 'Modo claro' : 'Modo escuro');
+    themeButton.querySelector('span').textContent = isDark ? '☀️' : '🌙';
+  }
+
+  try {
+    localStorage.setItem('mottameister-theme', theme);
+  } catch {
+    // The selected theme still applies when storage is unavailable.
+  }
+}
+
+applyTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+themeButton?.addEventListener('click', () => {
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+});
 
 function formatStat(value) {
   const number = Number(value);
@@ -28,22 +51,3 @@ fetch(`/api/community-stats?hour=${cacheHour}`)
     });
   })
   .catch(() => {});
-
-const root = document.getElementById('media-kit-particles');
-
-if (root) {
-  createRoot(root).render(
-    <Particles
-      particleColors={['#5d526f', '#b517ff', '#43d9ff', '#f7f2ff']}
-      particleCount={420}
-      particleSpread={11}
-      speed={0.075}
-      particleBaseSize={90}
-      sizeRandomness={1.2}
-      moveParticlesOnHover
-      particleHoverFactor={0.35}
-      alphaParticles
-      pixelRatio={Math.min(window.devicePixelRatio, 1.7)}
-    />
-  );
-}
