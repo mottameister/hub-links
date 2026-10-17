@@ -1,3 +1,5 @@
+import { handlePrintQueue } from './print-queue.js';
+import { handlePrintCamera } from './print-camera.js';
 const defaultEnvironment = "test";
 const maxCheckoutQuantity = 10;
 
@@ -1476,6 +1478,8 @@ export default {
 
     const url = new URL(request.url);
     try {
+      if (url.pathname === '/api/fila-3d/camera') return await handlePrintCamera(request, env);
+      if (url.pathname === '/api/fila-3d' || url.pathname.startsWith('/api/fila-3d/')) return await handlePrintQueue(request, env);
       if (url.pathname === "/health") return json({ ok: true, service: "mottameister-services-api" }, 200, request);
       if (url.pathname === "/api/shop/checkout" && request.method === "POST") return json(await handleCheckout(request, env), 200, request);
       if (url.pathname === "/api/shop/referrals/code" && request.method === "POST") return json(await handleReferralCode(request, env), 200, request);

@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 
 const staticEntries = [
   'status',
+  'fila-3d',
   'coruja-shop/assets',
   'coruja-shop/admin',
   'coruja-shop/coruja-shop.js',
@@ -48,6 +49,10 @@ function copyLegacyStaticRoutes() {
 }
 
 export default defineConfig({
+  cacheDir: '.vite-cache',
+  server: {
+    proxy: { '/api/fila-3d': 'http://127.0.0.1:8787' }
+  },
   plugins: [react(), copyLegacyStaticRoutes()],
   build: {
     rollupOptions: {

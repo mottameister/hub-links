@@ -4,4 +4,8 @@
 !.env.worker.example
 node_modules/
 dist/
+.vite-cache/
+.wrangler/
+.camera-runtime/
+.camera-local/
 npm-debug.log*
