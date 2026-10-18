@@ -11,4 +11,4 @@ $bambu = $raw | ConvertFrom-Json
 $code = $bambu.access_code.PSObject.Properties | Select-Object -First 1 -ExpandProperty Value
 if (-not $code) { throw 'Bambu Studio has no saved access code.' }
 $scriptName = if ($Live -or $config.mode -eq 'live') { 'print-camera-live.py' } else { 'print-camera-bridge.py' }
-@{ip=$config.ip;code=$code;token=$token;endpoint=$config.endpoint} | ConvertTo-Json -Compress | & C:/Python314/python.exe (Join-Path $PSScriptRoot $scriptName)
+@{ip=$config.ip;code=$code;token=$token;endpoint=$config.endpoint} | ConvertTo-Json -Compress | & C:/Python314/python.exe (Join-Path $PSScriptRoot $scriptName) --stdin

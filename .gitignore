@@ -9,3 +9,5 @@ dist/
 .camera-runtime/
 .camera-local/
 npm-debug.log*
+
+__pycache__/

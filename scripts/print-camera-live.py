@@ -7,7 +7,8 @@ root=pathlib.Path(__file__).resolve().parents[1]
 log=logging.getLogger('print-camera-live');log.setLevel(logging.INFO)
 handler=logging.handlers.RotatingFileHandler(root/'.camera-local/live.log',maxBytes=200000,backupCount=2)
 handler.setFormatter(logging.Formatter('%(asctime)s %(message)s'));log.addHandler(handler)
-config=json.loads(sys.stdin.readline())
+from print_camera_config import load_config
+config=json.loads(sys.stdin.readline()) if '--stdin' in sys.argv else load_config()
 from urllib.parse import quote
 url='rtsps://bblp:'+quote(config['code'],safe='')+'@'+config['ip']+':322/streaming/live/1'
 endpoint=config.get('endpoint','https://mottameister-services-api.mottameister.xyz/api/fila-3d/camera').rstrip('/')+'/live/'
