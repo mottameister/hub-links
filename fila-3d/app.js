@@ -1,3 +1,4 @@
+import Hls from 'hls.js/dist/hls.light.mjs';
 const $ = (id) => document.getElementById(id);
 const endpoint = '/api/fila-3d';
 let loading = false;
@@ -44,21 +45,49 @@ $('form').onsubmit = async (event) => {
 };
 load(); setInterval(() => { if (!document.hidden && !$('dialog').open) load(); }, 30000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
-let cameraBusy = false;
-async function updateCamera() {
-  if (document.hidden || cameraBusy) return;
-  cameraBusy = true;
-  try {
-    const response = await fetch(endpoint + '/camera?t=' + Date.now(), { cache: 'no-store' });
-    if (!response.ok) throw new Error();
-    const blob = await response.blob(); const url = URL.createObjectURL(blob);
-    const img = $('camera'); const previous = img.src;
-    img.onload = () => { if (previous.startsWith('blob:')) URL.revokeObjectURL(previous); };
-    img.src = url; img.hidden = false; $('camera-empty').hidden = true;
-    $('camera-state').textContent = 'Atualiza a cada 5 s'; $('camera-state').className = 'camera-state online';
-  } catch {
-    $('camera').hidden = true; $('camera-empty').hidden = false;
-    $('camera-state').textContent = 'Desconectada'; $('camera-state').className = 'camera-state';
-  } finally { cameraBusy = false; }
+
+const video = $('camera');
+const liveUrl = endpoint + '/camera/live/index.m3u8';
+let player = null, starting = false, lastProgress = 0, previousTime = -1;
+function cameraState(online, text) {
+  $('camera-state').textContent = text;
+  $('camera-state').className = 'camera-state' + (online ? ' online' : '');
+  video.hidden = !online; $('camera-empty').hidden = online;
 }
-updateCamera(); setInterval(updateCamera, 5000);
+function stopCamera() {
+  if (player) { player.destroy(); player = null; }
+  video.pause(); video.removeAttribute('src'); video.load();
+  lastProgress = 0; previousTime = -1;
+}
+async function startCamera() {
+  if (starting || document.hidden) return;
+  starting = true;
+  try {
+    const response = await fetch(liveUrl, { cache: 'no-store' });
+    if (!response.ok) throw new Error();
+    stopCamera(); cameraState(false, 'Conectando…');
+    if (video.canPlayType('application/vnd.apple.mpegurl')) video.src = liveUrl;
+    else if (Hls.isSupported()) {
+      player = new Hls({ enableWorker: false, liveSyncDurationCount: 2, liveMaxLatencyDurationCount: 5, maxBufferLength: 15, backBufferLength: 10 });
+      player.on(Hls.Events.ERROR, (_event, data) => { if (data.fatal) { stopCamera(); cameraState(false, 'Reconectando…'); } });
+      player.loadSource(liveUrl); player.attachMedia(video);
+    } else {
+      $('camera-empty').querySelector('strong').textContent = 'Este navegador não reproduz o vídeo.';
+      cameraState(false, 'Indisponível'); return;
+    }
+    lastProgress = Date.now();
+    video.play().catch(() => cameraState(true, 'Toque para assistir'));
+  } catch { stopCamera(); cameraState(false, 'Desconectada'); }
+  finally { starting = false; }
+}
+video.addEventListener('playing', () => { lastProgress = Date.now(); cameraState(true, 'Ao vivo'); });
+video.addEventListener('error', () => { cameraState(false, 'Desconectada'); });
+video.addEventListener('timeupdate', () => {
+  if (Math.abs(video.currentTime - previousTime) > .1) { previousTime = video.currentTime; lastProgress = Date.now(); cameraState(true, 'Ao vivo'); }
+});
+setInterval(() => {
+  if (!video.hidden && video.paused) return;
+  if (!document.hidden && (!lastProgress || Date.now() - lastProgress > 15000)) startCamera();
+}, 5000);
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopCamera(); else startCamera(); });
+startCamera();

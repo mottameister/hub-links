@@ -5,7 +5,6 @@ import react from '@vitejs/plugin-react';
 
 const staticEntries = [
   'status',
-  'fila-3d',
   'coruja-shop/assets',
   'coruja-shop/admin',
   'coruja-shop/coruja-shop.js',
@@ -58,6 +57,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve('index.html'),
+        printQueue: resolve('fila-3d/index.html'),
         mediaKit: resolve('media-kit/index.html'),
         gtEngineer: resolve('gt-engineer/index.html'),
         mottafit: resolve('mottafit/index.html'),
