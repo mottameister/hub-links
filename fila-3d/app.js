@@ -66,12 +66,12 @@ async function startCamera() {
     const response = await fetch(liveUrl, { cache: 'no-store' });
     if (!response.ok) throw new Error();
     stopCamera(); cameraState(false, 'Conectando…');
-    if (video.canPlayType('application/vnd.apple.mpegurl')) video.src = liveUrl;
-    else if (Hls.isSupported()) {
+    if (Hls.isSupported()) {
       player = new Hls({ enableWorker: false, liveSyncDurationCount: 2, liveMaxLatencyDurationCount: 5, maxBufferLength: 15, backBufferLength: 10 });
       player.on(Hls.Events.ERROR, (_event, data) => { if (data.fatal) { stopCamera(); cameraState(false, 'Reconectando…'); } });
       player.loadSource(liveUrl); player.attachMedia(video);
-    } else {
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) video.src = liveUrl;
+    else {
       $('camera-empty').querySelector('strong').textContent = 'Este navegador não reproduz o vídeo.';
       cameraState(false, 'Indisponível'); return;
     }
@@ -83,7 +83,7 @@ async function startCamera() {
 video.addEventListener('playing', () => { lastProgress = Date.now(); cameraState(true, 'Ao vivo'); });
 video.addEventListener('error', () => { cameraState(false, 'Desconectada'); });
 video.addEventListener('timeupdate', () => {
-  if (Math.abs(video.currentTime - previousTime) > .1) { previousTime = video.currentTime; lastProgress = Date.now(); cameraState(true, 'Ao vivo'); }
+  if (!video.paused && video.readyState >= 3 && Math.abs(video.currentTime - previousTime) > .1) { previousTime = video.currentTime; lastProgress = Date.now(); cameraState(true, 'Ao vivo'); }
 });
 setInterval(() => {
   if (!video.hidden && video.paused) return;
