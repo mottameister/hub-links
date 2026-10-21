@@ -15,6 +15,10 @@ function card(item, index) {
   el.querySelector('h3').textContent = item.name;
   const badge = el.querySelector('.badge'); badge.textContent = ['', 'Sem pressa', 'Normal', 'Quero logo!'][item.priority]; badge.classList.add('p' + item.priority);
   el.querySelector('.owner').textContent = item.owner;
+  if (item.filament_color) {
+    const color = document.createElement('span'); color.className = 'badge filament-color';
+    color.textContent = 'Filamento: ' + item.filament_color; el.querySelector('.meta').append(color);
+  }
   if (item.link) {
     try { const url = new URL(item.link); if (['https:', 'http:'].includes(url.protocol)) { const a = document.createElement('a'); a.href = url.href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'Ver projeto ↗'; el.querySelector('.meta').append(a); } } catch {}
   }
@@ -36,10 +40,17 @@ async function load() {
 $('add').onclick = () => { $('form-error').textContent = ''; $('dialog').showModal(); };
 $('close').onclick = () => $('dialog').close();
 $('refresh').onclick = load;
+function syncOwner() {
+  const other = $('owner').value === 'other';
+  $('owner-other-label').hidden = !other; $('owner-other').disabled = !other; $('owner-other').required = other;
+}
+$('owner').addEventListener('change', () => { syncOwner(); if ($('owner').value === 'other') $('owner-other').focus(); });
 $('form').onsubmit = async (event) => {
   event.preventDefault(); $('save').disabled = true; $('form-error').textContent = '';
   const data = Object.fromEntries(new FormData(event.target)); data.priority = Number(data.priority);
-  try { await api('', { method: 'POST', body: JSON.stringify(data) }); event.target.reset(); $('dialog').close(); await load(); }
+  if (data.owner === 'other') data.owner = (data.owner_other || '').trim();
+  delete data.owner_other;
+  try { await api('', { method: 'POST', body: JSON.stringify(data) }); event.target.reset(); syncOwner(); $('dialog').close(); await load(); }
   catch (e) { $('form-error').textContent = e.message; }
   finally { $('save').disabled = false; }
 };
