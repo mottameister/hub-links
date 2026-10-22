@@ -1,5 +1,7 @@
 const defaultEventId = "coruja-cup-next";
-const eventCapacities = {};
+const eventCapacities = {
+  "torneio-das-sombras-2026-10-24": 16,
+};
 const legacyEventIds = ["poison-edition-001"];
 
 const allowedOrigins = new Set([
@@ -73,7 +75,20 @@ const readRegistrations = async (store, eventId) => {
     cursor = page.list_complete ? undefined : page.cursor;
   } while (cursor);
 
-  return rows.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+  const sorted = rows.sort((a, b) => (
+    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    || String(a.id).localeCompare(String(b.id))
+  ));
+  // Derive placement from registration order so a capacity increase immediately
+  // promotes existing waitlisted players in status, admin and CSV responses.
+  // Original records remain intact; no migration or destructive rewrite is needed.
+  if (!Object.hasOwn(eventCapacities, eventId)) return sorted;
+  let position = 0;
+  return sorted.map((row) => {
+    if (!["confirmed", "waitlist"].includes(row.status)) return row;
+    position += 1;
+    return { ...row, status: position <= capacityFor(eventId) ? "confirmed" : "waitlist" };
+  });
 };
 
 const readRegistrationsWithLegacy = async (store, eventId) => {
