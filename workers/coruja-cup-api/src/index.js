@@ -1,7 +1,6 @@
-const defaultEventId = "coruja-cup-next";
-const eventCapacities = {
-  "torneio-das-sombras-2026-10-24": 16,
-};
+const eventCapacities = { "torneio-das-sombras-2026-10-24": 16 };
+const capacityFor = (eventId) => eventCapacities[eventId] || 9;
+const defaultEventId = "coruja-cup-2026-06-28";
 const legacyEventIds = ["poison-edition-001"];
 
 const allowedOrigins = new Set([
@@ -79,9 +78,8 @@ const readRegistrations = async (store, eventId) => {
     new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     || String(a.id).localeCompare(String(b.id))
   ));
-  // Derive placement from registration order so a capacity increase immediately
-  // promotes existing waitlisted players in status, admin and CSV responses.
-  // Original records remain intact; no migration or destructive rewrite is needed.
+  // Capacity changes apply consistently to status, admin and CSV, in signup order.
+  // Keep original records intact: placement is derived without rewriting player data.
   if (!Object.hasOwn(eventCapacities, eventId)) return sorted;
   let position = 0;
   return sorted.map((row) => {
@@ -116,8 +114,6 @@ const getCounts = (registrations) => ({
   waitlist: registrations.filter((row) => row.status === "waitlist").length,
   total: registrations.length,
 });
-
-const capacityFor = (eventId) => eventCapacities[eventId] || Number.POSITIVE_INFINITY;
 
 const isAuthorized = (request, env) => {
   const expected = env.CORUJA_CUP_ADMIN_TOKEN;
@@ -182,7 +178,7 @@ const handleRegister = async (request, env) => {
 
   if (duplicate) {
     return json(request, {
-      error: "Voce ja esta na lista de interessados.",
+      error: "Voce ja esta inscrito ou na lista de espera.",
       status: duplicate.status,
     }, 409);
   }
