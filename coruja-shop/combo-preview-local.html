@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coruja Shop | Monte seu combo</title>
+  <meta name="description" content="Monte seu combo na Toca da Coruja, escolha uma assinatura ou um item único." />
+  <meta name="theme-color" content="#172635" />
+  <script>
+    (() => {
+      let savedTheme;
+      try { savedTheme = localStorage.getItem('mottameister-theme'); } catch {}
+      const theme = savedTheme === 'light' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = theme;
+      document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#172635' : '#e8eef4';
+    })();
+  </script>
+  <meta property="og:title" content="Coruja Shop | Monte seu combo" />
+  <meta property="og:description" content="Monte seu combo, escolha uma assinatura ou um item único na Toca da Coruja." />
+  <meta property="og:image" content="https://mottameister.xyz/coruja-shop/assets/spawn-shop.png" />
+  <meta property="og:url" content="https://mottameister.xyz/coruja-shop/" />
+  <link rel="stylesheet" href="./coruja-shop.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <a class="brand" href="../index.html" aria-label="Voltar ao hub Mottameister"><img class="brand-mark" src="./assets/owl.png" alt="" /> TOCA DA CORUJA</a>
+      <nav aria-label="Navegação da loja">
+        <a href="#combo">Monte seu combo</a><a href="#assinaturas">Assinaturas</a><a href="#unicos">Itens únicos</a><a href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Discord</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Ativar tema claro" title="Alternar tema"><span data-theme-icon aria-hidden="true">☀️</span></button>
+    </header>
+
+    <main>
+      <section class="combo-hero" id="combo" aria-labelledby="page-title">
+        <div class="combo-heading"><span class="eyebrow">Coruja Shop · do seu jeito</span><h1 id="page-title">Monte seu <em>combo.</em></h1><p>Escolha os benefícios que fazem sentido para você. Quanto mais itens diferentes, maior o desconto no pacote.</p></div>
+        <div class="combo-layout">
+          <div class="combo-picker">
+            <div class="combo-group"><div class="group-heading"><h2>CobbleDollars</h2><span>Para movimentar a economia da Toca</span></div><div class="combo-options">
+              <button type="button" data-combo-sku="cobbledollars_1m" data-price="9.90"><span>1 mi CobbleDollars</span><strong>R$ 9,90</strong></button>
+              <button type="button" data-combo-sku="cobbledollars_5m" data-price="29.90"><span>5 mi CobbleDollars</span><strong>R$ 29,90</strong></button>
+              <button type="button" data-combo-sku="cobbledollars_10m" data-price="39.90"><span>10 mi CobbleDollars</span><strong>R$ 39,90</strong></button>
+              <button type="button" data-combo-sku="cobbledollars_20m" data-price="69.90"><span>20 mi CobbleDollars</span><strong>R$ 69,90</strong></button>
+            </div></div>
+            <div class="combo-group"><div class="group-heading"><h2>Claims</h2><span>Mais espaço para proteger suas construções</span></div><div class="combo-options">
+              <button type="button" data-combo-sku="claims_5" data-price="9.90"><span>5 Claims</span><strong>R$ 9,90</strong></button>
+              <button type="button" data-combo-sku="claims_12" data-price="19.90"><span>12 Claims</span><strong>R$ 19,90</strong></button>
+              <button type="button" data-combo-sku="claims_30" data-price="39.90"><span>30 Claims</span><strong>R$ 39,90</strong></button>
+            </div></div>
+            <details class="combo-more"><summary>Adicionar assinaturas, itens únicos e experiências</summary>
+              <div class="combo-group"><h2>Assinaturas · 31 dias</h2><p>Escolha no máximo uma assinatura por combo.</p><div class="combo-options">
+                <button type="button" data-combo-sku="coruja_plus" data-price="24.90" data-combo-membership><span>Coruja de Bronze</span><strong>R$ 24,90</strong></button>
+                <button type="button" data-combo-sku="coruja_plus_plus" data-price="39.90" data-combo-membership><span>Coruja de Prata</span><strong>R$ 39,90</strong></button>
+                <button type="button" data-combo-sku="coruja_gold" data-price="64.90" data-combo-membership><span>Coruja de Ouro</span><strong>R$ 64,90</strong></button>
+              </div></div>
+              <div class="combo-group"><h2>Itens únicos</h2><div class="combo-options">
+                <button type="button" data-combo-sku="chunk_loader_1" data-price="99.90"><span>Chunk Loader · 1 chunk</span><strong>R$ 99,90</strong></button>
+                <button type="button" data-combo-sku="shiny_cookie" data-price="99.90"><span>Star Cookie · 1 unidade</span><strong>R$ 99,90</strong></button>
+              </div></div>
+              <div class="combo-group"><h2>Experiências</h2><p>Esses benefícios precisam de entrega manual.</p><div class="combo-options">
+                <button type="button" data-combo-sku="ace_trainer_toca" data-price="19.90"><span>Ace Trainer personalizado</span><strong>R$ 19,90</strong></button>
+              </div></div>
+            </details>
+          </div>
+          <aside class="combo-summary" aria-label="Resumo do combo">
+            <span class="eyebrow">Seu pacote</span><h2>Feito por você.</h2>
+            <p class="combo-hint">Toque nos benefícios para adicionar ou remover. Produtos avulsos continuam disponíveis abaixo.</p>
+            <div class="combo-discount-guide"><span>2 itens <strong>5% OFF</strong></span><span>3 itens <strong>10% OFF</strong></span><span>4+ itens <strong>15% OFF</strong></span></div>
+            <p class="combo-selection" data-combo-items>Nenhum benefício selecionado.</p>
+            <div class="combo-totals"><div><span>Subtotal</span><strong data-combo-subtotal>R$ 0,00</strong></div><div><span>Desconto do combo</span><strong data-combo-discount>0%</strong></div><div class="combo-total"><span>Total do combo</span><strong data-combo-total>R$ 0,00</strong></div></div>
+            <div class="checkout-fields"><label for="minecraftNick">Seu nick original do Minecraft</label><input id="minecraftNick" name="minecraftNick" autocomplete="username" maxlength="16" pattern="[A-Za-z0-9_]{3,16}" placeholder="Digite seu nick" data-shop-nick /><label for="shopCoupon">Cupom <span>(opcional)</span></label><input id="shopCoupon" name="shopCoupon" autocomplete="off" maxlength="80" placeholder="Código de desconto" data-shop-coupon /></div>
+            <button class="primary-button featured-button" type="button" data-combo-checkout disabled><span>Comprar meu combo</span><strong data-combo-button-price>R$ 0,00</strong></button>
+            <p class="microcopy">O total é atualizado a cada item. Cupom, assinatura ativa e indicação podem reduzir o valor no checkout.</p>
+            <p class="checkout-status" role="status" aria-live="polite" data-shop-status>Escolha o primeiro benefício para montar seu combo.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="shop-section" id="assinaturas" aria-labelledby="subscriptions-title">
+        <div class="section-heading"><div><span class="eyebrow">31 dias de benefícios</span><h2 id="subscriptions-title">Assinaturas</h2></div><p>Apoie a Toca e receba benefícios para jogar. Compra por 31 dias, sem cobrança recorrente automática.</p></div>
+        <div class="product-grid subscription-grid">
+          <article class="product-card tier-bronze"><span class="product-type">Coruja de Bronze</span><h3>Comece com mais.</h3><p>2 mi CobbleDollars, 5 Claims, 1 ovo shiny aleatório, cargo no chat e 10% de desconto em avulsos.</p><button type="button" data-shop-checkout data-sku="coruja_plus" data-fixed-quantity="1"><span>Escolher Bronze</span><strong>R$ 24,90</strong></button></article>
+          <article class="product-card tier-silver"><span class="product-type">Coruja de Prata</span><h3>O favorito da Toca.</h3><p>4 mi CobbleDollars, 5 Claims, 2 ovos shiny aleatórios, cargo no chat e 10% em avulsos.</p><button type="button" data-shop-checkout data-sku="coruja_plus_plus" data-fixed-quantity="1"><span>Escolher Prata</span><strong>R$ 39,90</strong></button></article>
+          <article class="product-card tier-gold"><span class="product-type">Coruja de Ouro</span><h3>O pacote mais forte.</h3><p>10 mi CobbleDollars, 12 Claims, 3 ovos shiny aleatórios, cargo no chat e 15% em avulsos.</p><button type="button" data-shop-checkout data-sku="coruja_gold" data-fixed-quantity="1"><span>Escolher Ouro</span><strong>R$ 64,90</strong></button></article>
+        </div>
+      </section>
+
+      <section class="shop-section" id="unicos" aria-labelledby="unique-title">
+        <div class="section-heading"><div><span class="eyebrow">Para um projeto especial</span><h2 id="unique-title">Itens únicos</h2></div><p>Dois benefícios avulsos de R$ 99,90 cada. Você também pode adicioná-los ao combo acima.</p></div>
+        <div class="product-grid unique-grid">
+          <article class="product-card"><span class="product-type">Base ativa</span><h3>Chunk Loader</h3><p>Mantenha 1 chunk de 16 × 16 blocos da sua base carregado enquanto estiver online. Limite de 1 por jogador, válido nesta temporada.</p><button type="button" data-shop-checkout data-sku="chunk_loader_1" data-fixed-quantity="1"><span>Escolher Chunk Loader</span><strong>R$ 99,90</strong></button></article>
+          <article class="product-card"><span class="product-type">Um toque de sorte</span><h3>Star Cookie</h3><p>1 cookie do mod Shiny Cookie. Ao usar em um Pokémon, oferece uma chance de torná-lo shiny; não é garantia.</p><button type="button" data-shop-checkout data-sku="shiny_cookie" data-fixed-quantity="1"><span>Escolher Star Cookie</span><strong>R$ 99,90</strong></button></article>
+        </div>
+      </section>
+
+      <section class="goal-section" id="meta" aria-labelledby="goal-title"><div class="goal-copy"><span class="eyebrow">Uma conquista para todo mundo</span><h2 id="goal-title">Nosso próximo servidor,<br /><em>feito pela comunidade.</em></h2><p>As compras aprovadas desde o início da campanha ajudam na meta de uma máquina própria nos EUA. Quando chegarmos lá, apresentaremos a compra e o plano de migração.</p><p class="goal-detail">O progresso usa o valor bruto dos pedidos aprovados. Testes e pedidos cancelados ficam de fora.</p></div><div class="goal-card" aria-live="polite"><span class="goal-card-label">PROGRESSO DA META</span><div class="goal-number" data-goal-percent>0%</div><div class="goal-track" role="progressbar" aria-label="Progresso da meta do servidor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-goal-track><span data-goal-fill></span></div><p data-goal-state>Carregando progresso...</p><span class="goal-foot">Atualizado com as compras aprovadas do shop</span></div></section>
+
+      <section class="support" aria-labelledby="support-title"><div><span class="eyebrow">Mais formas de participar</span><h2 id="support-title">Continue a jornada</h2></div><div class="support-list"><details><summary>Indique um amigo e ganhe desconto</summary><p>No servidor, use <strong>/meucodigo</strong> ou <strong>/indicacao</strong>. Um jogador novo pode usar <strong>/indicado SEU_CODIGO</strong> nas primeiras 24 horas. Cada indicação válida rende 10% de desconto por 30 dias, até 30%.</p></details><details><summary>Ace Trainer personalizado</summary><p>Um treinador especial na campanha, definido em conversa antes da criação. A entrega é manual.</p><button type="button" data-shop-checkout data-sku="ace_trainer_toca" data-fixed-quantity="1">Encomendar · R$ 19,90</button></details></div></section>
+    </main>
+    <footer><span>Coruja Shop · Toca da Coruja</span><a href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer">Precisa de ajuda? Entre no Discord</a><p>Os produtos são benefícios internos do servidor, sem valor fora dele e sem afiliação com Mojang, Microsoft, Nintendo, Creatures, GAME FREAK ou Pokémon.</p></footer>
+  </div>
+  <script src="./coruja-shop.js"></script>
+</body>
+</html>

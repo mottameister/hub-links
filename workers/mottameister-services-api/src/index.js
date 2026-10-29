@@ -1,10 +1,12 @@
 import { handlePrintQueue } from './print-queue.js';
 import { handlePrintCamera } from './print-camera.js';
 import { handlePrintLive } from './print-live.js';
+import { calculateCombo, comboSku } from './shop-combo.js';
 const defaultEnvironment = "test";
 const maxCheckoutQuantity = 10;
 
 const products = {
+  [comboSku]: { sku: comboSku, title: "Monte seu combo", type: "combo", amount: 0, currency: "BRL", cobbleDollars: 0 },
   chunk_loader_1: {
     sku: "chunk_loader_1",
     title: "Chunk Loader — 1 chunk",
@@ -82,9 +84,9 @@ const products = {
   },
   coruja_plus: {
     sku: "coruja_plus",
-    title: "Coruja+",
+    title: "Coruja de Bronze",
     type: "membership",
-    amount: 29.9,
+    amount: 24.9,
     currency: "BRL",
     cobbleDollars: 2000000,
     claimChunks: 5,
@@ -96,7 +98,7 @@ const products = {
   },
   coruja_plus_plus: {
     sku: "coruja_plus_plus",
-    title: "Coruja++",
+    title: "Coruja de Prata",
     type: "membership",
     amount: 39.9,
     currency: "BRL",
@@ -107,6 +109,29 @@ const products = {
     membershipDays: 31,
     discountPercent: 10,
     command: "coruja-membership grant {nick} plus_plus 4000000 5 2 31",
+  },
+  coruja_gold: {
+    sku: "coruja_gold",
+    title: "Coruja de Ouro",
+    type: "membership",
+    amount: 64.9,
+    currency: "BRL",
+    cobbleDollars: 10000000,
+    claimChunks: 12,
+    shinyEggs: 3,
+    membershipTier: "gold",
+    membershipDays: 31,
+    discountPercent: 15,
+    command: "coruja-membership grant {nick} gold 10000000 12 3 31",
+  },
+  shiny_cookie: {
+    sku: "shiny_cookie",
+    title: "Star Cookie",
+    type: "shiny_cookie",
+    amount: 99.9,
+    currency: "BRL",
+    cobbleDollars: 0,
+    command: "give {nick} shinycookie:star_cookie 1",
   },
   ace_trainer_toca: {
     sku: "ace_trainer_toca",
@@ -219,7 +244,7 @@ const parseCheckoutQuantity = (value, product = null) => {
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > maxCheckoutQuantity) {
     throw Object.assign(new Error(`Quantidade deve ser entre 1 e ${maxCheckoutQuantity}.`), { statusCode: 400 });
   }
-  if (["membership", "manual_fulfillment", "explorer_kit", "opac_forceload"].includes(product?.type) && quantity !== 1) {
+  if (["membership", "manual_fulfillment", "explorer_kit", "opac_forceload", "shiny_cookie", "combo"].includes(product?.type) && quantity !== 1) {
     throw Object.assign(new Error("Esse produto deve ser comprado uma unidade por vez."), { statusCode: 400 });
   }
   return quantity;
@@ -263,13 +288,22 @@ const getPaidClaimBonusTotal = async (env, order) => {
 
   return (rows.results || []).reduce((total, row) => {
     const product = getProduct(row.sku);
-    if (!product || !["opac_claim_bonus", "membership"].includes(product.type)) return total;
+    if (!product || !["opac_claim_bonus", "membership", "combo"].includes(product.type)) return total;
     if (row.id !== order.id && !paidDeliveryStatuses.has(row.delivery_status || "")) return total;
     return total + getOrderClaimChunks({ paymentValidation: jsonParse(row.payment_validation, null), amount: 0 }, product);
   }, 0);
 };
 
 const getOrderDeliveryCommand = async (env, order, product) => {
+  if (product.type === "combo") {
+    const combo = order.paymentValidation?.combo;
+    if (!combo?.hasAutomaticItems) throw new Error("Combo sem itens para entrega automatica.");
+    const membership = combo.membershipSku ? getProduct(combo.membershipSku) : null;
+    const totalClaims = combo.claimChunks > 0 ? await getPaidClaimBonusTotal(env, order) : 0;
+    return ["coruja-combo", "grant", order.minecraftNick, combo.cobbleDollars, totalClaims,
+      combo.shinyEggs, membership?.membershipTier || "none", membership?.membershipDays || 0,
+      combo.shinyCookies, combo.hasChunkLoader ? 1 : 0].join(" ");
+  }
   if (product.type === "cobbledollars") {
     const totalCobbleDollars = Number(order.cobbleDollars || product.cobbleDollars || 0);
     return `cobbledollars give ${order.minecraftNick} ${totalCobbleDollars}`;
@@ -489,10 +523,13 @@ const getActiveMembership = async (env, minecraftUuid) => {
 };
 
 const upsertMembership = async ({ env, order, product }) => {
-  if (product.type !== "membership") return null;
+  const membershipProduct = product.type === "combo"
+    ? getProduct(order.paymentValidation?.combo?.membershipSku)
+    : product;
+  if (membershipProduct?.type !== "membership") return null;
   await ensureShopMembershipsTable(env);
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + Number(product.membershipDays || 31) * 86400000).toISOString();
+  const expiresAt = new Date(now.getTime() + Number(membershipProduct.membershipDays || 31) * 86400000).toISOString();
   const updatedAt = now.toISOString();
   await env.DB.prepare(`
     INSERT INTO shop_memberships (environment, minecraft_uuid, minecraft_nick, tier, status, expires_at, discount_percent, claim_chunks, shiny_eggs, last_order_id, created_at, updated_at)
@@ -511,17 +548,17 @@ const upsertMembership = async ({ env, order, product }) => {
     getEnvironment(env),
     order.minecraftUuid || "",
     order.minecraftNick,
-    product.membershipTier,
+    membershipProduct.membershipTier,
     "active",
     expiresAt,
-    Number(product.discountPercent || 0),
-    Number(product.claimChunks || 0),
-    Number(product.shinyEggs || 0),
+    Number(membershipProduct.discountPercent || 0),
+    Number(membershipProduct.claimChunks || 0),
+    Number(membershipProduct.shinyEggs || 0),
     order.id,
     updatedAt,
     updatedAt,
   ).run();
-  return { tier: product.membershipTier, expiresAt };
+  return { tier: membershipProduct.membershipTier, expiresAt };
 };
 
 const referralRewardPercent = (env) => Math.max(1, Math.min(Number(env.SHOP_REFERRAL_REWARD_PERCENT || 10), 30));
@@ -823,46 +860,52 @@ const deliveryFromRow = (row) => row && ({
 const createOrder = async ({ env, request, payload }) => {
   const product = getProduct(payload.sku);
   if (!product) throw Object.assign(new Error("Produto invalido."), { statusCode: 400 });
-  if (product.type === "explorer_kit" && env.SHOP_KITS_ENABLED !== "true") {
-    throw Object.assign(new Error("Kits Explorador ainda nao estao disponiveis para compra."), { statusCode: 409 });
+  if (product.type === "explorer_kit" || product.sku === "mundo_toca_download") {
+    throw Object.assign(new Error("Esse beneficio nao esta mais disponivel para novos pedidos."), { statusCode: 409 });
   }
+  const combo = product.type === "combo" ? calculateCombo(payload.items, products) : null;
   const quantity = parseCheckoutQuantity(payload.quantity, product);
   const cleanNick = sanitizeMinecraftNick(payload.minecraftNick);
   if (!cleanNick) throw Object.assign(new Error("Nick do Minecraft invalido."), { statusCode: 400 });
   const profile = await validateMinecraftProfile(cleanNick);
-  if (product.type === "opac_forceload") {
+  if (product.type === "opac_forceload" || combo?.hasChunkLoader) {
     if (!/^[a-f0-9]{32}$/.test(profile.id)) {
       throw Object.assign(new Error("Nao foi possivel confirmar sua conta Minecraft. Tente novamente mais tarde."), { statusCode: 503 });
     }
     await env.DB.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS shop_one_chunk_loader_per_player
       ON shop_orders (environment, minecraft_uuid, sku) WHERE sku = 'chunk_loader_1'`).run();
-    const existing = await env.DB.prepare("SELECT * FROM shop_orders WHERE environment = ? AND minecraft_uuid = ? AND sku = ?")
-      .bind(getEnvironment(env), profile.id, product.sku).first();
+    await env.DB.prepare(`CREATE UNIQUE INDEX IF NOT EXISTS shop_one_chunk_loader_across_combos
+      ON shop_orders (environment, minecraft_uuid)
+      WHERE sku = 'chunk_loader_1' OR (sku = 'combo_personalizado' AND json_extract(payment_validation, '$.combo.hasChunkLoader') = 1)`).run();
+    const existing = await env.DB.prepare(`SELECT * FROM shop_orders WHERE environment = ? AND minecraft_uuid = ?
+      AND (sku = 'chunk_loader_1' OR (sku = 'combo_personalizado' AND json_extract(payment_validation, '$.combo.hasChunkLoader') = 1))`)
+      .bind(getEnvironment(env), profile.id).first();
     if (existing) {
-      if (existing.status === "checkout_created" && existing.mercado_pago_preference_id && !existing.paid_at) {
+      if (existing.sku === product.sku && product.type !== "combo" && existing.status === "checkout_created" && existing.mercado_pago_preference_id && !existing.paid_at) {
         return { ...orderFromRow(existing), reuseCheckout: true };
       }
       throw Object.assign(new Error("Chunk Loader limitado a 1 por jogador. Voce ja possui uma compra ou pedido desse produto. Precisa de ajuda? Entre no Discord."), { statusCode: 409 });
     }
   }
   const now = new Date().toISOString();
-  const activeMembership = product.type === "membership" ? null : await getActiveMembership(env, profile.id);
+  const activeMembership = product.type === "membership" || combo?.membershipSku ? null : await getActiveMembership(env, profile.id);
   const referralDiscount = await getActiveReferralDiscount(env, profile.id);
   const membershipDiscountPercent = Number(activeMembership?.discount_percent || 0);
-  const discountPercent = Math.min(referralMaxDiscountPercent(env), membershipDiscountPercent + referralDiscount.discountPercent);
+  const discountPercent = Math.min(referralMaxDiscountPercent(env), (combo?.comboDiscountPercent || 0) + membershipDiscountPercent + referralDiscount.discountPercent);
   const discountSources = [
+    combo?.comboDiscountPercent > 0 ? "combo" : "",
     membershipDiscountPercent > 0 ? "active_membership" : "",
     referralDiscount.discountPercent > 0 ? "referral_credits" : "",
   ].filter(Boolean);
-  const originalAmount = roundMoney(product.amount * quantity);
+  const originalAmount = combo ? combo.subtotal : roundMoney(product.amount * quantity);
   const totalAmount = discountPercent > 0 ? roundMoney(originalAmount * (1 - discountPercent / 100)) : originalAmount;
-  const totalCobbleDollars = (product.cobbleDollars || 0) * quantity;
-  const totalClaimChunks = (product.claimChunks || 0) * quantity;
+  const totalCobbleDollars = combo ? combo.cobbleDollars : (product.cobbleDollars || 0) * quantity;
+  const totalClaimChunks = combo ? combo.claimChunks : (product.claimChunks || 0) * quantity;
   const order = {
     id: crypto.randomUUID(),
     status: "created",
     sku: product.sku,
-    productTitle: quantity > 1 ? `${product.title} x${quantity}` : product.title,
+    productTitle: combo ? `Combo: ${combo.items.map((item) => `${products[item.sku].title}${item.quantity > 1 ? ` x${item.quantity}` : ""}`).join(" + ")}` : quantity > 1 ? `${product.title} x${quantity}` : product.title,
     amount: totalAmount,
     currency: product.currency,
     cobbleDollars: totalCobbleDollars,
@@ -875,9 +918,10 @@ const createOrder = async ({ env, request, payload }) => {
       unitCobbleDollars: product.cobbleDollars || 0,
       unitClaimChunks: product.claimChunks || 0,
       claimChunks: totalClaimChunks,
-      shinyEggs: (product.shinyEggs || 0) * quantity,
-      membershipTier: product.membershipTier || "",
-      membershipDays: product.membershipDays || 0,
+      shinyEggs: combo ? combo.shinyEggs : (product.shinyEggs || 0) * quantity,
+      membershipTier: combo?.membershipSku ? products[combo.membershipSku].membershipTier : product.membershipTier || "",
+      membershipDays: combo?.membershipSku ? products[combo.membershipSku].membershipDays : product.membershipDays || 0,
+      combo,
       originalAmount,
       discountPercent,
       membershipDiscountPercent,
@@ -899,7 +943,7 @@ const createOrder = async ({ env, request, payload }) => {
     .bind(...toOrderRow({ env, order }))
     .run();
   } catch (error) {
-    if (product.type === "opac_forceload" && /unique constraint/i.test(error.message)) {
+    if ((product.type === "opac_forceload" || combo?.hasChunkLoader) && /unique constraint/i.test(error.message)) {
       throw Object.assign(new Error("Ja existe um pedido de Chunk Loader para sua conta. Tente novamente para retomar o pagamento."), { statusCode: 409 });
     }
     throw error;
@@ -934,6 +978,8 @@ const createPreference = async ({ env, request, order }) => {
     ? `Claims de chunks para ${order.minecraftNick} na Toca da Coruja`
     : product.type === "membership"
       ? `${product.title}: CobbleDollars, Claims extras, ovos shiny random e cargo especial para ${order.minecraftNick}`
+    : product.type === "combo"
+      ? `Combo personalizado para ${order.minecraftNick}: ${order.paymentValidation.combo.items.length} beneficios, com desconto progressivo.`
       : product.type === "manual_fulfillment"
       ? `${product.title}: pedido personalizado combinado por conversa com o Motta`
       : product.type === "explorer_kit"
@@ -987,7 +1033,7 @@ const paymentBelongsToOrder = ({ order, payment }) => paymentExternalReference(p
 
 const createDeliveryIfNeeded = async ({ env, order, payment }) => {
   const product = getProduct(order.sku);
-  if (product.type === "manual_fulfillment") return null;
+  if (product.type === "manual_fulfillment" || (product.type === "combo" && !order.paymentValidation?.combo?.hasAutomaticItems)) return null;
 
   const existing = await env.DB.prepare("SELECT * FROM shop_deliveries WHERE environment = ? AND order_id = ?")
     .bind(getEnvironment(env), order.id)
@@ -1050,7 +1096,7 @@ const applyApprovedPayment = async ({ env, order, payment }) => {
   }
 
   const paidOrder = await updateOrder(env, order.id, {
-    status: product.type === "manual_fulfillment" ? "paid_manual_fulfillment" : "paid_pending_delivery",
+    status: product.type === "manual_fulfillment" || (product.type === "combo" && !order.paymentValidation?.combo?.hasAutomaticItems) ? "paid_manual_fulfillment" : "paid_pending_delivery",
     mercadoPagoPaymentId: String(payment.id || order.mercadoPagoPaymentId || ""),
     paidAt: payment.date_approved || new Date().toISOString(),
   });
@@ -1224,7 +1270,7 @@ const handleCheckout = async (request, env) => {
   }
   if (testCoupon) {
     const paidOrder = await updateOrder(env, order.id, {
-      status: product.type === "manual_fulfillment" ? "paid_manual_fulfillment" : "paid_pending_delivery",
+      status: product.type === "manual_fulfillment" || (product.type === "combo" && !order.paymentValidation?.combo?.hasAutomaticItems) ? "paid_manual_fulfillment" : "paid_pending_delivery",
       amount: 0,
       mercadoPagoPaymentId: `coupon:${testCoupon}`,
       lastPaymentStatus: "coupon_test",
@@ -1354,7 +1400,8 @@ const handleDelivered = async (request, env) => {
   await env.DB.prepare("UPDATE shop_deliveries SET status = ?, delivered_at = ?, delivery_log = ? WHERE environment = ? AND order_id = ?")
     .bind("delivered", deliveredAt, sanitizeText(payload.deliveryLog, 500), getEnvironment(env), orderId)
     .run();
-  await updateOrder(env, orderId, { status: "delivered" });
+  const order = await getOrder(env, orderId);
+  await updateOrder(env, orderId, { status: order.paymentValidation?.combo?.hasManualItems ? "paid_manual_fulfillment" : "delivered" });
   return { ok: true, delivery: { id: delivery.id, status: "delivered", deliveredAt } };
 };
 

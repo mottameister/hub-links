@@ -5,8 +5,9 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { DatabaseSync } from 'node:sqlite';
 import { webcrypto } from 'node:crypto';
+import { calculateCombo, comboSku } from '../workers/mottameister-services-api/src/shop-combo.js';
 
-const apiSource = fs.readFileSync(new URL('../workers/mottameister-services-api/src/index.js', import.meta.url), 'utf8').replace('export default {', 'globalThis.worker = {');
+const apiSource = fs.readFileSync(new URL('../workers/mottameister-services-api/src/index.js', import.meta.url), 'utf8').replace(/^import .*;\r?\n/gm, '').replace('export default {', 'globalThis.worker = {');
 const workerPath = new URL('../scripts/coruja-shop-worker.cjs', import.meta.url);
 const workerSource = fs.readFileSync(workerPath, 'utf8').replace(/main\(\)\.catch\([\s\S]*$/, '').replace('const rconCommand =', 'let rconCommand =');
 function apiFixture() {
@@ -20,7 +21,7 @@ function apiFixture() {
   }};
   let profileAvailable = true;
   const preferences = [];
-  const context = vm.createContext({Request,Response,URL,URLSearchParams,TextEncoder,crypto:webcrypto,console,fetch:async(url,options)=>{
+  const context = vm.createContext({Request,Response,URL,URLSearchParams,TextEncoder,crypto:webcrypto,console,calculateCombo,comboSku,fetch:async(url,options)=>{
     if (String(url).includes('api.mojang.com')) return profileAvailable?Response.json({id:'a'.repeat(32),name:'Player_123'}):new Response('',{status:503});
     if (String(url).endsWith('/checkout/preferences') && options.method==='POST') {preferences.push(JSON.parse(options.body));return Response.json({id:'pref-1',init_point:'https://example.com/pay/pref-1'});}
     if (String(url).endsWith('/checkout/preferences/pref-1')) return Response.json({id:'pref-1',init_point:'https://example.com/pay/pref-1'});
@@ -28,8 +29,9 @@ function apiFixture() {
   }});
   vm.runInContext(apiSource,context);
   const env = {DB,SHOP_ENV:'test',MERCADOPAGO_ACCESS_TOKEN:'test-only'};
-  const checkout = async(quantity=1,nick='Player_123')=>context.worker.fetch(new Request('https://example.com/api/shop/checkout',{method:'POST',body:JSON.stringify({sku:'chunk_loader_1',quantity,minecraftNick:nick})}),env);
-  return {db,preferences,checkout,offlineProfile:()=>{profileAvailable=false;}};
+  const checkoutProduct = async(payload)=>context.worker.fetch(new Request('https://example.com/api/shop/checkout',{method:'POST',body:JSON.stringify({minecraftNick:'Player_123',...payload})}),env);
+  const checkout = async(quantity=1,nick='Player_123')=>checkoutProduct({sku:'chunk_loader_1',quantity,minecraftNick:nick});
+  return {db,preferences,checkout,checkoutProduct,offlineProfile:()=>{profileAvailable=false;}};
 }
 
 test('loader checkout costs 99.90 and reuses pending payment across nickname changes',async()=>{
@@ -51,6 +53,29 @@ test('loader rejects multiple quantities and missing UUID, and serializes simult
   assert.deepEqual(responses.map(r=>r.status).sort(),[200,409]);
   assert.equal(f.db.prepare('SELECT COUNT(*) AS count FROM shop_orders').get().count,1);
   const unavailable=apiFixture(); unavailable.offlineProfile(); assert.equal((await unavailable.checkout()).status,503);
+});
+
+test('combo checkout prices and reserves a chunk loader across direct orders', async()=>{
+  const f=apiFixture();
+  const response=await f.checkoutProduct({sku:'combo_personalizado',items:[{sku:'cobbledollars_1m'},{sku:'claims_5'},{sku:'chunk_loader_1'}]});
+  assert.equal(response.status,200,await response.text());
+  assert.equal(f.preferences[0].items[0].unit_price,107.73);
+  const row=f.db.prepare("SELECT amount, cobble_dollars, payment_validation FROM shop_orders").get();
+  assert.equal(row.amount,107.73);
+  assert.equal(row.cobble_dollars,1000000);
+  assert.equal(JSON.parse(row.payment_validation).combo.hasChunkLoader,true);
+  assert.equal((await f.checkout()).status,409);
+});
+
+test('subscription prices match the new tiers and world download is closed', async()=>{
+  for (const [sku, price] of [['coruja_plus',24.9],['coruja_plus_plus',39.9],['coruja_gold',64.9]]) {
+    const f=apiFixture();
+    const response=await f.checkoutProduct({sku});
+    assert.equal(response.status,200,`${sku}: ${await response.text()}`);
+    assert.equal(f.preferences[0].items[0].unit_price,price);
+  }
+  const closed=apiFixture();
+  assert.equal((await closed.checkoutProduct({sku:'mundo_toca_download'})).status,409);
 });
 
 function deliveryFixture({bonus=0,offline=false,rejectSet=false,offlinePlayer=false}={}) {

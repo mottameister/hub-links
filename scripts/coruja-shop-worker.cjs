@@ -23,6 +23,7 @@ const config = {
   shinyEggCommandTemplate: process.env.SHOP_SHINY_EGG_COMMAND_TEMPLATE || "givepokemonegg {nick} {species} shiny=yes",
   luckPermsPlusGroup: process.env.SHOP_LUCKPERMS_PLUS_GROUP || "coruja_plus",
   luckPermsPlusPlusGroup: process.env.SHOP_LUCKPERMS_PLUS_PLUS_GROUP || "coruja_plus_plus",
+  luckPermsGoldGroup: process.env.SHOP_LUCKPERMS_GOLD_GROUP || process.env.SHOP_LUCKPERMS_PLUS_PLUS_GROUP || "coruja_plus_plus",
   luckPermsCommandTemplate: process.env.SHOP_LUCKPERMS_COMMAND_TEMPLATE || "lp user {nick} parent addtemp {group} {days}d",
 };
 
@@ -199,7 +200,7 @@ const parseOpacClaimBonusCommand = (command) => {
 };
 
 const parseMembershipCommand = (command) => {
-  const match = String(command || "").trim().match(/^coruja-membership\s+grant\s+([A-Za-z0-9_]{3,16})\s+(plus|plus_plus)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?$/i);
+  const match = String(command || "").trim().match(/^coruja-membership\s+grant\s+([A-Za-z0-9_]{3,16})\s+(plus|plus_plus|gold)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?$/i);
   if (!match) return null;
   return {
     minecraftNick: match[1],
@@ -209,6 +210,16 @@ const parseMembershipCommand = (command) => {
     shinyEggs: Number(match[5]),
     days: Number(match[6]),
     totalClaimChunks: match[7] ? Number(match[7]) : null,
+  };
+};
+
+const parseComboCommand = (command) => {
+  const match = String(command || "").trim().match(/^coruja-combo\s+grant\s+([A-Za-z0-9_]{3,16})\s+(\d+)\s+(\d+)\s+(\d+)\s+(none|plus|plus_plus|gold)\s+(\d+)\s+([0-3])\s+([01])$/i);
+  if (!match) return null;
+  return {
+    minecraftNick: match[1], cobbleDollars: Number(match[2]), totalClaimChunks: Number(match[3]),
+    shinyEggs: Number(match[4]), tier: match[5].toLowerCase(), days: Number(match[6]),
+    shinyCookies: Number(match[7]), hasChunkLoader: match[8] === "1",
   };
 };
 
@@ -288,7 +299,7 @@ const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars,
     logs.push(`shiny egg ${index + 1}/${shinyEggs} (${species}): ${await runDeliveryCommand(command, command)}`);
   }
 
-  const group = tier === "plus_plus" ? config.luckPermsPlusPlusGroup : config.luckPermsPlusGroup;
+  const group = tier === "gold" ? config.luckPermsGoldGroup : tier === "plus_plus" ? config.luckPermsPlusPlusGroup : tier === "plus" ? config.luckPermsPlusGroup : "";
   if (group) {
     const command = renderCommandTemplate(config.luckPermsCommandTemplate, { nick: minecraftNick, group, days });
     logs.push(`luckperms: ${await runDeliveryCommand(command, command)}`);
@@ -298,6 +309,25 @@ const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars,
 };
 
 const executeDeliveryCommand = async (delivery, command) => {
+  const cookie = String(command || "").trim().match(/^give\s+([A-Za-z0-9_]{3,16})\s+shinycookie:star_cookie\s+([1-3])$/i);
+  if (cookie) {
+    const output = await runDeliveryCommand(command, command);
+    if (!config.dryRun && !/\b(gave|given|deu)\b/i.test(output)) throw new Error(`Shiny Cookie delivery has no positive RCON confirmation: ${String(output).slice(0, 220)}`);
+    return `star cookies: ${output}`;
+  }
+  const combo = parseComboCommand(command);
+  if (combo) {
+    const logs = [];
+    if (combo.hasChunkLoader) logs.push(await executeDeliveryCommand(delivery, `opac-forceload grant ${combo.minecraftNick} 1`));
+    if (combo.shinyCookies > 0) {
+      const giveCommand = `give ${combo.minecraftNick} shinycookie:star_cookie ${combo.shinyCookies}`;
+      logs.push(await executeDeliveryCommand(delivery, giveCommand));
+    }
+    logs.push(await deliverMembership({
+      delivery, ...combo, claimChunks: combo.totalClaimChunks,
+    }));
+    return logs.filter(Boolean).join("\n");
+  }
   const forceload = String(command || "").trim().match(/^opac-forceload\s+grant\s+([A-Za-z0-9_]{3,16})\s+1$/i);
   if (forceload) {
     const nick = forceload[1];
@@ -370,7 +400,7 @@ const deliver = async (delivery) => {
   try {
     output = await executeDeliveryCommand(delivery, command);
   } catch (error) {
-    if (error instanceof RetryableDeliveryError) {
+    if (error instanceof RetryableDeliveryError && !parseComboCommand(command)) {
       await retryDelivery(delivery.orderId, error.message);
       console.warn(`[shop] delivery ${delivery.orderId} will retry: ${error.message}`);
       return;
