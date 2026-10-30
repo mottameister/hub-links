@@ -68,7 +68,7 @@ test('combo checkout prices and reserves a chunk loader across direct orders', a
 });
 
 test('subscription prices match the new tiers and world download is closed', async()=>{
-  for (const [sku, price] of [['coruja_plus',24.9],['coruja_plus_plus',39.9],['coruja_gold',64.9]]) {
+  for (const [sku, price] of [['coruja_plus',24.9],['coruja_plus_plus',39.9],['coruja_gold',64.9],['coruja_diamond',99.9]]) {
     const f=apiFixture();
     const response=await f.checkoutProduct({sku});
     assert.equal(response.status,200,`${sku}: ${await response.text()}`);
@@ -76,6 +76,29 @@ test('subscription prices match the new tiers and world download is closed', asy
   }
   const closed=apiFixture();
   assert.equal((await closed.checkoutProduct({sku:'mundo_toca_download'})).status,409);
+});
+
+test('new cash and claim tiers use their published prices', async()=>{
+  for (const [sku, price] of [
+    ['cobbledollars_15m',54.9],['cobbledollars_30m',99.9],
+    ['claims_20',29.9],['claims_45',54.9],['claims_60',69.9],
+  ]) {
+    const f=apiFixture();
+    const response=await f.checkoutProduct({sku});
+    assert.equal(response.status,200,`${sku}: ${await response.text()}`);
+    assert.equal(f.preferences[0].items[0].unit_price,price);
+  }
+});
+
+test('delivery worker recognizes direct and combo diamond commands', async()=>{
+  const context=vm.createContext({require:createRequire(workerPath),process:{env:{SHOP_DRY_RUN:'true'}},Buffer,console,setTimeout,clearTimeout,fetch});
+  vm.runInContext(workerSource+`\nglobalThis.parseDiamond = parseMembershipCommand; globalThis.parseDiamondCombo = parseComboCommand; globalThis.deliverDiamond = executeDeliveryCommand;`,context);
+  const direct='coruja-membership grant Player_123 diamond 20000000 20 4 31';
+  const combo='coruja-combo grant Player_123 35000000 65 4 diamond 31 0 0';
+  assert.equal(context.parseDiamond(direct).tier,'diamond');
+  assert.equal(context.parseDiamondCombo(combo).totalClaimChunks,65);
+  assert.match(await context.deliverDiamond({orderId:'test-only'},direct),/20000000/);
+  assert.match(await context.deliverDiamond({orderId:'test-only'},combo),/35000000/);
 });
 
 function deliveryFixture({bonus=0,offline=false,rejectSet=false,offlinePlayer=false}={}) {

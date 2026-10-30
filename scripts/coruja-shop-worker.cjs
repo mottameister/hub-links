@@ -24,6 +24,7 @@ const config = {
   luckPermsPlusGroup: process.env.SHOP_LUCKPERMS_PLUS_GROUP || "coruja_plus",
   luckPermsPlusPlusGroup: process.env.SHOP_LUCKPERMS_PLUS_PLUS_GROUP || "coruja_plus_plus",
   luckPermsGoldGroup: process.env.SHOP_LUCKPERMS_GOLD_GROUP || process.env.SHOP_LUCKPERMS_PLUS_PLUS_GROUP || "coruja_plus_plus",
+  luckPermsDiamondGroup: process.env.SHOP_LUCKPERMS_DIAMOND_GROUP || process.env.SHOP_LUCKPERMS_GOLD_GROUP || process.env.SHOP_LUCKPERMS_PLUS_PLUS_GROUP || "coruja_plus_plus",
   luckPermsCommandTemplate: process.env.SHOP_LUCKPERMS_COMMAND_TEMPLATE || "lp user {nick} parent addtemp {group} {days}d",
 };
 
@@ -200,7 +201,7 @@ const parseOpacClaimBonusCommand = (command) => {
 };
 
 const parseMembershipCommand = (command) => {
-  const match = String(command || "").trim().match(/^coruja-membership\s+grant\s+([A-Za-z0-9_]{3,16})\s+(plus|plus_plus|gold)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?$/i);
+  const match = String(command || "").trim().match(/^coruja-membership\s+grant\s+([A-Za-z0-9_]{3,16})\s+(plus|plus_plus|gold|diamond)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)(?:\s+(\d+))?$/i);
   if (!match) return null;
   return {
     minecraftNick: match[1],
@@ -214,7 +215,7 @@ const parseMembershipCommand = (command) => {
 };
 
 const parseComboCommand = (command) => {
-  const match = String(command || "").trim().match(/^coruja-combo\s+grant\s+([A-Za-z0-9_]{3,16})\s+(\d+)\s+(\d+)\s+(\d+)\s+(none|plus|plus_plus|gold)\s+(\d+)\s+([0-3])\s+([01])$/i);
+  const match = String(command || "").trim().match(/^coruja-combo\s+grant\s+([A-Za-z0-9_]{3,16})\s+(\d+)\s+(\d+)\s+(\d+)\s+(none|plus|plus_plus|gold|diamond)\s+(\d+)\s+([0-3])\s+([01])$/i);
   if (!match) return null;
   return {
     minecraftNick: match[1], cobbleDollars: Number(match[2]), totalClaimChunks: Number(match[3]),
@@ -299,7 +300,7 @@ const deliverMembership = async ({ delivery, minecraftNick, tier, cobbleDollars,
     logs.push(`shiny egg ${index + 1}/${shinyEggs} (${species}): ${await runDeliveryCommand(command, command)}`);
   }
 
-  const group = tier === "gold" ? config.luckPermsGoldGroup : tier === "plus_plus" ? config.luckPermsPlusPlusGroup : tier === "plus" ? config.luckPermsPlusGroup : "";
+  const group = tier === "diamond" ? config.luckPermsDiamondGroup : tier === "gold" ? config.luckPermsGoldGroup : tier === "plus_plus" ? config.luckPermsPlusPlusGroup : tier === "plus" ? config.luckPermsPlusGroup : "";
   if (group) {
     const command = renderCommandTemplate(config.luckPermsCommandTemplate, { nick: minecraftNick, group, days });
     logs.push(`luckperms: ${await runDeliveryCommand(command, command)}`);

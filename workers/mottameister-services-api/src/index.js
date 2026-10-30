@@ -43,6 +43,11 @@ const products = {
     cobbleDollars: 10000000,
     command: "cobbledollars give {nick} 10000000",
   },
+  cobbledollars_15m: {
+    sku: "cobbledollars_15m", title: "15 mi CobbleDollars", type: "cobbledollars",
+    amount: 54.9, currency: "BRL", cobbleDollars: 15000000,
+    command: "cobbledollars give {nick} 15000000",
+  },
   cobbledollars_20m: {
     sku: "cobbledollars_20m",
     title: "20 mi CobbleDollars",
@@ -51,6 +56,11 @@ const products = {
     currency: "BRL",
     cobbleDollars: 20000000,
     command: "cobbledollars give {nick} 20000000",
+  },
+  cobbledollars_30m: {
+    sku: "cobbledollars_30m", title: "30 mi CobbleDollars", type: "cobbledollars",
+    amount: 99.9, currency: "BRL", cobbleDollars: 30000000,
+    command: "cobbledollars give {nick} 30000000",
   },
   claims_5: {
     sku: "claims_5",
@@ -72,6 +82,11 @@ const products = {
     claimChunks: 12,
     command: "opac-claims add {nick} 12",
   },
+  claims_20: {
+    sku: "claims_20", title: "20 Claims", type: "opac_claim_bonus",
+    amount: 29.9, currency: "BRL", cobbleDollars: 0, claimChunks: 20,
+    command: "opac-claims add {nick} 20",
+  },
   claims_30: {
     sku: "claims_30",
     title: "30 Claims",
@@ -81,6 +96,16 @@ const products = {
     cobbleDollars: 0,
     claimChunks: 30,
     command: "opac-claims add {nick} 30",
+  },
+  claims_45: {
+    sku: "claims_45", title: "45 Claims", type: "opac_claim_bonus",
+    amount: 54.9, currency: "BRL", cobbleDollars: 0, claimChunks: 45,
+    command: "opac-claims add {nick} 45",
+  },
+  claims_60: {
+    sku: "claims_60", title: "60 Claims", type: "opac_claim_bonus",
+    amount: 69.9, currency: "BRL", cobbleDollars: 0, claimChunks: 60,
+    command: "opac-claims add {nick} 60",
   },
   coruja_plus: {
     sku: "coruja_plus",
@@ -123,6 +148,13 @@ const products = {
     membershipDays: 31,
     discountPercent: 15,
     command: "coruja-membership grant {nick} gold 10000000 12 3 31",
+  },
+  coruja_diamond: {
+    sku: "coruja_diamond", title: "Coruja de Diamante", type: "membership",
+    amount: 99.9, currency: "BRL", cobbleDollars: 20000000,
+    claimChunks: 20, shinyEggs: 4, membershipTier: "diamond",
+    membershipDays: 31, discountPercent: 20,
+    command: "coruja-membership grant {nick} diamond 20000000 20 4 31",
   },
   shiny_cookie: {
     sku: "shiny_cookie",

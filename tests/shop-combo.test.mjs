@@ -5,10 +5,16 @@ import { calculateCombo } from '../workers/mottameister-services-api/src/shop-co
 const products = {
   cobbledollars_1m: { type: 'cobbledollars', amount: 9.9, cobbleDollars: 1000000 },
   cobbledollars_5m: { type: 'cobbledollars', amount: 29.9, cobbleDollars: 5000000 },
+  cobbledollars_15m: { type: 'cobbledollars', amount: 54.9, cobbleDollars: 15000000 },
+  cobbledollars_30m: { type: 'cobbledollars', amount: 99.9, cobbleDollars: 30000000 },
   claims_5: { type: 'opac_claim_bonus', amount: 9.9, claimChunks: 5 },
   claims_12: { type: 'opac_claim_bonus', amount: 19.9, claimChunks: 12 },
+  claims_20: { type: 'opac_claim_bonus', amount: 29.9, claimChunks: 20 },
+  claims_45: { type: 'opac_claim_bonus', amount: 54.9, claimChunks: 45 },
+  claims_60: { type: 'opac_claim_bonus', amount: 69.9, claimChunks: 60 },
   coruja_plus: { type: 'membership', amount: 24.9, cobbleDollars: 2000000, claimChunks: 5, shinyEggs: 1 },
   coruja_gold: { type: 'membership', amount: 64.9, cobbleDollars: 10000000, claimChunks: 12, shinyEggs: 3 },
+  coruja_diamond: { type: 'membership', amount: 99.9, cobbleDollars: 20000000, claimChunks: 20, shinyEggs: 4 },
   chunk_loader_1: { type: 'opac_forceload', amount: 99.9 },
   shiny_cookie: { type: 'shiny_cookie', amount: 99.9 },
   ace_trainer_toca: { type: 'manual_fulfillment', amount: 19.9 },
@@ -39,9 +45,20 @@ test('combo aggregates deliveries and identifies manual work', () => {
   assert.equal(combo.hasAutomaticItems, true);
 });
 
+test('new tiers aggregate the diamond benefits with extra cash and claims', () => {
+  const combo = calculateCombo(items('coruja_diamond', 'cobbledollars_15m', 'claims_45'), products);
+  assert.equal(combo.membershipSku, 'coruja_diamond');
+  assert.equal(combo.cobbleDollars, 35000000);
+  assert.equal(combo.claimChunks, 65);
+  assert.equal(combo.shinyEggs, 4);
+  assert.equal(combo.comboDiscountPercent, 10);
+  assert.equal(combo.comboAmount, 188.73);
+});
+
 test('combo rejects duplicate benefits, two memberships and invalid quantities', () => {
   assert.throws(() => calculateCombo(items('claims_5', 'claims_5'), products));
   assert.throws(() => calculateCombo(items('coruja_plus', 'coruja_gold'), products));
+  assert.throws(() => calculateCombo(items('coruja_gold', 'coruja_diamond'), products));
   assert.throws(() => calculateCombo([{ sku: 'chunk_loader_1', quantity: 2 }], products));
   assert.throws(() => calculateCombo([{ sku: 'shiny_cookie', quantity: 4 }], products));
   assert.throws(() => calculateCombo([{ sku: 'kit_ferro', quantity: 1 }], products));

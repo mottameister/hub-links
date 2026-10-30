@@ -350,7 +350,8 @@ footer p { flex: 0 0 100%; margin: 0; color: var(--muted); font-size: 11px; line
 .shop-section { padding: 0 0 76px; scroll-margin-top: 25px; }
 .shop-section .section-heading { margin-bottom: 20px; }
 .product-card h3 { margin: 14px 0 8px; font-size: 23px; }
-.subscription-grid .product-card { min-height: 305px; }
+.subscription-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.subscription-grid .product-card { min-height: 280px; }
 .tier-bronze { border-color: rgba(205, 149, 103, .45); }
 .tier-bronze .product-type { color: #d6a580; }
 .tier-bronze button { border-color: rgba(205, 149, 103, .5); }
@@ -360,10 +361,15 @@ footer p { flex: 0 0 100%; margin: 0; color: var(--muted); font-size: 11px; line
 .tier-gold { border-color: rgba(236, 191, 112, .6); background: linear-gradient(145deg, rgba(229, 182, 104, .21), rgba(115, 139, 159, .13) 60%, rgba(13, 31, 46, .2)); }
 .tier-gold .product-type { color: #f0c987; }
 .tier-gold button { border-color: rgba(236, 191, 112, .65); }
+.tier-diamond { border-color: rgba(142, 220, 245, .66); background: linear-gradient(145deg, rgba(149, 225, 248, .24), rgba(108, 147, 211, .15) 56%, rgba(13, 31, 46, .2)); }
+.tier-diamond .product-type { color: #a9e5f5; }
+.tier-diamond button { border-color: rgba(142, 220, 245, .72); }
 :root[data-theme='light'] .tier-bronze .product-type { color: #95603f; }
 :root[data-theme='light'] .tier-silver .product-type { color: #506f83; }
 :root[data-theme='light'] .tier-gold { background: linear-gradient(145deg, rgba(255,250,237,.88), rgba(226,238,246,.61)); }
 :root[data-theme='light'] .tier-gold .product-type { color: #8b6830; }
+:root[data-theme='light'] .tier-diamond { background: linear-gradient(145deg, rgba(237, 253, 255, .94), rgba(222, 238, 252, .72)); }
+:root[data-theme='light'] .tier-diamond .product-type { color: #33738e; }
 .unique-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .unique-grid .product-card { min-height: 270px; }
 

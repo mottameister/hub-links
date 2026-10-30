@@ -1,9 +1,9 @@
 export const comboSku = "combo_personalizado";
 
 const allowedSkus = new Set([
-  "cobbledollars_1m", "cobbledollars_5m", "cobbledollars_10m", "cobbledollars_20m",
-  "claims_5", "claims_12", "claims_30",
-  "coruja_plus", "coruja_plus_plus", "coruja_gold",
+  "cobbledollars_1m", "cobbledollars_5m", "cobbledollars_10m", "cobbledollars_15m", "cobbledollars_20m", "cobbledollars_30m",
+  "claims_5", "claims_12", "claims_20", "claims_30", "claims_45", "claims_60",
+  "coruja_plus", "coruja_plus_plus", "coruja_gold", "coruja_diamond",
   "chunk_loader_1", "shiny_cookie", "ace_trainer_toca",
 ]);
 
@@ -12,7 +12,7 @@ const money = (value) => Math.round(value * 100) / 100;
 
 export const calculateCombo = (input, products) => {
   if (!Array.isArray(input) || input.length < 1 || input.length > allowedSkus.size) {
-    throw badCombo("Escolha de 1 a 13 beneficios para o combo.");
+    throw badCombo(`Escolha de 1 a ${allowedSkus.size} beneficios para o combo.`);
   }
 
   const seen = new Set();
