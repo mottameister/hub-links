@@ -61,7 +61,7 @@ const tocaLinks = [
     meta: 'AO VIVO',
     icon: '📡',
     tone: 'green',
-    action: 'server'
+    href: '/status/'
   },
   {
     title: 'Baixar o Modpack',
@@ -70,30 +70,6 @@ const tocaLinks = [
     icon: '📦',
     tone: 'green',
     action: 'modpack'
-  },
-  {
-    title: 'Campanha',
-    description: 'Trainers, progressão e desafios.',
-    meta: 'RCT',
-    icon: '⚔️',
-    href: 'https://modrinth.com/mod/toca-da-coruja-campanha',
-    tone: 'cyan'
-  },
-  {
-    title: 'Download do Mundo',
-    description: 'Mapa oficial para jogar em single player.',
-    meta: 'CORUJA SHOP',
-    icon: '🌍',
-    href: '/coruja-shop/#mundo-toca',
-    tone: 'gold'
-  },
-  {
-    title: 'Virar Ace Trainer',
-    description: 'Trainer personalizado combinado por conversa.',
-    meta: 'CORUJA SHOP',
-    icon: '🎓',
-    href: '/coruja-shop/#ace-trainer',
-    tone: 'pink'
   }
 ];
 
@@ -121,13 +97,6 @@ const modalContent = {
       ['Twitch', 'Acompanhe as transmissões ao vivo.', 'https://www.twitch.tv/mottameister'],
       ['Kick', 'Outro ponto para encontrar as lives.', 'https://kick.com/mottameister'],
       ['YouTube', 'Lives, vídeos e reprises no canal.', 'https://www.youtube.com/@mottameister']
-    ]
-  },
-  server: {
-    title: 'Server Toca da Coruja',
-    subtitle: 'Tudo que está acontecendo no mundo agora.',
-    links: [
-      ['Status do Servidor', 'Veja se a Toca está online e quem está jogando.', '/status/']
     ]
   },
   modpack: {
