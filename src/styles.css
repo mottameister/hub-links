@@ -360,6 +360,7 @@ nav > a:hover, .text-cta:hover { color: #2e668e; }
 .loft-coordinate { position: absolute; right: 24px; bottom: 19px; color: #d7c6e1; }
 @media (max-width: 660px) {
   .loft-hero { grid-template-columns: 1fr; }
-  .loft-copy { padding-bottom: 8px; }
-  .loft-visual { padding-top: 0; }
+  .loft-copy { padding: 28px 24px 20px; }
+  .loft-visual { gap: 12px; padding: 0 24px 22px; }
+  .loft-coordinate { position: static; justify-self: end; }
 }
