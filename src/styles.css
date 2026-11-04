@@ -326,3 +326,40 @@ nav > a:hover, .text-cta:hover { color: #2e668e; }
 .is-compact .card-icon { font-size: 18px; }
 .arrow { font-size: 15px; }
 .modal-close { font-size: 16px; }
+
+.loft-hero {
+  display: grid;
+  grid-template-columns: minmax(300px, .9fr) minmax(0, 1.2fr);
+  align-items: center;
+  isolation: isolate;
+  margin: 0 0 48px;
+  overflow: hidden;
+  border: 1px solid #4c3e68;
+  border-radius: 28px;
+  background: radial-gradient(ellipse at 81% 44%, #392954, transparent 58%), #171325;
+  color: #fff7fa;
+}
+.loft-copy { padding: clamp(28px, 5vw, 54px); }
+.loft-label, .loft-coordinate { color: #e8b3ff; font-size: 10px; font-weight: 700; letter-spacing: .16em; }
+.loft-copy h2 {
+  margin: 14px 0;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: clamp(40px, 5vw, 63px);
+  line-height: .98;
+  letter-spacing: -.07em;
+}
+.loft-copy h2 em { color: #fac086; font-style: normal; }
+.loft-copy p { max-width: 32ch; margin: 0; color: #ded3e6; font-size: 15px; line-height: 1.55; }
+.loft-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 16px; margin-top: 23px; }
+.loft-actions a { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; font-size: 13px; font-weight: 700; }
+.loft-enter { padding: 0 16px; border-radius: 999px; background: #fac086; color: #251626; text-decoration: none; }
+.loft-enter:hover { background: #ffd7a8; }
+.loft-docs { color: #f1d9f8; text-underline-offset: 4px; }
+.loft-visual { position: relative; align-self: stretch; min-width: 0; display: grid; place-items: center; padding: 14px 18px 32px; }
+.loft-visual img { display: block; width: 100%; height: auto; border-radius: 16px; }
+.loft-coordinate { position: absolute; right: 24px; bottom: 19px; color: #d7c6e1; }
+@media (max-width: 660px) {
+  .loft-hero { grid-template-columns: 1fr; }
+  .loft-copy { padding-bottom: 8px; }
+  .loft-visual { padding-top: 0; }
+}

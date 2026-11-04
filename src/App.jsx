@@ -323,6 +323,22 @@ export default function App() {
           </div>
         </section>
 
+        <section className="loft-hero" id="loft" aria-labelledby="loft-title">
+          <div className="loft-copy">
+            <span className="loft-label">✦ Loft</span>
+            <h2 id="loft-title">Meu canto<br />gamer <em>3D.</em></h2>
+            <p>Entre, explore, mexa na estante de Funkos, espie minhas impressões 3D, veja as peças do meu PC.</p>
+            <div className="loft-actions">
+              <a className="loft-enter" href="https://rooms.loftapp.io/room/mottameister" target="_blank" rel="noreferrer">Entrar no quarto <span aria-hidden="true">↗</span></a>
+              <a className="loft-docs" href="https://www.loftapp.io/" target="_blank" rel="noreferrer">Acesse a Loft <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <div className="loft-visual">
+            <img src="/loft-room-share.jpg" alt="Quarto do Motta na Loft" width="1200" height="630" loading="lazy" decoding="async" />
+            <span className="loft-coordinate" aria-hidden="true">01 / QUARTO DO MOTTA</span>
+          </div>
+        </section>
+
         <section className="featured-section" id="parcerias" aria-label="Parcerias e recomendações">
           <div className="section-intro">
             <span className="eyebrow">PARCERIAS E RECOMENDAÇÕES</span>
