@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+const loftRoomUrl = 'https://rooms.loftapp.io/room/mottameister';
+
 const featured = [
   {
     title: 'Trabalhe comigo',
@@ -329,14 +331,14 @@ export default function App() {
             <h2 id="loft-title">Meu canto<br />gamer <em>3D.</em></h2>
             <p>Entre, explore, mexa na estante de Funkos, espie minhas impressões 3D, veja as peças do meu PC.</p>
             <div className="loft-actions">
-              <a className="loft-enter" href="https://rooms.loftapp.io/room/mottameister" target="_blank" rel="noreferrer">Entrar no quarto <span aria-hidden="true">↗</span></a>
+              <a className="loft-enter" href={loftRoomUrl} target="_blank" rel="noreferrer">Entrar no quarto <span aria-hidden="true">↗</span></a>
               <a className="loft-docs" href="https://www.loftapp.io/" target="_blank" rel="noreferrer">Acesse a Loft <span aria-hidden="true">↗</span></a>
             </div>
           </div>
-          <div className="loft-visual">
+          <a className="loft-visual" href={loftRoomUrl} target="_blank" rel="noreferrer" aria-label="Entrar no quarto do Motta na Loft">
             <img src="/loft-room-share.jpg" alt="Quarto do Motta na Loft" width="1200" height="630" loading="lazy" decoding="async" />
             <span className="loft-coordinate" aria-hidden="true">01 / QUARTO DO MOTTA</span>
-          </div>
+          </a>
         </section>
 
         <section className="featured-section" id="parcerias" aria-label="Parcerias e recomendações">
