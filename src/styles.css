@@ -355,11 +355,11 @@ nav > a:hover, .text-cta:hover { color: #2e668e; }
 .loft-enter { padding: 0 16px; border-radius: 999px; background: #fac086; color: #251626; text-decoration: none; }
 .loft-enter:hover { background: #ffd7a8; }
 .loft-docs { color: #f1d9f8; text-underline-offset: 4px; }
-.loft-visual { position: relative; align-self: stretch; min-width: 0; display: grid; place-items: center; padding: 14px 18px 32px; }
-.loft-visual img { display: block; width: 100%; height: auto; border-radius: 16px; }
-.loft-coordinate { position: absolute; right: 24px; bottom: 19px; color: #d7c6e1; }
+.loft-visual { grid-template-columns: minmax(0, 1fr); position: relative; align-self: stretch; min-width: 0; display: grid; align-content: center; gap: 12px; padding: 24px 24px 24px 0; }
+.loft-room { display: block; width: 100%; height: 600px; border: 0; border-radius: 16px; background: #171325; }
+.loft-coordinate { justify-self: end; color: #d7c6e1; }
 @media (max-width: 660px) {
-  .loft-hero { grid-template-columns: 1fr; }
+  .loft-hero { grid-template-columns: minmax(0, 1fr); }
   .loft-copy { padding: 28px 24px 20px; }
   .loft-visual { gap: 12px; padding: 0 24px 22px; }
   .loft-coordinate { position: static; justify-self: end; }

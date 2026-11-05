@@ -335,10 +335,19 @@ export default function App() {
               <a className="loft-docs" href="https://www.loftapp.io/" target="_blank" rel="noreferrer">Acesse a Loft <span aria-hidden="true">↗</span></a>
             </div>
           </div>
-          <a className="loft-visual" href={loftRoomUrl} target="_blank" rel="noreferrer" aria-label="Entrar no quarto do Motta na Loft">
-            <img src="/loft-room-share.jpg" alt="Quarto do Motta na Loft" width="1200" height="630" loading="lazy" decoding="async" />
+          <div className="loft-visual">
+            <iframe
+              className="loft-room"
+              src="https://rooms.loftapp.io/embed/mottameister"
+              title="Quarto 3D do Motta na Loft"
+              width="100%"
+              height="600"
+              loading="lazy"
+              allow="autoplay; fullscreen"
+              allowFullScreen
+            />
             <span className="loft-coordinate" aria-hidden="true">01 / QUARTO DO MOTTA</span>
-          </a>
+          </div>
         </section>
 
         <section className="featured-section" id="parcerias" aria-label="Parcerias e recomendações">
