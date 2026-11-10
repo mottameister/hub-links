@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import portraitUrl from './profile-home.webp';
 
 const loftRoomUrl = 'https://rooms.loftapp.io/room/mottameister';
 
@@ -223,6 +224,8 @@ export default function App() {
   const [modal, setModal] = useState(null);
   const [tocaOpen, setTocaOpen] = useState(false);
   const [specialOpen, setSpecialOpen] = useState(false);
+  const [loftOpen, setLoftOpen] = useState(false);
+  const focusLoftRoom = useCallback((frame) => { frame?.focus(); }, []);
   const [communityStats, setCommunityStats] = useState(null);
   const [followers, setFollowers] = useState(() => {
     try {
@@ -320,7 +323,7 @@ export default function App() {
           </div>
 
           <div className="portrait-wrap">
-            <img src="/profile.jpeg" alt="@mottameister" />
+            <img src={portraitUrl} alt="@mottameister" width="640" height="640" fetchPriority="high" />
             <span className="portrait-tag">VIRGINIA, USA · BRASIL NO CORAÇÃO</span>
           </div>
         </section>
@@ -336,16 +339,21 @@ export default function App() {
             </div>
           </div>
           <div className="loft-visual">
-            <iframe
-              className="loft-room"
-              src="https://rooms.loftapp.io/embed/mottameister"
-              title="Quarto 3D do Motta na Loft"
-              width="100%"
-              height="600"
-              loading="lazy"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-            />
+            {loftOpen ? (
+              <iframe
+                ref={focusLoftRoom}
+                className="loft-room"
+                src="https://rooms.loftapp.io/embed/mottameister"
+                title="Quarto 3D do Motta na Loft"
+                allow="autoplay; fullscreen"
+                allowFullScreen
+              />
+            ) : (
+              <button className="loft-preview" type="button" onClick={() => setLoftOpen(true)}>
+                <img src="/loft-room-share.jpg" alt="" width="1200" height="630" loading="lazy" decoding="async" fetchPriority="low" />
+                <span>Carregar quarto 3D <span aria-hidden="true">▶</span></span>
+              </button>
+            )}
             <span className="loft-coordinate" aria-hidden="true">01 / QUARTO DO MOTTA</span>
           </div>
         </section>
