@@ -1,4 +1,5 @@
 import Hls from 'hls.js/dist/hls.light.mjs';
+import { filaments } from './filaments.js';
 const $ = (id) => document.getElementById(id);
 const endpoint = '/api/fila-3d';
 let loading = false;
@@ -17,7 +18,10 @@ function card(item, index) {
   el.querySelector('.owner').textContent = item.owner;
   if (item.filament_color) {
     const color = document.createElement('span'); color.className = 'badge filament-color';
-    color.textContent = 'Filamento: ' + item.filament_color; el.querySelector('.meta').append(color);
+    color.textContent = item.filament_color;
+    const filament = filaments.find(({ name }) => name === item.filament_color);
+    if (filament) color.style.setProperty('--filament', filament.hex);
+    el.querySelector('.meta').append(color);
   }
   if (item.link) {
     try { const url = new URL(item.link); if (['https:', 'http:'].includes(url.protocol)) { const a = document.createElement('a'); a.href = url.href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'Ver projeto ↗'; el.querySelector('.meta').append(a); } } catch {}
@@ -32,7 +36,7 @@ async function load() {
   try {
     const { items } = await api(); const active = items.filter(i => i.status !== 'done'), done = items.filter(i => i.status === 'done');
     $('list').replaceChildren(...active.map(card)); $('done').replaceChildren(...done.map(card));
-    if (!active.length) { const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = 'A fila está livre. Qual vai ser a próxima ideia?'; $('list').append(empty); }
+    if (!active.length) { const empty = document.createElement('div'); empty.className = 'empty'; empty.textContent = 'Nenhuma impressão na fila.'; $('list').append(empty); }
     $('count').textContent = active.length; $('done-count').textContent = `(${done.length})`; $('history').hidden = !done.length; $('message').textContent = '';
   } catch { $('message').textContent = 'Não conseguimos atualizar a fila. Toque em Atualizar para tentar de novo.'; }
   finally { loading = false; $('refresh').disabled = false; }
@@ -40,6 +44,39 @@ async function load() {
 $('add').onclick = () => { $('form-error').textContent = ''; $('dialog').showModal(); };
 $('close').onclick = () => $('dialog').close();
 $('refresh').onclick = load;
+const filamentOptions = $('filament-options');
+for (const { name, hex, material } of filaments) {
+  const swatch = document.createElement('label');
+  const description = material && !name.includes('(') ? `${name} · ${material}` : name;
+  swatch.className = 'swatch';
+  swatch.title = description;
+  swatch.style.setProperty('--filament', hex);
+
+  const input = document.createElement('input');
+  input.type = 'radio';
+  input.name = 'filament_color';
+  input.value = name;
+  input.setAttribute('aria-label', description);
+  const chip = document.createElement('span');
+  chip.className = 'swatch-chip';
+  chip.setAttribute('aria-hidden', 'true');
+  swatch.append(input, chip);
+  filamentOptions.append(swatch);
+}
+
+function syncFilament() {
+  const selected = filamentOptions.querySelector('input:checked');
+  $('filament-name').textContent = selected?.getAttribute('aria-label') ?? 'Sem preferência';
+  $('clear-filament').hidden = !selected;
+}
+filamentOptions.addEventListener('change', syncFilament);
+$('clear-filament').addEventListener('click', () => {
+  const selected = filamentOptions.querySelector('input:checked');
+  selected.checked = false;
+  syncFilament();
+  selected.focus();
+});
+
 function syncOwner() {
   const other = $('owner').value === 'other';
   $('owner-other-label').hidden = !other; $('owner-other').disabled = !other; $('owner-other').required = other;
@@ -50,7 +87,7 @@ $('form').onsubmit = async (event) => {
   const data = Object.fromEntries(new FormData(event.target)); data.priority = Number(data.priority);
   if (data.owner === 'other') data.owner = (data.owner_other || '').trim();
   delete data.owner_other;
-  try { await api('', { method: 'POST', body: JSON.stringify(data) }); event.target.reset(); syncOwner(); $('dialog').close(); await load(); }
+  try { await api('', { method: 'POST', body: JSON.stringify(data) }); event.target.reset(); syncOwner(); syncFilament(); $('dialog').close(); await load(); }
   catch (e) { $('form-error').textContent = e.message; }
   finally { $('save').disabled = false; }
 };
