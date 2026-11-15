@@ -29,6 +29,15 @@ dialog {
 }
 form > label { margin: 12px 0; }
 .fields label { margin: 0 0 14px; }
+#form :is(label > input:not([type="radio"]), select) {
+  background: #e8ecdf;
+  border-color: #858e7b;
+}
+#form :is(label > input:not([type="radio"]), select):focus {
+  background: #f5f7ef;
+  border-color: #627657;
+  outline-color: #627657;
+}
 .filament-picker {
   min-width: 0;
   margin: 0 0 12px;
