@@ -91,7 +91,8 @@ const modalContent = {
       ['TikTok', '@_mottameister', 'https://www.tiktok.com/@_mottameister'],
       ['Twitch', '/mottameister', 'https://www.twitch.tv/mottameister'],
       ['YouTube', '/@mottameister', 'https://www.youtube.com/@mottameister'],
-      ['X', '/mottameister', 'https://x.com/mottameister']
+      ['X', '/mottameister', 'https://x.com/mottameister'],
+      ['Steam', '/id/mottameister/', 'https://steamcommunity.com/id/mottameister/']
     ]
   },
   shop: {
