@@ -347,8 +347,8 @@ export default function App() {
           </div>
 
           <button className="portrait-wrap" type="button" aria-haspopup="dialog" onClick={() => setModal('social')}>
-            <img src={portraitUrl} alt="" width="640" height="640" fetchPriority="high" />
-            <span className="portrait-tag">minhas redes sociais <span aria-hidden="true">▾</span></span>
+            <img src={portraitUrl} alt="" width="614" height="614" fetchPriority="high" />
+            <span className="portrait-tag">Minhas redes sociais <span aria-hidden="true">▾</span></span>
           </button>
         </section>
 
