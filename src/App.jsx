@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import portraitUrl from './profile-home.webp';
 
 const loftRoomUrl = 'https://rooms.loftapp.io/room/mottameister';
@@ -84,6 +84,16 @@ const specialLinks = [
 ];
 
 const modalContent = {
+  social: {
+    title: 'Minhas redes sociais',
+    links: [
+      ['Instagram', '@mottameister', 'https://www.instagram.com/mottameister/'],
+      ['TikTok', '@_mottameister', 'https://www.tiktok.com/@_mottameister'],
+      ['Twitch', '/mottameister', 'https://www.twitch.tv/mottameister'],
+      ['YouTube', '/@mottameister', 'https://www.youtube.com/@mottameister'],
+      ['X', '/mottameister', 'https://x.com/mottameister']
+    ]
+  },
   shop: {
     title: 'Produtos que eu uso',
     subtitle: 'Links de curadoria, sem papo de vendedor.',
@@ -186,26 +196,40 @@ function LinkCard({ item, compact = false, onOpen }) {
 
 function Modal({ type, onClose }) {
   const content = type ? modalContent[type] : null;
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
 
   useEffect(() => {
-    if (!content) return undefined;
-    const handleKeyDown = (event) => event.key === 'Escape' && onClose();
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [content, onClose]);
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    dialog.showModal();
+    closeButtonRef.current.focus();
+    return () => dialog.close();
+  }, [content]);
 
   if (!content) return null;
 
+  const closeDialog = () => {
+    dialogRef.current.close();
+    onClose();
+  };
+
   return (
-    <div className="modal-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()} role="presentation">
-      <div className="modal-card glass-surface" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <dialog
+      ref={dialogRef}
+      className="modal-backdrop"
+      aria-labelledby="modal-title"
+      onCancel={(event) => { event.preventDefault(); closeDialog(); }}
+      onClick={(event) => event.target === event.currentTarget && closeDialog()}
+    >
+      <div className="modal-card glass-surface">
         <div className="modal-head">
           <div>
-            <span className="eyebrow">ATALHO RÁPIDO</span>
+            {content.subtitle && <span className="eyebrow">ATALHO RÁPIDO</span>}
             <h2 id="modal-title">{content.title}</h2>
-            <p>{content.subtitle}</p>
+            {content.subtitle && <p>{content.subtitle}</p>}
           </div>
-          <button className="modal-close" type="button" onClick={onClose} aria-label="Fechar">✖️</button>
+          <button ref={closeButtonRef} className="modal-close" type="button" onClick={closeDialog} aria-label="Fechar">✖️</button>
         </div>
         <div className="modal-links">
           {content.links.map(([title, description, href]) => (
@@ -216,7 +240,7 @@ function Modal({ type, onClose }) {
           ))}
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }
 
@@ -309,7 +333,7 @@ export default function App() {
           <div className="hero-copy">
             <span className="eyebrow"><i /> VIDA REAL · COMUNIDADE · JOGOS</span>
             <h1>Uma comunidade<br /><em>que vira conteúdo, projeto e história.</em></h1>
-            <p>Corujões, setup e Cobblemon para uma audiência que acompanha, comenta e volta.</p>
+            <p>Compartilho minha vida nos EUA, meu setup e os jogos que curto, incluindo os Corujões com meu filho Dom.</p>
             <div className="hero-actions">
               <a className="primary-cta" href="#parcerias">Trabalhe comigo <Arrow /></a>
               <a className="ghost-cta" href="https://discord.com/invite/TcSFAXGr6a" target="_blank" rel="noreferrer"><span className="live-dot" /> Conheça a Toca</a>
@@ -322,10 +346,10 @@ export default function App() {
             </div>
           </div>
 
-          <div className="portrait-wrap">
-            <img src={portraitUrl} alt="@mottameister" width="640" height="640" fetchPriority="high" />
-            <span className="portrait-tag">VIRGINIA, USA · BRASIL NO CORAÇÃO</span>
-          </div>
+          <button className="portrait-wrap" type="button" aria-haspopup="dialog" onClick={() => setModal('social')}>
+            <img src={portraitUrl} alt="" width="640" height="640" fetchPriority="high" />
+            <span className="portrait-tag">minhas redes sociais <span aria-hidden="true">▾</span></span>
+          </button>
         </section>
 
         <section className="loft-hero" id="loft" aria-labelledby="loft-title">
