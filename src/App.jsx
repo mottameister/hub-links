@@ -95,6 +95,13 @@ const modalContent = {
       ['Steam', '/id/mottameister/', 'https://steamcommunity.com/id/mottameister/']
     ]
   },
+  mice: {
+    title: 'Mouses dos vídeos',
+    links: [
+      ['RAGNOK 88', null, 'https://ragnok.com/opbcuk'],
+      ['ErgoStrike7', null, 'https://ragnok.com/tfaffp']
+    ]
+  },
   shop: {
     title: 'Produtos que eu uso',
     subtitle: 'Links de curadoria, sem papo de vendedor.',
@@ -235,7 +242,7 @@ function Modal({ type, onClose }) {
         <div className="modal-links">
           {content.links.map(([title, description, href]) => (
             <a key={title} href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer">
-              <span><strong>{title}</strong><small>{description}</small></span>
+              <span><strong>{title}</strong>{description && <small>{description}</small>}</span>
               <Arrow />
             </a>
           ))}
@@ -347,10 +354,15 @@ export default function App() {
             </div>
           </div>
 
-          <button className="portrait-wrap" type="button" aria-haspopup="dialog" onClick={() => setModal('social')}>
-            <img src={portraitUrl} alt="" width="614" height="614" fetchPriority="high" />
-            <span className="portrait-tag">Minhas redes sociais <span aria-hidden="true">▾</span></span>
-          </button>
+          <div className="hero-portrait">
+            <button className="portrait-tag portrait-mice" type="button" aria-haspopup="dialog" onClick={() => setModal('mice')}>
+              Mouses dos vídeos <span aria-hidden="true">▾</span>
+            </button>
+            <button className="portrait-wrap" type="button" aria-haspopup="dialog" onClick={() => setModal('social')}>
+              <img src={portraitUrl} alt="" width="614" height="614" fetchPriority="high" />
+              <span className="portrait-tag">Minhas redes sociais <span aria-hidden="true">▾</span></span>
+            </button>
+          </div>
         </section>
 
         <section className="loft-hero" id="loft" aria-labelledby="loft-title">
